@@ -6,7 +6,7 @@
 |---|---|---|---|---|
 | POC-00 | 本机审计和版本锁定 | **PASS** | docs/poc/evidence/POC-00-environment.md（commit d5bb7564） | 2026-10-26 完成源码/版本/隔离审计 |
 | POC-01 | Docker/Bench 安装初始化及可重启 | **PASS** | docs/poc/evidence/POC-01-install.md（commit d5bb7564） | 2026-10-26 site erpnext-poc.localhost 可用 |
-| POC-02 | 简体中文默认值及翻译验收 | TODO | 待执行 | 依赖01 |
+| POC-02 | 简体中文默认值及翻译验收 | **PASS** | docs/poc/evidence/POC-02-l10n.md | 2026-10-26 8 处 zh 空翻译用 cn_mfg_poc patch 修复 |
 | POC-03 | 国产 PC 菜单与角色入口 | TODO | 待执行 | 依赖02 |
 | POC-04 | 四类型订单与样本配置 | TODO | 待执行 | 依赖03 |
 | POC-05 | 生产订单完整业务单据与库存生命周期 | TODO | 待执行 | 依赖04 |
