@@ -3,13 +3,17 @@
 **状态：尚未开始。** 以下是待填写模板，不代表已在用户 Windows 电脑上安装或通过测试。
 
 ## 环境
-- URL：待 Workbuddy 本机验收后填写
-- Windows 入口：待填
-- Git POC branch/head：待填
-- ERPNext / Frappe / Python 版本：待填
-- Docker/Bench 目录、site、端口、持久化 volume：待填
-- 启动/停止/备份/恢复命令：待填
-- 账号：待填（**只写账号名称，密码本机安全交付，不进 Git**）
+- URL：http://erpnext-poc.localhost:18000 （已可访问，Windows 浏览器直连，系统代理已关闭）
+- Windows 入口：hosts 已加 `127.0.0.1 erpnext-poc.localhost`；SocketIO 端口 19000
+- Git POC branch/head：poc/erpnext-cn-manufacturing-20261026 / ea9d3ceb43c76039c39354f704a63b860d1423d9
+- ERPNext / Frappe / Python 版本：16.52.1 / 16.53.0(version-16) / 3.14.9（bench 5.31.1, MariaDB 11.8, Node 24.22.1）
+- Docker/Bench 目录、site、端口、持久化 volume：
+  - 编排：`D:\ERP\poc\frappe_docker\docker-compose.yml`
+  - 容器：poc-frappe / poc-mariadb / poc-redis-cache / poc-redis-queue
+  - site：`/workspace/development/frappe-bench/sites/erpnext-poc.localhost`（Docker 卷 `poc-workspace`）
+  - 数据库卷：`poc-mariadb-data`；端口仅绑定 127.0.0.1（web 18000-18005，socketio 19000-19005）
+- 启动/停止/备份/恢复命令：见 docs/poc/evidence/POC-01-install.md 与 `poc/scripts/poc.ps1`
+- 账号：Administrator（**密码本机安全交付，见 D:\ERP\poc\CREDENTIALS.local.md，不进 Git**）
 
 ## 四类真实单据
 | 类型 | 销售订单 No. | BOM | 工单 No. | 任务 No. | 采购/库存 No. | 交付 No. | 财务 No. | 验收结果 |
@@ -22,9 +26,9 @@
 ## 端到端测试状态
 | 验收点 | 实际结果 PASS/FAIL/BLOCKED | 证据/单号/数值 | 差距与处理 |
 |---|---|---|---|
-| 环境真实运行且重启持久化 | 未执行 | | |
-| 系统及新用户默认简体中文 | 未执行 | | |
-| 左侧菜单/右侧操作区、角色权限 | 未执行 | | |
+| 环境真实运行且重启持久化 | **PASS**（POC-01） | docker compose down/up 后登录、Company、System Settings、apps 全部保留 | — |
+| 系统及新用户默认简体中文 | 未执行 | System Settings.language=zh 已由 Setup Wizard 写入 | 待 POC-02 |
+| 左侧菜单/右侧操作区、角色权限 | 未执行 | 默认侧栏已为中文（见 poc-01-customer.png） | 待 POC-03 |
 | 四种业务类型真实订单可提交查询 | 未执行 | | |
 | 耗材与零部件直接出库 | 未执行 | | |
 | 服务无库存扣减 | 未执行 | | |

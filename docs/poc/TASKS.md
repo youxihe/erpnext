@@ -4,8 +4,8 @@
 
 | 序号 | 任务 | 状态 | 证据/提交 | 备注 |
 |---|---|---|---|---|
-| POC-00 | 本机审计和版本锁定 | TODO | 待执行 | 必须第一项 |
-| POC-01 | Docker/Bench 安装初始化及可重启 | TODO | 待执行 | 依赖00 |
+| POC-00 | 本机审计和版本锁定 | **PASS** | docs/poc/evidence/POC-00-environment.md | 2026-10-26 完成源码/版本/隔离审计 |
+| POC-01 | Docker/Bench 安装初始化及可重启 | **PASS** | docs/poc/evidence/POC-01-install.md | 2026-10-26 site erpnext-poc.localhost 可用 |
 | POC-02 | 简体中文默认值及翻译验收 | TODO | 待执行 | 依赖01 |
 | POC-03 | 国产 PC 菜单与角色入口 | TODO | 待执行 | 依赖02 |
 | POC-04 | 四类型订单与样本配置 | TODO | 待执行 | 依赖03 |

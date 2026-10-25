@@ -1,0 +1,55 @@
+# ERPNext 中文轻制造 POC — 隔离开发/运行环境
+# 参考 frappe_docker devcontainer-example + docs/05-development/04-alternate-setup.md
+# 全部端口仅绑定 127.0.0.1；容器名/卷名/端口均与其他项目(ai-erp / openclaw)隔离。
+services:
+  mariadb:
+    image: docker.io/mariadb:11.8
+    container_name: poc-mariadb
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      # 降低内存占用（本机 16GB RAM，同时跑着其他项目容器）
+      - --innodb-buffer-pool-size=256M
+      - --max-connections=100
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MARIADB_AUTO_UPGRADE: 1
+    volumes:
+      - poc-mariadb-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+  redis-cache:
+    image: docker.io/redis:alpine
+    container_name: poc-redis-cache
+    command: ["redis-server", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+
+  redis-queue:
+    image: docker.io/redis:alpine
+    container_name: poc-redis-queue
+    command: ["redis-server", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+
+  frappe:
+    image: docker.io/frappe/bench:latest
+    container_name: poc-frappe
+    command: sleep infinity
+    environment:
+      - SHELL=/bin/bash
+      - FRAPPE_BIND_ADDR=0.0.0.0
+    ports:
+      # bench web / socketio 端口，仅本机可访问
+      - "127.0.0.1:18000-18005:8000-8005"
+      - "127.0.0.1:19000-19005:19000-19005"
+    volumes:
+      - poc-workspace:/workspace
+      # 宿主机交换目录：备份、证据文件、自定义 app 导出
+      - ../share:/hostshare
+    working_dir: /workspace/development
+
+volumes:
+  poc-mariadb-data:
+  poc-workspace:
