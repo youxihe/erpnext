@@ -1,0 +1,186 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"24e4981206\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u8ba2\\u5355\\u4e0e\\u4ea4\\u671f\", \"col\": 4}}, {\"id\": \"0c5e49012e\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5e93\\u5b58\\u4e0e\\u6210\\u672c\", \"col\": 4}}, {\"id\": \"3111f5e8b4\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u8d22\\u52a1\", \"col\": 4}}]",
+ "creation": "2026-10-26 06:57:03.567935",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "\u7ecf\u8425\u62a5\u8868",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u8ba2\u5355\u4e0e\u4ea4\u671f",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u9500\u552e\u5206\u6790",
+   "link_count": 0,
+   "link_to": "Sales Analytics",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Sales Order",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u91c7\u8d2d\u5206\u6790",
+   "link_count": 0,
+   "link_to": "Purchase Analytics",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Order",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5de5\u5355\u6c47\u603b",
+   "link_count": 0,
+   "link_to": "Work Order Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Work Order",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u4efb\u52a1\u5355\u6c47\u603b",
+   "link_count": 0,
+   "link_to": "Job Card Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Job Card",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e93\u5b58\u4e0e\u6210\u672c",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e93\u5b58\u4f59\u989d",
+   "link_count": 0,
+   "link_to": "Stock Balance",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5de5\u5355\u5e93\u5b58",
+   "link_count": 0,
+   "link_to": "Work Order Stock Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Work Order",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e93\u5b58\u8d26\u9f84",
+   "link_count": 0,
+   "link_to": "Stock Ageing",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Item",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u8d22\u52a1",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e94\u6536\u8d26\u9f84",
+   "link_count": 0,
+   "link_to": "Accounts Receivable",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Sales Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e94\u4ed8\u8d26\u9f84",
+   "link_count": 0,
+   "link_to": "Accounts Payable",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u603b\u8d26",
+   "link_count": 0,
+   "link_to": "General Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "GL Entry",
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-10-26 07:06:20.284789",
+ "modified_by": "Administrator",
+ "module": "CN MFG POC",
+ "name": "\u7ecf\u8425\u62a5\u8868",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Sales Manager"
+  },
+  {
+   "role": "Purchase Manager"
+  },
+  {
+   "role": "Stock Manager"
+  },
+  {
+   "role": "Manufacturing Manager"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 8.0,
+ "shortcuts": [],
+ "standard": 1,
+ "title": "\u7ecf\u8425\u62a5\u8868",
+ "type": "Workspace"
+}

@@ -1,0 +1,163 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"f101c9c3fe\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5e93\\u5b58\\u67e5\\u8be2\", \"col\": 4}}, {\"id\": \"3d368ee42e\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u51fa\\u5165\\u5e93\\u4e0e\\u76d8\\u70b9\", \"col\": 4}}, {\"id\": \"825edb78ca\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u9886\\u6599\\u4e0e\\u4ea7\\u6210\\u54c1\", \"col\": 4}}]",
+ "creation": "2026-10-26 06:57:03.521756",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "\u4ed3\u5e93\u7ba1\u7406",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e93\u5b58\u67e5\u8be2",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e93\u5b58\u4f59\u989d",
+   "link_count": 0,
+   "link_to": "Stock Balance",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e93\u5b58\u8d26\u9f84",
+   "link_count": 0,
+   "link_to": "Stock Ageing",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Item",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u7269\u6599",
+   "link_count": 0,
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u4ed3\u5e93",
+   "link_count": 0,
+   "link_to": "Warehouse",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u6279\u6b21",
+   "link_count": 0,
+   "link_to": "Batch",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e8f\u5217\u53f7",
+   "link_count": 0,
+   "link_to": "Serial No",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u51fa\u5165\u5e93\u4e0e\u76d8\u70b9",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u7269\u6599\u79fb\u52a8",
+   "link_count": 0,
+   "link_to": "Stock Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e93\u5b58\u76d8\u70b9",
+   "link_count": 0,
+   "link_to": "Stock Reconciliation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u9886\u6599\u4e0e\u4ea7\u6210\u54c1",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u7269\u6599\u9700\u6c42",
+   "link_count": 0,
+   "link_to": "Material Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u751f\u4ea7\u5de5\u5355",
+   "link_count": 0,
+   "link_to": "Work Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-10-26 07:06:20.196534",
+ "modified_by": "Administrator",
+ "module": "CN MFG POC",
+ "name": "\u4ed3\u5e93\u7ba1\u7406",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Stock User"
+  }
+ ],
+ "sequence_id": 5.0,
+ "shortcuts": [],
+ "standard": 1,
+ "title": "\u4ed3\u5e93\u7ba1\u7406",
+ "type": "Workspace"
+}

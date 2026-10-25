@@ -1,0 +1,144 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"df04bad95d\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5f00\\u7968\", \"col\": 4}}, {\"id\": \"33101f5fa0\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u6536\\u4ed8\\u6b3e\", \"col\": 4}}, {\"id\": \"f4a85e9b78\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5f80\\u6765\\u5bf9\\u8d26\", \"col\": 4}}]",
+ "creation": "2026-10-26 06:57:03.550018",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "\u8d22\u52a1\u7ba1\u7406",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5f00\u7968",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u9500\u552e\u53d1\u7968",
+   "link_count": 0,
+   "link_to": "Sales Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u91c7\u8d2d\u53d1\u7968",
+   "link_count": 0,
+   "link_to": "Purchase Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u6536\u4ed8\u6b3e",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u6536\u4ed8\u6b3e",
+   "link_count": 0,
+   "link_to": "Payment Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u65e5\u8bb0\u8d26",
+   "link_count": 0,
+   "link_to": "Journal Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u4f1a\u8ba1\u79d1\u76ee",
+   "link_count": 0,
+   "link_to": "Account",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5f80\u6765\u5bf9\u8d26",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e94\u6536\u8d26\u9f84",
+   "link_count": 0,
+   "link_to": "Accounts Receivable",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Sales Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5e94\u4ed8\u8d26\u9f84",
+   "link_count": 0,
+   "link_to": "Accounts Payable",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u603b\u8d26",
+   "link_count": 0,
+   "link_to": "General Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "GL Entry",
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-10-26 07:06:20.250527",
+ "modified_by": "Administrator",
+ "module": "CN MFG POC",
+ "name": "\u8d22\u52a1\u7ba1\u7406",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Accounts User"
+  }
+ ],
+ "sequence_id": 7.0,
+ "shortcuts": [],
+ "standard": 1,
+ "title": "\u8d22\u52a1\u7ba1\u7406",
+ "type": "Workspace"
+}

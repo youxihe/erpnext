@@ -1,0 +1,170 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"7d145dc4a0\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4ea7\\u54c1\\u8bbe\\u8ba1\", \"col\": 4}}, {\"id\": \"adf81b6c2b\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u751f\\u4ea7\\u8ba1\\u5212\", \"col\": 4}}, {\"id\": \"8f0dc04e18\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u751f\\u4ea7\\u6267\\u884c\", \"col\": 4}}, {\"id\": \"843036290b\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u751f\\u4ea7\\u8d44\\u6e90\", \"col\": 4}}]",
+ "creation": "2026-10-26 06:57:03.477815",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "\u8bbe\u8ba1\u4e0e\u751f\u4ea7",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u4ea7\u54c1\u8bbe\u8ba1",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u7269\u6599",
+   "link_count": 0,
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u7269\u6599\u6e05\u5355",
+   "link_count": 0,
+   "link_to": "BOM",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5de5\u827a\u8def\u7ebf",
+   "link_count": 0,
+   "link_to": "Routing",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5de5\u5e8f",
+   "link_count": 0,
+   "link_to": "Operation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u751f\u4ea7\u8ba1\u5212",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u751f\u4ea7\u8ba1\u5212",
+   "link_count": 0,
+   "link_to": "Production Plan",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u7269\u6599\u9700\u6c42",
+   "link_count": 0,
+   "link_to": "Material Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u751f\u4ea7\u6267\u884c",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u751f\u4ea7\u5de5\u5355",
+   "link_count": 0,
+   "link_to": "Work Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u751f\u4ea7\u4efb\u52a1\u5355",
+   "link_count": 0,
+   "link_to": "Job Card",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u7269\u6599\u79fb\u52a8",
+   "link_count": 0,
+   "link_to": "Stock Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u751f\u4ea7\u8d44\u6e90",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5de5\u4f5c\u7ad9",
+   "link_count": 0,
+   "link_to": "Workstation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-10-26 07:06:20.121314",
+ "modified_by": "Administrator",
+ "module": "CN MFG POC",
+ "name": "\u8bbe\u8ba1\u4e0e\u751f\u4ea7",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Manufacturing User"
+  }
+ ],
+ "sequence_id": 3.0,
+ "shortcuts": [],
+ "standard": 1,
+ "title": "\u8bbe\u8ba1\u4e0e\u751f\u4ea7",
+ "type": "Workspace"
+}

@@ -1,0 +1,151 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"81efbc0701\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u91c7\\u8d2d\\u8fc7\\u7a0b\", \"col\": 4}}, {\"id\": \"ea54e041c6\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4f9b\\u5e94\\u5546\\u8d44\\u6599\", \"col\": 4}}, {\"id\": \"1fa1a80241\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5165\\u5e93\\u4e0e\\u53d1\\u7968\", \"col\": 4}}]",
+ "creation": "2026-10-26 06:57:03.499983",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "\u91c7\u8d2d\u7ba1\u7406",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u91c7\u8d2d\u8fc7\u7a0b",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u7269\u6599\u9700\u6c42",
+   "link_count": 0,
+   "link_to": "Material Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u8be2\u4ef7\u5355",
+   "link_count": 0,
+   "link_to": "Request for Quotation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u4f9b\u5e94\u5546\u62a5\u4ef7",
+   "link_count": 0,
+   "link_to": "Supplier Quotation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u91c7\u8d2d\u8ba2\u5355",
+   "link_count": 0,
+   "link_to": "Purchase Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u4f9b\u5e94\u5546\u8d44\u6599",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u4f9b\u5e94\u5546",
+   "link_count": 0,
+   "link_to": "Supplier",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u8054\u7cfb\u4eba",
+   "link_count": 0,
+   "link_to": "Contact",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5730\u5740",
+   "link_count": 0,
+   "link_to": "Address",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u5165\u5e93\u4e0e\u53d1\u7968",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u91c7\u8d2d\u5165\u5e93",
+   "link_count": 0,
+   "link_to": "Purchase Receipt",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u91c7\u8d2d\u53d1\u7968",
+   "link_count": 0,
+   "link_to": "Purchase Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-10-26 07:06:20.163938",
+ "modified_by": "Administrator",
+ "module": "CN MFG POC",
+ "name": "\u91c7\u8d2d\u7ba1\u7406",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Purchase User"
+  }
+ ],
+ "sequence_id": 4.0,
+ "shortcuts": [],
+ "standard": 1,
+ "title": "\u91c7\u8d2d\u7ba1\u7406",
+ "type": "Workspace"
+}
