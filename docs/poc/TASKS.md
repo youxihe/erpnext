@@ -8,7 +8,7 @@
 | POC-01 | Docker/Bench 安装初始化及可重启 | **PASS** | docs/poc/evidence/POC-01-install.md（commit d5bb7564） | 2026-10-26 site erpnext-poc.localhost 可用 |
 | POC-02 | 简体中文默认值及翻译验收 | **PASS** | docs/poc/evidence/POC-02-l10n.md（commit fd7b27c4） | 2026-10-26 8 处 zh 空翻译用 cn_mfg_poc patch 修复 |
 | POC-03 | 国产 PC 菜单与角色入口 | **PASS** | docs/poc/evidence/POC-03-navigation.md（commit ebb5eb21） | 2026-10-26 10 个角色门控中文工作台 + block_modules 屏蔽 36 模块，3 角色实测差异 + 10/10 后端权限探针全过 |
-| POC-04 | 四类型订单与样本配置 | TODO | 待执行 | 依赖03 |
+| POC-04 | 四类型订单与样本配置 | **PASS** | docs/poc/evidence/POC-04-orders.md（commit d556fcb6） | 2026-10-26 四类订单 SAL-ORD-2026-00001..04 提交；耗材/零部件交货真实扣减 50→40、8→3；服务类 0 工单 0 库存 |
 | POC-05 | 生产订单完整业务单据与库存生命周期 | TODO | 待执行 | 依赖04 |
 | POC-06 | 负面测试、复测、交付 | TODO | 待执行 | 依赖05 |
 
