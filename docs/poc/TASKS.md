@@ -9,8 +9,8 @@
 | POC-02 | 简体中文默认值及翻译验收 | **PASS** | docs/poc/evidence/POC-02-l10n.md（commit fd7b27c4） | 2026-10-26 8 处 zh 空翻译用 cn_mfg_poc patch 修复 |
 | POC-03 | 国产 PC 菜单与角色入口 | **PASS** | docs/poc/evidence/POC-03-navigation.md（commit ebb5eb21） | 2026-10-26 10 个角色门控中文工作台 + block_modules 屏蔽 36 模块，3 角色实测差异 + 10/10 后端权限探针全过 |
 | POC-04 | 四类型订单与样本配置 | **PASS** | docs/poc/evidence/POC-04-orders.md（commit d556fcb6） | 2026-10-26 四类订单 SAL-ORD-2026-00001..04 提交；耗材/零部件交货真实扣减 50→40、8→3；服务类 0 工单 0 库存 |
-| POC-05 | 生产订单完整业务单据与库存生命周期 | **PASS** | docs/poc/evidence/POC-05-production.md | 2026-10-26 生产计划→缺料采购→工单(2 工序)→Job Card→领料→完工→交付→开票→收款全链路；成品 720 元/台与 BOM 勾稽一致，应收 0 |
-| POC-06 | 负面测试、复测、交付 | **PASS** | docs/poc/evidence/POC-06-handover.md | 2026-10-26 负面测试 9/10 拦截（1 项已知缺口 GAP-06-01）、重启 17 项指标零差异、修复重启不自启、四类订单财务闭环、交接指南与 JSH 对比 |
+| POC-05 | 生产订单完整业务单据与库存生命周期 | **PASS** | docs/poc/evidence/POC-05-production.md（commit a6095e94） | 2026-10-26 生产计划→缺料采购→工单(2 工序)→Job Card→领料→完工→交付→开票→收款全链路；成品 720 元/台与 BOM 勾稽一致，应收 0 |
+| POC-06 | 负面测试、复测、交付 | **PASS** | docs/poc/evidence/POC-06-handover.md（commit d040db16） | 2026-10-26 负面测试 9/10 拦截（1 项已知缺口 GAP-06-01）、重启 17 项指标零差异、修复重启不自启、四类订单财务闭环、交接指南与 JSH 对比 |
 
 ## 状态和交付规则
 - 每项需要写入：实际开始结束日期、环境/提交 SHA、测试步骤、实测单号/URL、截图或日志路径、PASS/FAIL 原因、未解决事项。
