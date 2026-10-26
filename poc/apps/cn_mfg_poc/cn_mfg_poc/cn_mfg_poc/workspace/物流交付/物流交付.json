@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\": \"da8d2072a2\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4ea4\\u4ed8\", \"col\": 4}}]",
+ "content": "[{\"id\": \"61b10732b0\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4ea4\\u4ed8\", \"col\": 4}}]",
  "creation": "2026-10-26 06:57:03.539352",
  "custom_blocks": [],
  "docstatus": 0,
@@ -42,7 +42,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-10-26 07:06:20.226562",
+ "modified": "2026-10-26 08:37:31.515754",
  "modified_by": "Administrator",
  "module": "CN MFG POC",
  "name": "\u7269\u6d41\u4ea4\u4ed8",
@@ -59,7 +59,37 @@
   }
  ],
  "sequence_id": 6.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u4ea4\u8d27\u5355",
+   "link_to": "Delivery Note",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u9500\u552e\u8ba2\u5355",
+   "link_to": "Sales Order",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u7269\u6d41\u5355",
+   "link_to": "Shipment",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "\u4ea4\u8d27\u5355\u8d8b\u52bf",
+   "link_to": "Delivery Note Trends",
+   "report_ref_doctype": "Delivery Note",
+   "type": "Report"
+  }
+ ],
  "standard": 1,
  "title": "\u7269\u6d41\u4ea4\u4ed8",
  "type": "Workspace"

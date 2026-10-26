@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\": \"e3669c0409\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u9500\\u552e\\u8fc7\\u7a0b\", \"col\": 4}}, {\"id\": \"6eecfb9966\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5ba2\\u6237\\u8d44\\u6599\", \"col\": 4}}, {\"id\": \"845fd8997b\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4ea4\\u4ed8\\u4e0e\\u56de\\u6b3e\", \"col\": 4}}]",
+ "content": "[{\"id\": \"b5ff96a43a\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u9500\\u552e\\u8fc7\\u7a0b\", \"col\": 4}}, {\"id\": \"a9733ca5d6\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5ba2\\u6237\\u8d44\\u6599\", \"col\": 4}}, {\"id\": \"6fe0afc3ce\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4ea4\\u4ed8\\u4e0e\\u56de\\u6b3e\", \"col\": 4}}]",
  "creation": "2026-10-26 06:57:03.454175",
  "custom_blocks": [],
  "docstatus": 0,
@@ -140,7 +140,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-10-26 07:06:20.081137",
+ "modified": "2026-10-26 08:37:31.404582",
  "modified_by": "Administrator",
  "module": "CN MFG POC",
  "name": "\u5ba2\u6237\u4e0e\u9500\u552e",
@@ -154,7 +154,43 @@
   }
  ],
  "sequence_id": 2.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u9500\u552e\u8ba2\u5355",
+   "link_to": "Sales Order",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u4ea4\u8d27\u5355",
+   "link_to": "Delivery Note",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u9500\u552e\u53d1\u7968",
+   "link_to": "Sales Invoice",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u5ba2\u6237",
+   "link_to": "Customer",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u7269\u6599\u4ef7\u683c",
+   "link_to": "Item Price",
+   "type": "DocType"
+  }
+ ],
  "standard": 1,
  "title": "\u5ba2\u6237\u4e0e\u9500\u552e",
  "type": "Workspace"

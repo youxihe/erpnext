@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\": \"f101c9c3fe\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5e93\\u5b58\\u67e5\\u8be2\", \"col\": 4}}, {\"id\": \"3d368ee42e\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u51fa\\u5165\\u5e93\\u4e0e\\u76d8\\u70b9\", \"col\": 4}}, {\"id\": \"825edb78ca\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u9886\\u6599\\u4e0e\\u4ea7\\u6210\\u54c1\", \"col\": 4}}]",
+ "content": "[{\"id\": \"801235c89b\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5e93\\u5b58\\u67e5\\u8be2\", \"col\": 4}}, {\"id\": \"1c3210a041\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u51fa\\u5165\\u5e93\\u4e0e\\u76d8\\u70b9\", \"col\": 4}}, {\"id\": \"56f52d3c28\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u9886\\u6599\\u4e0e\\u4ea7\\u6210\\u54c1\", \"col\": 4}}]",
  "creation": "2026-10-26 06:57:03.521756",
  "custom_blocks": [],
  "docstatus": 0,
@@ -142,7 +142,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-10-26 07:06:20.196534",
+ "modified": "2026-10-26 08:40:14.891866",
  "modified_by": "Administrator",
  "module": "CN MFG POC",
  "name": "\u4ed3\u5e93\u7ba1\u7406",
@@ -156,7 +156,44 @@
   }
  ],
  "sequence_id": 5.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u7269\u6599",
+   "link_to": "Item",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u4ed3\u5e93",
+   "link_to": "Warehouse",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u7269\u6599\u79fb\u52a8",
+   "link_to": "Stock Entry",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "\u5e93\u5b58\u4f59\u989d",
+   "link_to": "Stock Balance",
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u5e93\u5b58\u5bf9\u8d26",
+   "link_to": "Stock Reconciliation",
+   "type": "DocType"
+  }
+ ],
  "standard": 1,
  "title": "\u4ed3\u5e93\u7ba1\u7406",
  "type": "Workspace"

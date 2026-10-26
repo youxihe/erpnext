@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\": \"df04bad95d\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5f00\\u7968\", \"col\": 4}}, {\"id\": \"33101f5fa0\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u6536\\u4ed8\\u6b3e\", \"col\": 4}}, {\"id\": \"f4a85e9b78\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5f80\\u6765\\u5bf9\\u8d26\", \"col\": 4}}]",
+ "content": "[{\"id\": \"63783e85ea\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5f00\\u7968\", \"col\": 4}}, {\"id\": \"0199dc58c5\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u6536\\u4ed8\\u6b3e\", \"col\": 4}}, {\"id\": \"40f1c81b76\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5f80\\u6765\\u5bf9\\u8d26\", \"col\": 4}}]",
  "creation": "2026-10-26 06:57:03.550018",
  "custom_blocks": [],
  "docstatus": 0,
@@ -123,7 +123,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-10-26 07:06:20.250527",
+ "modified": "2026-10-26 08:40:14.931482",
  "modified_by": "Administrator",
  "module": "CN MFG POC",
  "name": "\u8d22\u52a1\u7ba1\u7406",
@@ -137,7 +137,44 @@
   }
  ],
  "sequence_id": 7.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u9500\u552e\u53d1\u7968",
+   "link_to": "Sales Invoice",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u6536\u6b3e\u5355",
+   "link_to": "Payment Entry",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u603b\u8d26\u51ed\u8bc1",
+   "link_to": "Journal Entry",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "\u5e94\u6536\u8d26\u6b3e\u6c47\u603b",
+   "link_to": "Accounts Receivable",
+   "report_ref_doctype": "Sales Invoice",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u79d1\u76ee\u8868",
+   "link_to": "Account",
+   "type": "DocType"
+  }
+ ],
  "standard": 1,
  "title": "\u8d22\u52a1\u7ba1\u7406",
  "type": "Workspace"

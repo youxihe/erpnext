@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\": \"24e4981206\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u8ba2\\u5355\\u4e0e\\u4ea4\\u671f\", \"col\": 4}}, {\"id\": \"0c5e49012e\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5e93\\u5b58\\u4e0e\\u6210\\u672c\", \"col\": 4}}, {\"id\": \"3111f5e8b4\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u8d22\\u52a1\", \"col\": 4}}]",
+ "content": "[{\"id\": \"cc7e139979\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u8ba2\\u5355\\u4e0e\\u4ea4\\u671f\", \"col\": 4}}, {\"id\": \"84cc1dd5f9\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5e93\\u5b58\\u4e0e\\u6210\\u672c\", \"col\": 4}}, {\"id\": \"c3a9841592\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u8d22\\u52a1\", \"col\": 4}}]",
  "creation": "2026-10-26 06:57:03.567935",
  "custom_blocks": [],
  "docstatus": 0,
@@ -150,7 +150,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-10-26 07:06:20.284789",
+ "modified": "2026-10-26 08:37:31.582785",
  "modified_by": "Administrator",
  "module": "CN MFG POC",
  "name": "\u7ecf\u8425\u62a5\u8868",
@@ -179,7 +179,48 @@
   }
  ],
  "sequence_id": 8.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "\u5e93\u5b58\u4f59\u989d",
+   "link_to": "Stock Balance",
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "\u9500\u552e\u8ba2\u5355\u5206\u6790",
+   "link_to": "Sales Order Analysis",
+   "report_ref_doctype": "Sales Order",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "\u91c7\u8d2d\u8ba2\u5355\u5206\u6790",
+   "link_to": "Purchase Order Analysis",
+   "report_ref_doctype": "Purchase Order",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "\u5e94\u6536\u8d26\u6b3e\u6c47\u603b",
+   "link_to": "Accounts Receivable",
+   "report_ref_doctype": "Sales Invoice",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "\u751f\u4ea7\u8ba1\u5212\u6c47\u603b",
+   "link_to": "Production Analytics",
+   "report_ref_doctype": "Work Order",
+   "type": "Report"
+  }
+ ],
  "standard": 1,
  "title": "\u7ecf\u8425\u62a5\u8868",
  "type": "Workspace"

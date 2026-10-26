@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\": \"81efbc0701\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u91c7\\u8d2d\\u8fc7\\u7a0b\", \"col\": 4}}, {\"id\": \"ea54e041c6\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4f9b\\u5e94\\u5546\\u8d44\\u6599\", \"col\": 4}}, {\"id\": \"1fa1a80241\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5165\\u5e93\\u4e0e\\u53d1\\u7968\", \"col\": 4}}]",
+ "content": "[{\"id\": \"c156343439\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u91c7\\u8d2d\\u8fc7\\u7a0b\", \"col\": 4}}, {\"id\": \"e3b4423698\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4f9b\\u5e94\\u5546\\u8d44\\u6599\", \"col\": 4}}, {\"id\": \"336a45ce58\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u5165\\u5e93\\u4e0e\\u53d1\\u7968\", \"col\": 4}}]",
  "creation": "2026-10-26 06:57:03.499983",
  "custom_blocks": [],
  "docstatus": 0,
@@ -130,7 +130,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-10-26 07:06:20.163938",
+ "modified": "2026-10-26 08:37:31.440524",
  "modified_by": "Administrator",
  "module": "CN MFG POC",
  "name": "\u91c7\u8d2d\u7ba1\u7406",
@@ -144,7 +144,44 @@
   }
  ],
  "sequence_id": 4.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u91c7\u8d2d\u8ba2\u5355",
+   "link_to": "Purchase Order",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u91c7\u8d2d\u5165\u5e93",
+   "link_to": "Purchase Receipt",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u7269\u6599\u7533\u8bf7",
+   "link_to": "Material Request",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u4f9b\u5e94\u5546",
+   "link_to": "Supplier",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "\u91c7\u8d2d\u8ba2\u5355\u5206\u6790",
+   "link_to": "Purchase Order Analysis",
+   "report_ref_doctype": "Purchase Order",
+   "type": "Report"
+  }
+ ],
  "standard": 1,
  "title": "\u91c7\u8d2d\u7ba1\u7406",
  "type": "Workspace"

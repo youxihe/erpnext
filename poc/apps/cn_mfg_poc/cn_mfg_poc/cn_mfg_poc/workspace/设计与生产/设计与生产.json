@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\": \"7d145dc4a0\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4ea7\\u54c1\\u8bbe\\u8ba1\", \"col\": 4}}, {\"id\": \"adf81b6c2b\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u751f\\u4ea7\\u8ba1\\u5212\", \"col\": 4}}, {\"id\": \"8f0dc04e18\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u751f\\u4ea7\\u6267\\u884c\", \"col\": 4}}, {\"id\": \"843036290b\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u751f\\u4ea7\\u8d44\\u6e90\", \"col\": 4}}]",
+ "content": "[{\"id\": \"b1c318e9be\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u4ea7\\u54c1\\u8bbe\\u8ba1\", \"col\": 4}}, {\"id\": \"974735b784\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u751f\\u4ea7\\u8ba1\\u5212\", \"col\": 4}}, {\"id\": \"f35633ce9b\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u751f\\u4ea7\\u6267\\u884c\", \"col\": 4}}, {\"id\": \"71efe917b8\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u751f\\u4ea7\\u8d44\\u6e90\", \"col\": 4}}]",
  "creation": "2026-10-26 06:57:03.477815",
  "custom_blocks": [],
  "docstatus": 0,
@@ -149,7 +149,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-10-26 07:06:20.121314",
+ "modified": "2026-10-26 08:40:14.732193",
  "modified_by": "Administrator",
  "module": "CN MFG POC",
  "name": "\u8bbe\u8ba1\u4e0e\u751f\u4ea7",
@@ -163,7 +163,50 @@
   }
  ],
  "sequence_id": 3.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u751f\u4ea7\u5de5\u5355",
+   "link_to": "Work Order",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u751f\u4ea7\u8ba1\u5212",
+   "link_to": "Production Plan",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u7269\u6599\u6e05\u5355",
+   "link_to": "BOM",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u751f\u4ea7\u4efb\u52a1\u5355",
+   "link_to": "Job Card",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u7269\u6599\u79fb\u52a8",
+   "link_to": "Stock Entry",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "\u5de5\u4f4d",
+   "link_to": "Workstation",
+   "type": "DocType"
+  }
+ ],
  "standard": 1,
  "title": "\u8bbe\u8ba1\u4e0e\u751f\u4ea7",
  "type": "Workspace"
