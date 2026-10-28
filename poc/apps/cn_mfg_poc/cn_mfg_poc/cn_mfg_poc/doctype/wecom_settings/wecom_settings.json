@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "creation": "2026-10-29 05:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_app",
+  "corp_id",
+  "column_app",
+  "agent_id",
+  "section_oauth",
+  "redirect_domain",
+  "column_oauth",
+  "session_ttl_hours",
+  "section_mode",
+  "mock_mode",
+  "mock_signing_key",
+  "section_secret",
+  "contact_secret",
+  "section_note",
+  "config_note"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_app",
+   "fieldtype": "Section Break",
+   "label": "自建应用"
+  },
+  {
+   "fieldname": "corp_id",
+   "fieldtype": "Data",
+   "label": "企业ID (CorpID)"
+  },
+  {
+   "fieldname": "column_app",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "agent_id",
+   "fieldtype": "Data",
+   "label": "应用 AgentID"
+  },
+  {
+   "fieldname": "section_oauth",
+   "fieldtype": "Section Break",
+   "label": "OAuth 免登"
+  },
+  {
+   "description": "H5 回调必须与企微后台配置的可信域名一致，如 erp.example.com",
+   "fieldname": "redirect_domain",
+   "fieldtype": "Data",
+   "label": "可信回调域名"
+  },
+  {
+   "fieldname": "column_oauth",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "2",
+   "description": "企微免登会话有效期（小时），到期需重新免登",
+   "fieldname": "session_ttl_hours",
+   "fieldtype": "Int",
+   "label": "会话有效期(小时)"
+  },
+  {
+   "fieldname": "section_mode",
+   "fieldtype": "Section Break",
+   "label": "运行模式"
+  },
+  {
+   "default": "1",
+   "description": "本地联调模式：不调用企微 API，用服务端签名的 state 模拟 OAuth 回调。上线前必须关闭。",
+   "fieldname": "mock_mode",
+   "fieldtype": "Check",
+   "label": "Mock 模式(本地联调)"
+  },
+  {
+   "fieldname": "mock_signing_key",
+   "fieldtype": "Password",
+   "label": "Mock 签名密钥"
+  },
+  {
+   "fieldname": "section_secret",
+   "fieldtype": "Section Break",
+   "label": "凭据（Password 字段加密存储，严禁写进 Git/日志）"
+  },
+  {
+   "fieldname": "contact_secret",
+   "fieldtype": "Password",
+   "label": "通讯录 Secret"
+  },
+  {
+   "fieldname": "section_note",
+   "fieldtype": "Section Break",
+   "label": "说明"
+  },
+  {
+   "fieldname": "config_note",
+   "fieldtype": "Small Text",
+   "label": "配置清单"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-10-29 05:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CN MFG POC",
+ "name": "WeCom Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

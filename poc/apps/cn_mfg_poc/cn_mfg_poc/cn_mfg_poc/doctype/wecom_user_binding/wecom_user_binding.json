@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "autoname": "format:WCB-{#####}",
+ "creation": "2026-10-29 05:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "corp_id",
+  "column_main",
+  "wecom_userid",
+  "erp_user",
+  "enabled",
+  "synced_at",
+  "note"
+ ],
+ "fields": [
+  {
+   "fieldname": "corp_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "企业ID (CorpID)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "企业微信成员 UserID，通讯录唯一",
+   "fieldname": "wecom_userid",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "企微成员 UserID",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "erp_user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "ERP 用户",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "启用"
+  },
+  {
+   "fieldname": "synced_at",
+   "fieldtype": "Datetime",
+   "label": "同步时间",
+   "read_only": 1
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "备注"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-29 05:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CN MFG POC",
+ "name": "WeCom User Binding",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "wecom_userid"
+}
