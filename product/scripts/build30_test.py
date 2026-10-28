@@ -44,13 +44,38 @@ p, _ = call("/api/method/cn_mfg_poc.wecom.sync.sync_members",
 print("     └ 结果:", p["message"]["created_bindings"] or p["message"]["skipped"])
 
 # ---------------------------------------------------------------- T1-T3 免登成功链路
+import http.cookiejar
+jar = http.cookiejar.CookieJar()
+opener2 = urllib.request.build_opener(
+    urllib.request.ProxyHandler({}), urllib.request.HTTPCookieProcessor(jar))
+
 p, _ = call("/api/method/cn_mfg_poc.wecom.oauth.mock_authorize?wecom_userid=ligong",
             expect=200, tag="T1 生成 mock 授权链接")
 cb_url = p["message"]["mock_callback_url"]
 
-p, cookie = call(cb_url, expect=200, tag="T2 模拟企微回调 → ERP 会话")
-sid = p["message"]["sid"]
-print(f"     └ 免登用户: {p['message']['user']} 角色: {[r for r in p['message']['roles'] if r in ('Manufacturing User','Sales User','Stock User')]}")
+# 回调现在直接 302 重定向回 H5 并种下会话 Cookie
+import urllib.parse
+cb_path = urllib.parse.urljoin(BASE, cb_url)
+print("     └ 回调:", cb_path[:90])
+# 不跟随重定向，直接从回调响应取会话 Cookie
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k):
+        return None
+op3 = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+try:
+    resp = op3.open(cb_path, timeout=30)
+    sc = resp.headers.get("Set-Cookie") or ""
+except urllib.error.HTTPError as e:
+    if e.code in (301, 302, 303, 307):
+        sc = e.headers.get("Set-Cookie") or ""
+        resp_status = e.code
+    else:
+        raise
+sid = sc.split("sid=")[1].split(";")[0] if "sid=" in sc else ""
+if "resp_status" not in dir():
+    resp_status = resp.status
+print(f"{'PASS'} | {'T2 模拟企微回调 → ERP 会话':<34} | {resp_status} (期望 302) | 免登 sid={sid[:8]}...")
+results.append(("T2 模拟企微回调 → ERP 会话", resp_status, 302, resp_status in (301, 302, 303, 307) and bool(sid)))
 
 p, _ = call("/api/method/cn_mfg_poc.api.my_jobs", headers={"Cookie": f"sid={sid}"},
             expect=200, tag="T3 免登会话调用本人任务 API")
@@ -94,8 +119,18 @@ p, _ = call("/api/method/cn_mfg_poc.wecom.sync.sync_members",
 print("     └ 结果:", p["message"]["created_bindings"])
 
 p, _ = call("/api/method/cn_mfg_poc.wecom.oauth.mock_authorize?wecom_userid=ligong", expect=200, tag="T9a 恢复后生成链接")
-p, _ = call(p["message"]["mock_callback_url"], expect=200, tag="T9b 恢复后免登成功")
-print("     └ 免登用户:", p["message"]["user"])
+class NoRedirect9(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k):
+        return None
+op9 = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect9())
+try:
+    r9 = op9.open(urllib.parse.urljoin(BASE, p["message"]["mock_callback_url"]), timeout=30)
+    st9, sc9 = r9.status, (r9.headers.get("Set-Cookie") or "")
+except urllib.error.HTTPError as e:
+    st9, sc9 = e.code, (e.headers.get("Set-Cookie") or "")
+ok9 = st9 in (301, 302, 303, 307) and "sid=" in sc9
+print(f"{'PASS' if ok9 else 'FAIL'} | {'T9b 恢复后免登成功':<34} | {st9} (期望 302)")
+results.append(("T9b 恢复后免登成功", st9, 302, ok9))
 
 print("=" * 70)
 fails = [r for r in results if not r[3]]

@@ -171,8 +171,9 @@ def mock_callback(state=None):
     erp_user = resolve_erp_user(payload["userid"])
     session = _establish_session(erp_user)
     frappe.local.cookie_manager.set_cookie("sid", session["sid"])
-    return {"user": session["user"], "sid": session["sid"], "roles": session["roles"],
-            "redirect": payload.get("redirect") or "/app"}
+    # 直接重定向回 H5 工作台（与真实 oauth_callback 行为一致）
+    frappe.local.response["type"] = "redirect"
+    frappe.local.response["location"] = payload.get("redirect") or "/wecom_h5"
 
 
 def _require_config(s):

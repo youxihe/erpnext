@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>{{ page_title }}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f4f5f7; color: #1f2329; font-size: 15px; }
+  header { background: #1a66ff; color: #fff; padding: 14px 16px; font-size: 17px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  header .who { font-size: 12px; font-weight: 400; opacity: .9; }
+  nav { display: flex; background: #fff; border-bottom: 1px solid #e5e6eb; position: sticky; top: 0; z-index: 5; }
+  nav button { flex: 1; border: 0; background: none; padding: 11px 0; font-size: 14px; color: #646a73; border-bottom: 2px solid transparent; }
+  nav button.on { color: #1a66ff; border-bottom-color: #1a66ff; font-weight: 600; }
+  main { padding: 12px; max-width: 560px; margin: 0 auto; }
+  .card { background: #fff; border-radius: 10px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+  .card h3 { font-size: 14px; color: #646a73; margin-bottom: 10px; }
+  label { display: block; font-size: 13px; color: #646a73; margin: 8px 0 4px; }
+  input, select { width: 100%; padding: 10px; border: 1px solid #dde0e7; border-radius: 8px; font-size: 15px; background: #fff; }
+  .btn { width: 100%; margin-top: 12px; padding: 12px; border: 0; border-radius: 8px; background: #1a66ff; color: #fff; font-size: 15px; font-weight: 600; }
+  .btn.gray { background: #e5e6eb; color: #1f2329; }
+  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eceef1; font-size: 14px; gap: 8px; }
+  .row:last-child { border-bottom: 0; }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; background: #eaf1ff; color: #1a66ff; white-space: nowrap; }
+  .tag.g { background: #e3f5e9; color: #12805c; }
+  .tag.o { background: #fff1e1; color: #b26a00; }
+  .empty { text-align: center; color: #8f959e; padding: 18px 0; font-size: 14px; }
+  .tip { font-size: 12px; color: #8f959e; margin-top: 8px; }
+  #toast { position: fixed; left: 50%; bottom: 60px; transform: translateX(-50%); background: rgba(0,0,0,.75); color: #fff; padding: 9px 16px; border-radius: 8px; font-size: 14px; display: none; z-index: 99; }
+  .login { text-align: center; padding-top: 16vh; }
+  .login .logo { font-size: 44px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+{% if is_guest %}
+  <div class="login card" style="margin: 16px;">
+    <div class="logo">🏭</div>
+    <h2 style="margin-bottom:6px;">轻智造 ERP 移动工作台</h2>
+    <p class="tip" style="margin-bottom:4px;">请先通过企业微信身份免登</p>
+    {% if mock_mode %}
+    <label>本地联调：模拟企微成员 UserID</label>
+    <select id="mockUser">
+      <option value="ligong">李工（ligong，车间）</option>
+      <option value="wangming-wx">王明（wangming-wx，销售）</option>
+      <option value="zhangsan">张三（zhangsan，仓储）</option>
+    </select>
+    <button class="btn" onclick="mockLogin()">模拟企微免登</button>
+    <p class="tip">生产环境此面板不可见：企业微信内自动 OAuth 免登。</p>
+    {% else %}
+    <button class="btn" onclick="realLogin()">企业微信免登</button>
+    {% endif %}
+  </div>
+{% else %}
+<header>
+  <span>轻智造 ERP</span>
+  <span class="who">{{ user }}</span>
+</header>
+<nav>
+  <button class="on" data-tab="report" onclick="switchTab('report')">客户报备</button>
+  <button data-tab="orders" onclick="switchTab('orders')">我的订单</button>
+  <button data-tab="jobs" onclick="switchTab('jobs')">我的任务</button>
+  <button data-tab="stock" onclick="switchTab('stock')">库存查询</button>
+</nav>
+<main>
+  <!-- 客户报备 -->
+  <section id="tab-report">
+    <div class="card">
+      <h3>新建客户报备</h3>
+      <label>客户名称 *</label><input id="leadCompany" placeholder="如：宁波海天精工股份有限公司">
+      <label>联系人</label><input id="leadContact" placeholder="如：周主管">
+      <label>手机号</label><input id="leadMobile" placeholder="如：13800001111">
+      <button class="btn" onclick="reportCustomer()">提交报备</button>
+      <p class="tip">报备人 = 当前登录人；同名客户或未关闭报备会自动去重。</p>
+    </div>
+    <div class="card">
+      <h3>查客户 / 报备单</h3>
+      <input id="searchQ" placeholder="输入客户名称关键词">
+      <button class="btn gray" onclick="searchCustomers()">查询</button>
+      <div id="searchResult" style="margin-top:8px;"></div>
+    </div>
+  </section>
+
+  <!-- 我的订单 -->
+  <section id="tab-orders" style="display:none;">
+    <div class="card"><h3>我的销售订单</h3><div id="ordersList"><div class="empty">加载中…</div></div></div>
+  </section>
+
+  <!-- 我的任务 -->
+  <section id="tab-jobs" style="display:none;">
+    <div class="card"><h3>我的车间任务</h3><div id="jobsList"><div class="empty">加载中…</div></div></div>
+  </section>
+
+  <!-- 库存 -->
+  <section id="tab-stock" style="display:none;">
+    <div class="card">
+      <h3>库存查询</h3>
+      <label>仓库（留空查全部有货仓库）</label>
+      <select id="stockWh">
+        <option value="">全部</option>
+        <option value="原材料仓 - QC">原材料仓</option>
+        <option value="生产在制仓 - QC">生产在制仓</option>
+        <option value="产成品仓 - QC">产成品仓</option>
+        <option value="贸易品仓 - QC">贸易品仓</option>
+      </select>
+      <button class="btn gray" onclick="loadStock()">查询</button>
+      <div id="stockList" style="margin-top:8px;"><div class="empty">—</div></div>
+    </div>
+  </section>
+</main>
+{% endif %}
+<div id="toast"></div>
+
+<script>
+var CSRF = "{{ csrf_token }}";
+function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.style.display="block"; setTimeout(function(){t.style.display="none";},2200); }
+function api(method, params, data){
+  var url = "/api/method/" + method;
+  if(params){ var qs=[]; for(var k in params){ qs.push(k+"="+encodeURIComponent(params[k])); } url += "?" + qs.join("&"); }
+  var opt = { method: data ? "POST" : "GET", headers: {"Accept":"application/json"} };
+  if(data){ opt.headers["Content-Type"]="application/json"; opt.headers["X-Frappe-CSRF-Token"]=CSRF; opt.body=JSON.stringify(data); }
+  return fetch(url, opt).then(function(r){ return r.json().then(function(j){ if(!r.ok){ var m=""; try{ var sm=JSON.parse(j._server_messages); m=JSON.parse(sm[0]).message; }catch(e){ m=j.exception||("HTTP "+r.status); } throw new Error(m); } return j.message; }); });
+}
+
+/* ---- 登录 ---- */
+function realLogin(){ api("cn_mfg_poc.wecom.oauth.login_url", {redirect:"/wecom_h5"}).then(function(r){ location.href = r.authorize_url; }).catch(function(e){ toast(e.message); }); }
+function mockLogin(){
+  var uid = document.getElementById("mockUser").value;
+  api("cn_mfg_poc.wecom.oauth.mock_authorize", {wecom_userid: uid, redirect:"/wecom_h5"}).then(function(r){ location.href = r.mock_callback_url; }).catch(function(e){ toast(e.message); });
+}
+
+/* ---- Tab ---- */
+function switchTab(name){
+  ["report","orders","jobs","stock"].forEach(function(t){
+    document.getElementById("tab-"+t).style.display = (t===name)?"":"none";
+    document.querySelector("nav [data-tab="+t+"]").className = (t===name)?"on":"";
+  });
+  if(name==="orders") loadOrders();
+  if(name==="jobs") loadJobs();
+  if(name==="stock") loadStock();
+}
+function tag(status){
+  var s = {"Completed":["g","已完成"],"Work In Progress":["o","进行中"],"Open":["","未开始"],"To Deliver":["o","待交付"],"To Deliver and Bill":["o","待交付"],"Completed 售罄":["g","已完成"]};
+  var m = s[status] || ["",""];
+  return '<span class="tag '+m[0]+'">'+(m[1]||status)+'</span>';
+}
+
+/* ---- 报备 ---- */
+function reportCustomer(){
+  var company = document.getElementById("leadCompany").value.trim();
+  if(!company){ toast("请填写客户名称"); return; }
+  api("cn_mfg_poc.api.report_customer", null, {
+    customer_name: company,
+    contact_name: document.getElementById("leadContact").value.trim(),
+    mobile_no: document.getElementById("leadMobile").value.trim()
+  }).then(function(r){
+    toast(r.existing ? r.message : "报备成功：" + r.lead);
+    document.getElementById("leadCompany").value="";
+    document.getElementById("leadContact").value="";
+    document.getElementById("leadMobile").value="";
+  }).catch(function(e){ toast(e.message); });
+}
+function searchCustomers(){
+  var q = document.getElementById("searchQ").value.trim();
+  if(!q){ toast("请输入关键词"); return; }
+  api("cn_mfg_poc.api.search_customers", {q:q}).then(function(r){
+    var h = "";
+    r.customers.forEach(function(c){ h += '<div class="row"><span>✅ '+c.customer_name+'（正式客户）</span></div>'; });
+    r.leads.forEach(function(l){ h += '<div class="row"><span>📝 '+l.company_name+'</span>'+tag(l.status)+'</div>'; });
+    document.getElementById("searchResult").innerHTML = h || '<div class="empty">无匹配结果</div>';
+  }).catch(function(e){ toast(e.message); });
+}
+
+/* ---- 订单 ---- */
+function loadOrders(){
+  api("cn_mfg_poc.api.my_orders").then(function(r){
+    var h = "";
+    r.orders.forEach(function(o){
+      h += '<div class="row"><span><b>'+o.name+'</b><br><span class="tip">'+o.customer+' · ¥'+o.grand_total+'</span></span>'
+        +  '<span style="text-align:right">'+tag(o.status)+'<br><span class="tip">交付 '+o.per_delivered+'% / 开票 '+o.per_billed+'%</span></span></div>';
+    });
+    document.getElementById("ordersList").innerHTML = h || '<div class="empty">暂无可见订单</div>';
+  }).catch(function(e){ document.getElementById("ordersList").innerHTML = '<div class="empty">'+e.message+'</div>'; });
+}
+
+/* ---- 任务 ---- */
+var JOB_CACHE = {};
+function loadJobs(){
+  api("cn_mfg_poc.api.my_jobs").then(function(r){
+    JOB_CACHE = {};
+    var h = "";
+    r.jobs.forEach(function(j){
+      JOB_CACHE[j.name] = j;
+      var done = j.total_completed_qty || 0, total = j.for_quantity || 0;
+      var pending = Math.max(total - done, 0);
+      h += '<div class="row"><span><b>'+j.operation+'</b> · '+j.name+'<br><span class="tip">'+j.production_item+' / '+j.workstation+' · '+done+'/'+total+'</span></span>'
+        +  '<span style="text-align:right">'+tag(j.status)
+        +  (pending>0 && j.status!=="Completed" ? '<br><button class="btn" style="margin-top:6px;padding:6px 12px;width:auto;" onclick="completeJob(\''+j.name+'\','+pending+')">报工 '+pending+'</button>' : '')
+        +  '</span></div>';
+    });
+    document.getElementById("jobsList").innerHTML = h || '<div class="empty">暂无分配给我的任务</div>';
+  }).catch(function(e){ document.getElementById("jobsList").innerHTML = '<div class="empty">'+e.message+'</div>'; });
+}
+function completeJob(name, pending){
+  if(!confirm("确认完成 "+name+" 剩余 "+pending+" 件？")) return;
+  api("cn_mfg_poc.api.update_job_progress", null, {job_card:name, qty:pending}).then(function(r){
+    toast("已报工："+r.status+" "+r.completed+"/"+r.for_quantity);
+    loadJobs();
+  }).catch(function(e){ toast(e.message); });
+}
+
+/* ---- 库存 ---- */
+function loadStock(){
+  var wh = document.getElementById("stockWh").value;
+  var params = wh ? {warehouse: wh} : null;
+  api("cn_mfg_poc.api.stock_balances", params).then(function(r){
+    var h = "";
+    r.balances.forEach(function(b){ h += '<div class="row"><span>'+b.item_code+'</span><span><b>'+b.actual_qty+'</b> <span class="tip">'+b.warehouse+'</span></span></div>'; });
+    document.getElementById("stockList").innerHTML = h || '<div class="empty">该范围暂无库存</div>';
+  }).catch(function(e){ toast(e.message); });
+}
+</script>
+</body>
+</html>

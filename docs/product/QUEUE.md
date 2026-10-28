@@ -8,7 +8,7 @@
 | BUILD-10 | ERP PC 核心模块补齐 | 七角色可点击核心流程、四类订单不回退 | PASS | docs/product/evidence/BUILD-10.md |
 | BUILD-20 | 三入口共用业务 API | 同一 ERP Site 的订单/库存/任务/客户读写接口与权限 | PASS(LOCAL) | docs/product/evidence/BUILD-20.md |
 | BUILD-30 | 企业微信组织与用户身份 | 人员映射、账号绑定/撤权、H5 免登 | LOCAL_PASS / REAL_WECOM_BLOCKED | docs/product/evidence/BUILD-30.md |
-| BUILD-40 | 企微自建 H5 | 客户报备/我的订单/我的任务/库存查询 | TODO | 待执行 |
+| BUILD-40 | 企微自建 H5 | 客户报备/我的订单/我的任务/库存查询 | LOCAL_PASS | docs/product/evidence/BUILD-40.md |
 | BUILD-50 | 企业微信 AI ERP 机器人查询 | 真实企微查同一个订单、库存和生产任务 | TODO | 待执行 |
 | BUILD-60 | 机器人安全业务写入 | 报备客户、Excel 采购入库预览+本人确认 | TODO | 待执行 |
 | BUILD-70 | 三入口统一验收 | 同身份/同单据/库存同值，真实客户端证据 | TODO | 待执行 |

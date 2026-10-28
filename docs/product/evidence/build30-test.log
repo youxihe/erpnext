@@ -1,8 +1,8 @@
 PASS | T0 绑定自举(复职/启用)                     | 200 (期望 200)
      └ 结果: ['ligong']
 PASS | T1 生成 mock 授权链接                    | 200 (期望 200)
-PASS | T2 模拟企微回调 → ERP 会话                 | 200 (期望 200)
-     └ 免登用户: ligong@erpnext-poc.localhost 角色: ['Manufacturing User']
+     └ 回调: http://127.0.0.1:18000/api/method/cn_mfg_poc.wecom.oauth.mock_callback?state=eyJ1c2VyaWQiO
+PASS | T2 模拟企微回调 → ERP 会话                 | 302 (期望 302) | 免登 sid=f0f3e62e...
 PASS | T3 免登会话调用本人任务 API                  | 200 (期望 200)
      └ 任务数: 2
 PASS | T4a 生成未绑定成员链接                      | 200 (期望 200)
@@ -17,8 +17,7 @@ PASS | T8d 停绑后旧会话失效(未登录)                  | 401 (期望 40
 PASS | T9-0 重新同步(复职)                      | 200 (期望 200)
      └ 结果: ['ligong→重新启用']
 PASS | T9a 恢复后生成链接                        | 200 (期望 200)
-PASS | T9b 恢复后免登成功                        | 200 (期望 200)
-     └ 免登用户: ligong@erpnext-poc.localhost
+PASS | T9b 恢复后免登成功                        | 302 (期望 302)
 ======================================================================
 合计 16 项，失败 0 项
 BUILD-30 本地联调全部通过
