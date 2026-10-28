@@ -1,0 +1,1151 @@
+{
+ "versions": {
+  "frappe": "16.53.0",
+  "erpnext": "16.52.1",
+  "python": "3.14.9",
+  "site": "erpnext-poc.localhost"
+ },
+ "installed_apps": [
+  "frappe",
+  "erpnext",
+  "cn_mfg_poc"
+ ],
+ "company": [
+  {
+   "name": "昆山启程智能设备有限公司",
+   "abbr": "QC",
+   "default_currency": "CNY",
+   "country": "China"
+  }
+ ],
+ "users": [
+  {
+   "email": "Administrator",
+   "full_name": "Administrator",
+   "type": "System User",
+   "roles": [
+    "Administrator",
+    "Website Manager",
+    "Purchase User",
+    "System Manager",
+    "Dashboard Manager",
+    "Sales Manager",
+    "Translator",
+    "Knowledge Base Editor",
+    "Script Manager",
+    "Desk User",
+    "Sales Master Manager",
+    "Maintenance Manager",
+    "Inbox User",
+    "Workspace Manager",
+    "Report Manager",
+    "Purchase Master Manager",
+    "Newsletter Manager",
+    "Guest",
+    "Maintenance User",
+    "Knowledge Base Contributor",
+    "Marketing Manager",
+    "Accounts Manager",
+    "Sales User",
+    "Prepared Report User",
+    "Purchase Manager",
+    "All",
+    "Accounts User",
+    "Fleet Manager",
+    "Fulfillment User",
+    "Auditor",
+    "Support Team",
+    "HR User",
+    "Manufacturing User",
+    "Projects User",
+    "HR Manager",
+    "Item Manager",
+    "Analytics",
+    "Delivery Manager",
+    "Projects Manager",
+    "Quality Manager",
+    "Academics User",
+    "Stock Manager",
+    "Delivery User",
+    "Stock User",
+    "Manufacturing Manager"
+   ]
+  },
+  {
+   "email": "chengong@erpnext-poc.localhost",
+   "full_name": "陈工",
+   "type": "System User",
+   "roles": [
+    "Purchase Manager",
+    "Purchase User"
+   ]
+  },
+  {
+   "email": "Guest",
+   "full_name": "Guest",
+   "type": "Website User",
+   "roles": [
+    "Guest"
+   ]
+  },
+  {
+   "email": "ligong@erpnext-poc.localhost",
+   "full_name": "李工",
+   "type": "System User",
+   "roles": [
+    "Employee",
+    "Manufacturing User"
+   ]
+  },
+  {
+   "email": "liugong@erpnext-poc.localhost",
+   "full_name": "刘工",
+   "type": "System User",
+   "roles": [
+    "Employee",
+    "Manufacturing Manager",
+    "Manufacturing User"
+   ]
+  },
+  {
+   "email": "wangming@erpnext-poc.localhost",
+   "full_name": "王明",
+   "type": "System User",
+   "roles": [
+    "Sales User",
+    "Sales Manager"
+   ]
+  },
+  {
+   "email": "zhanggong@erpnext-poc.localhost",
+   "full_name": "张工",
+   "type": "System User",
+   "roles": [
+    "Employee",
+    "Stock Manager",
+    "Stock User"
+   ]
+  },
+  {
+   "email": "zhaojingli@erpnext-poc.localhost",
+   "full_name": "赵经理",
+   "type": "System User",
+   "roles": [
+    "Accounts User",
+    "Manufacturing User",
+    "Purchase User",
+    "Sales User",
+    "Stock User",
+    "System Manager"
+   ]
+  },
+  {
+   "email": "zhoukaiji@erpnext-poc.localhost",
+   "full_name": "周会计",
+   "type": "System User",
+   "roles": [
+    "Accounts Manager",
+    "Accounts User"
+   ]
+  }
+ ],
+ "roles": [
+  "Academics User",
+  "Accounts Manager",
+  "Accounts User",
+  "Administrator",
+  "All",
+  "Analytics",
+  "Auditor",
+  "Customer",
+  "Dashboard Manager",
+  "Delivery Manager",
+  "Delivery User",
+  "Desk User",
+  "Employee",
+  "Fleet Manager",
+  "Fulfillment User",
+  "Guest",
+  "HR Manager",
+  "HR User",
+  "Inbox User",
+  "Item Manager",
+  "Knowledge Base Contributor",
+  "Knowledge Base Editor",
+  "Maintenance Manager",
+  "Maintenance User",
+  "Manufacturing Manager",
+  "Manufacturing User",
+  "Marketing Manager",
+  "Newsletter Manager",
+  "Prepared Report User",
+  "Projects Manager",
+  "Projects User",
+  "Purchase Manager",
+  "Purchase Master Manager",
+  "Purchase User",
+  "Quality Manager",
+  "Report Manager",
+  "Sales Manager",
+  "Sales Master Manager",
+  "Sales User",
+  "Script Manager",
+  "Stock Manager",
+  "Stock User",
+  "Supplier",
+  "Support Team",
+  "System Manager",
+  "Translator",
+  "Website Manager",
+  "Workspace Manager"
+ ],
+ "workspaces": [
+  {
+   "name": "Accounting",
+   "module": "Accounts",
+   "public": 1,
+   "roles": [],
+   "link_count": 92,
+   "links_sample": [
+    "Financial Statements",
+    "Profit and Loss",
+    "Balance Sheet",
+    "Cash Flow",
+    "Trial Balance",
+    "General Ledger",
+    "Consolidated Report",
+    "Custom Financial Statement",
+    "Consolidated Trial Balance",
+    "Financial Ratios",
+    "Receivables & Payables",
+    "Accounts Receivable",
+    "Accounts Receivable Summary",
+    "Accounts Payable",
+    "Accounts Payable Summary",
+    "Customer Ledger Summary",
+    "Supplier Ledger Summary",
+    "Trial Balance for Party",
+    "Customer Credit Balance",
+    "Payment Period Based On Invoice Date",
+    "Registers & Profitability",
+    "Sales Register",
+    "Purchase Register",
+    "Item-wise Sales Register",
+    "Item-wise Purchase Register",
+    "Gross Profit",
+    "Profitability Analysis",
+    "Gross and Net Profit Report",
+    "Deferred Revenue and Expense",
+    "Sales Invoice Trends",
+    "Purchase Invoice Trends",
+    "Sales Payment Summary",
+    "Tax & Compliance",
+    "TDS Computation Summary",
+    "Tax Withholding Details",
+    "UAE VAT 201",
+    "VAT Audit Report",
+    "South Africa VAT Settings",
+    "IRS 1099",
+    "Electronic Invoice Register"
+   ]
+  },
+  {
+   "name": "Assets",
+   "module": "Assets",
+   "public": 1,
+   "roles": [],
+   "link_count": 10,
+   "links_sample": [
+    "Asset Reports",
+    "Fixed Asset Register",
+    "Asset Depreciation Ledger",
+    "Asset Depreciations and Balances",
+    "Asset Activity",
+    "Asset Maintenance Report",
+    "Setup",
+    "Item",
+    "Asset Shift Factor",
+    "Asset Shift Allocation"
+   ]
+  },
+  {
+   "name": "Automation",
+   "module": "Automation",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "Build",
+   "module": "Build",
+   "public": 1,
+   "roles": [],
+   "link_count": 29,
+   "links_sample": [
+    "Customization",
+    "Customize Form",
+    "Custom Field",
+    "Custom Translation",
+    "Navbar Settings",
+    "Modules",
+    "Module Def",
+    "Module Onboarding",
+    "Packages",
+    "Package",
+    "Package Import",
+    "Scripting",
+    "Server Script",
+    "Client Script",
+    "Scheduled Job Type",
+    "Views",
+    "Report",
+    "Dashboard",
+    "Print Format",
+    "Page",
+    "Workspace",
+    "Dashboard Chart",
+    "System Logs",
+    "Background Jobs",
+    "Scheduled Jobs Logs",
+    "Error Logs",
+    "Activity Log",
+    "Communication Logs",
+    "Webhook Request Log"
+   ]
+  },
+  {
+   "name": "Buying",
+   "module": "Buying",
+   "public": 1,
+   "roles": [],
+   "link_count": 34,
+   "links_sample": [
+    "Purchase Reports",
+    "Purchase Analytics",
+    "Purchase Order Analysis",
+    "Purchase Register",
+    "Item-wise Purchase Register",
+    "Item-wise Purchase History",
+    "Purchase Order Trends",
+    "Purchase Receipt Trends",
+    "Purchase Invoice Trends",
+    "Supplier Quotation Comparison",
+    "Procurement Tracker",
+    "Item Wise Consumption",
+    "Order Status Reports",
+    "Requested Items to Order and Receive",
+    "Items To Be Requested",
+    "Received Items To Be Billed",
+    "Billed Items To Be Received",
+    "Supplier Reports",
+    "Accounts Payable",
+    "Accounts Payable Summary",
+    "Supplier Ledger Summary",
+    "Supplier Addresses And Contacts",
+    "Subcontracting Reports",
+    "Subcontract Order Summary",
+    "Materials To Be Transferred",
+    "Items To Be Received",
+    "Setup",
+    "Tax Template",
+    "Terms Template",
+    "Pricing Rule",
+    "Blanket Order",
+    "Supplier Scorecard Criteria",
+    "Supplier Scorecard Variable",
+    "Supplier Scorecard Standing"
+   ]
+  },
+  {
+   "name": "CRM",
+   "module": "CRM",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "Email",
+   "module": "Email",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "ERPNext Settings",
+   "module": "Setup",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "Financial Reports",
+   "module": "Accounts",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "Home",
+   "module": "Setup",
+   "public": 1,
+   "roles": [
+    "Desk User"
+   ],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "Integrations",
+   "module": "Integrations",
+   "public": 1,
+   "roles": [],
+   "link_count": 15,
+   "links_sample": [
+    "Google Services",
+    "Google Settings",
+    "Google Contacts",
+    "Google Calendar",
+    "Settings",
+    "Webhook",
+    "Slack Webhook URL",
+    "SMS Settings",
+    "Authentication",
+    "Social Login Key",
+    "LDAP Settings",
+    "OAuth Client",
+    "OAuth Provider Settings",
+    "Push Notifications",
+    "Push Notification Settings"
+   ]
+  },
+  {
+   "name": "Invoicing",
+   "module": "Accounts",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "Manufacturing",
+   "module": "Manufacturing",
+   "public": 1,
+   "roles": [],
+   "link_count": 34,
+   "links_sample": [
+    "Production Reports",
+    "Production Analytics",
+    "Work Order Summary",
+    "Open Work Orders",
+    "Work Orders in Progress",
+    "Completed Work Orders",
+    "Work Order Consumed Materials",
+    "Work Order Stock Report",
+    "Issued Items Against Work Order",
+    "Job Card Summary",
+    "Downtime Analysis",
+    "Process Loss Report",
+    "Cost of Poor Quality Report",
+    "Quality Inspection Summary",
+    "Planning Reports",
+    "Production Planning Report",
+    "Production Plan Summary",
+    "Material Requirements Planning Report",
+    "Forecasting",
+    "BOM Reports",
+    "BOM Search",
+    "BOM Explorer",
+    "BOM Stock Analysis",
+    "BOM Variance Report",
+    "BOM Operations Time",
+    "Planning",
+    "Master Production Schedule",
+    "Sales Forecast",
+    "Tools",
+    "Visual Plant Floor",
+    "Setup",
+    "Workstation Type",
+    "Item",
+    "Warehouse"
+   ]
+  },
+  {
+   "name": "Payments",
+   "module": "Accounts",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "Printing",
+   "module": "Printing",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "Projects",
+   "module": "Projects",
+   "public": 1,
+   "roles": [],
+   "link_count": 6,
+   "links_sample": [
+    "Project Reports",
+    "Project Summary",
+    "Timesheet Billing Summary",
+    "Daily Timesheet Summary",
+    "Delayed Tasks Summary",
+    "Project wise Stock Tracking"
+   ]
+  },
+  {
+   "name": "Quality",
+   "module": "Quality Management",
+   "public": 1,
+   "roles": [],
+   "link_count": 7,
+   "links_sample": [
+    "Quality Reports",
+    "Quality Inspection Summary",
+    "Review",
+    "Maintenance Schedules",
+    "Setup",
+    "Quality Inspection Parameter",
+    "Quality Inspection Parameter Group"
+   ]
+  },
+  {
+   "name": "Selling",
+   "module": "Selling",
+   "public": 1,
+   "roles": [],
+   "link_count": 45,
+   "links_sample": [
+    "Sales Reports",
+    "Sales Analytics",
+    "Sales Register",
+    "Gross Profit",
+    "Item-wise Sales Register",
+    "Item-wise Sales History",
+    "Sales Order Analysis",
+    "Sales Order Trends",
+    "Quotation Trends",
+    "Sales Invoice Trends",
+    "Territory-wise Sales",
+    "Lost Quotations",
+    "Customer Reports",
+    "Accounts Receivable",
+    "Accounts Receivable Summary",
+    "Customer Credit Balance",
+    "Inactive Customers",
+    "Customers Without Any Sales Transactions",
+    "Customer Acquisition and Loyalty",
+    "Payment Terms Status for Sales Order",
+    "Customer-wise Item Price",
+    "Sales Team Reports",
+    "Sales Person-wise Transaction Summary",
+    "Sales Person Commission Summary",
+    "Sales Partners Commission",
+    "Sales Partner Commission Summary",
+    "Sales Partner Transaction Summary",
+    "Sales Person Target Variance Based On Item Group",
+    "Territory Target Variance Based On Item Group",
+    "Sales Partner Target Variance based on Item Group",
+    "Pricing",
+    "Promotional Scheme",
+    "Coupon Code",
+    "Product Bundle",
+    "Blanket Order",
+    "Point of Sale",
+    "POS Opening Entry",
+    "POS Closing Entry",
+    "Loyalty Program",
+    "POS Settings"
+   ]
+  },
+  {
+   "name": "Stock",
+   "module": "Stock",
+   "public": 1,
+   "roles": [],
+   "link_count": 77,
+   "links_sample": [
+    "Stock Reports",
+    "Stock Ledger",
+    "Stock Balance",
+    "Stock Projected Qty",
+    "Stock Analytics",
+    "Stock Ageing",
+    "Warehouse Wise Stock Balance",
+    "Warehouse wise Item Balance Age and Value",
+    "Total Stock Summary",
+    "Item Shortage Report",
+    "Itemwise Recommended Reorder Level",
+    "Reserved Stock",
+    "Product Bundle Balance",
+    "Stock Summary",
+    "Warehouse Capacity Summary",
+    "Serial & Batch Reports",
+    "Serial No and Batch Traceability",
+    "Serial and Batch Summary",
+    "Serial No Status",
+    "Serial No Ledger",
+    "Serial No Warranty Expiry",
+    "Serial No Service Contract Expiry",
+    "Batch-Wise Balance History",
+    "Batch Item Expiry Status",
+    "Available Batch Report",
+    "Available Serial No",
+    "Movement Reports",
+    "Purchase Receipt Trends",
+    "Delivery Note Trends",
+    "Requested Items To Be Transferred",
+    "Items To Be Requested",
+    "Delayed Item Report",
+    "Delayed Order Report",
+    "Landed Cost Report",
+    "Item Wise Consumption",
+    "COGS By Item Group",
+    "Item Reports",
+    "Item Prices",
+    "Item Price Stock",
+    "Item-wise Price List Rate"
+   ]
+  },
+  {
+   "name": "Support",
+   "module": "Support",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "System",
+   "module": "System",
+   "public": 1,
+   "roles": [],
+   "link_count": 0,
+   "links_sample": []
+  },
+  {
+   "name": "Users",
+   "module": "Users",
+   "public": 1,
+   "roles": [
+    "System Manager"
+   ],
+   "link_count": 7,
+   "links_sample": [
+    "Activity Log",
+    "Access Log",
+    "Role Permissions Manager",
+    "User Permissions",
+    "Role Permission for Page and Report",
+    "Permitted Documents For User",
+    "Document Share Report"
+   ]
+  },
+  {
+   "name": "Website",
+   "module": "Website",
+   "public": 1,
+   "roles": [],
+   "link_count": 7,
+   "links_sample": [
+    "Website Settings",
+    "Website Theme",
+    "Website Script",
+    "About Us Settings",
+    "Contact Us Settings",
+    "Help Category",
+    "Help Article"
+   ]
+  },
+  {
+   "name": "仓库管理",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [
+    "Stock User"
+   ],
+   "link_count": 13,
+   "links_sample": [
+    "库存查询",
+    "库存余额",
+    "库存账龄",
+    "物料",
+    "仓库",
+    "批次",
+    "序列号",
+    "出入库与盘点",
+    "物料移动",
+    "库存盘点",
+    "领料与产成品",
+    "物料需求",
+    "生产工单"
+   ]
+  },
+  {
+   "name": "基础资料",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [],
+   "link_count": 11,
+   "links_sample": [
+    "主数据",
+    "物料",
+    "客户",
+    "供应商",
+    "仓库",
+    "员工",
+    "分类与单位",
+    "物料组",
+    "客户组",
+    "供应商组",
+    "计量单位"
+   ]
+  },
+  {
+   "name": "客户与销售",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [
+    "Sales User"
+   ],
+   "link_count": 13,
+   "links_sample": [
+    "销售过程",
+    "销售线索",
+    "商机",
+    "报价单",
+    "销售订单",
+    "客户资料",
+    "客户",
+    "联系人",
+    "地址",
+    "交付与回款",
+    "交货单",
+    "销售发票",
+    "收付款"
+   ]
+  },
+  {
+   "name": "工作台",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [],
+   "link_count": 11,
+   "links_sample": [
+    "日常待办",
+    "待办事项",
+    "业务概览",
+    "销售订单",
+    "采购订单",
+    "生产工单",
+    "交货单",
+    "摘要报表",
+    "销售分析",
+    "工单汇总",
+    "库存余额"
+   ]
+  },
+  {
+   "name": "物流交付",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [
+    "Sales User",
+    "Stock User"
+   ],
+   "link_count": 3,
+   "links_sample": [
+    "交付",
+    "交货单",
+    "送货行程"
+   ]
+  },
+  {
+   "name": "系统设置",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [
+    "System Manager"
+   ],
+   "link_count": 11,
+   "links_sample": [
+    "用户与权限",
+    "用户",
+    "角色",
+    "角色档案",
+    "用户权限",
+    "公司与参数",
+    "公司",
+    "货币",
+    "财年",
+    "打印格式",
+    "系统设置"
+   ]
+  },
+  {
+   "name": "经营报表",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [
+    "Sales Manager",
+    "Purchase Manager",
+    "Stock Manager",
+    "Manufacturing Manager",
+    "Accounts Manager",
+    "System Manager"
+   ],
+   "link_count": 13,
+   "links_sample": [
+    "订单与交期",
+    "销售分析",
+    "采购分析",
+    "工单汇总",
+    "任务单汇总",
+    "库存与成本",
+    "库存余额",
+    "工单库存",
+    "库存账龄",
+    "财务",
+    "应收账龄",
+    "应付账龄",
+    "总账"
+   ]
+  },
+  {
+   "name": "设计与生产",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [
+    "Manufacturing User"
+   ],
+   "link_count": 14,
+   "links_sample": [
+    "产品设计",
+    "物料",
+    "物料清单",
+    "工艺路线",
+    "工序",
+    "生产计划",
+    "生产计划",
+    "物料需求",
+    "生产执行",
+    "生产工单",
+    "生产任务单",
+    "物料移动",
+    "生产资源",
+    "工作站"
+   ]
+  },
+  {
+   "name": "财务管理",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [
+    "Accounts User"
+   ],
+   "link_count": 11,
+   "links_sample": [
+    "开票",
+    "销售发票",
+    "采购发票",
+    "收付款",
+    "收付款",
+    "日记账",
+    "会计科目",
+    "往来对账",
+    "应收账龄",
+    "应付账龄",
+    "总账"
+   ]
+  },
+  {
+   "name": "采购管理",
+   "module": "CN MFG POC",
+   "public": 1,
+   "roles": [
+    "Purchase User"
+   ],
+   "link_count": 12,
+   "links_sample": [
+    "采购过程",
+    "物料需求",
+    "询价单",
+    "供应商报价",
+    "采购订单",
+    "供应商资料",
+    "供应商",
+    "联系人",
+    "地址",
+    "入库与发票",
+    "采购入库",
+    "采购发票"
+   ]
+  }
+ ],
+ "doc_counts": {
+  "Customer": 1,
+  "Sales Order": 4,
+  "Sales Invoice": 5,
+  "Delivery Note": 4,
+  "Payment Entry": 5,
+  "BOM": 1,
+  "Production Plan": 1,
+  "Work Order": 1,
+  "Job Card": 2,
+  "Workstation": 2,
+  "Operation": 3,
+  "Material Request": 1,
+  "Supplier": 1,
+  "Purchase Order": 1,
+  "Purchase Receipt": 2,
+  "Stock Entry": 4,
+  "Warehouse": 9,
+  "Item": 7,
+  "Bin": 9,
+  "Stock Ledger Entry": 49,
+  "GL Entry": 52,
+  "Employee": 3,
+  "User": 9
+ },
+ "sales_orders": [
+  {
+   "name": "SAL-ORD-2026-00001",
+   "customer": "苏州华新装备有限公司",
+   "business_type": "生产",
+   "items": [
+    {
+     "item_code": "ASSY-X1",
+     "qty": 2.0,
+     "rate": 8800.0,
+     "delivered_qty": 2.0
+    }
+   ],
+   "grand_total": 17600.0,
+   "status": "Completed",
+   "per_delivered": 100.0,
+   "per_billed": 100.0
+  },
+  {
+   "name": "SAL-ORD-2026-00002",
+   "customer": "苏州华新装备有限公司",
+   "business_type": "耗材",
+   "items": [
+    {
+     "item_code": "FILTER-KIT",
+     "qty": 10.0,
+     "rate": 80.0,
+     "delivered_qty": 10.0
+    }
+   ],
+   "grand_total": 800.0,
+   "status": "Completed",
+   "per_delivered": 100.0,
+   "per_billed": 100.0
+  },
+  {
+   "name": "SAL-ORD-2026-00003",
+   "customer": "苏州华新装备有限公司",
+   "business_type": "零部件",
+   "items": [
+    {
+     "item_code": "FLANGE-ASSY",
+     "qty": 5.0,
+     "rate": 150.0,
+     "delivered_qty": 5.0
+    }
+   ],
+   "grand_total": 750.0,
+   "status": "Completed",
+   "per_delivered": 100.0,
+   "per_billed": 100.0
+  },
+  {
+   "name": "SAL-ORD-2026-00004",
+   "customer": "苏州华新装备有限公司",
+   "business_type": "服务",
+   "items": [
+    {
+     "item_code": "INSTALL-SVC",
+     "qty": 1.0,
+     "rate": 800.0,
+     "delivered_qty": 0.0
+    }
+   ],
+   "grand_total": 800.0,
+   "status": "To Deliver",
+   "per_delivered": 0.0,
+   "per_billed": 100.0
+  }
+ ],
+ "production_chain": {
+  "Production Plan": [
+   {
+    "name": "MFG-PP-2026-00001",
+    "docstatus": 1,
+    "status": "Completed"
+   }
+  ],
+  "Work Order": [
+   {
+    "name": "MFG-WO-2026-00001",
+    "production_item": "ASSY-X1",
+    "qty": 2.0,
+    "produced_qty": 2.0,
+    "status": "Completed",
+    "docstatus": 1
+   }
+  ],
+  "Job Card": [
+   {
+    "name": "PO-JOB00001",
+    "operation": "装配",
+    "workstation": "装配工位",
+    "status": "Completed",
+    "total_completed_qty": 2.0,
+    "for_quantity": 2.0,
+    "work_order": "MFG-WO-2026-00001"
+   },
+   {
+    "name": "PO-JOB00002",
+    "operation": "检验",
+    "workstation": "检验工位",
+    "status": "Completed",
+    "total_completed_qty": 2.0,
+    "for_quantity": 2.0,
+    "work_order": "MFG-WO-2026-00001"
+   }
+  ],
+  "BOM": [
+   {
+    "name": "BOM-ASSY-X1-001",
+    "item": "ASSY-X1",
+    "is_default": 1,
+    "docstatus": 1
+   }
+  ],
+  "Stock Entry": [
+   {
+    "name": "MAT-STE-2026-00001",
+    "purpose": "Material Transfer for Manufacture",
+    "docstatus": 2
+   },
+   {
+    "name": "MAT-STE-2026-00002",
+    "purpose": "Manufacture",
+    "docstatus": 2
+   },
+   {
+    "name": "MAT-STE-2026-00003",
+    "purpose": "Material Transfer for Manufacture",
+    "docstatus": 1
+   },
+   {
+    "name": "MAT-STE-2026-00004",
+    "purpose": "Manufacture",
+    "docstatus": 1
+   }
+  ]
+ },
+ "stock": [
+  {
+   "item_code": "FASTENER",
+   "warehouse": "原材料仓 - QC",
+   "actual_qty": 4.0,
+   "stock_value": 20.0
+  },
+  {
+   "item_code": "FILTER-KIT",
+   "warehouse": "贸易品仓 - QC",
+   "actual_qty": 40.0,
+   "stock_value": 2000.0
+  },
+  {
+   "item_code": "FLANGE-ASSY",
+   "warehouse": "贸易品仓 - QC",
+   "actual_qty": 3.0,
+   "stock_value": 360.0
+  }
+ ],
+ "warehouses": [
+  {
+   "name": "产成品仓 - QC",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "仓库 - QC",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "原材料仓 - QC",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "在途物料 - QC",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "成品 - QC",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "所有仓库 - QC",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "生产在制仓 - QC",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "贸易品仓 - QC",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "进行中 - QC",
+   "company": "昆山启程智能设备有限公司"
+  }
+ ],
+ "custom_fields": [
+  {
+   "dt": "Sales Order",
+   "fieldname": "business_type",
+   "label": "业务类型",
+   "fieldtype": "Select"
+  }
+ ],
+ "own_app_path": "/workspace/development/frappe-bench/apps/cn_mfg_poc/cn_mfg_poc/__init__.py",
+ "whitelisted_own": [],
+ "site_config_keys": [
+  "background_workers",
+  "db_host",
+  "db_name",
+  "db_password",
+  "db_port",
+  "db_socket",
+  "db_type",
+  "db_user",
+  "default_site",
+  "developer_mode",
+  "file_watcher_port",
+  "frappe_user",
+  "gunicorn_workers",
+  "installed_apps",
+  "live_reload",
+  "rebase_on_pull",
+  "redis_cache",
+  "redis_queue",
+  "redis_socketio",
+  "restart_supervisor_on_update"
+ ]
+}

@@ -4,7 +4,7 @@
 
 | 顺序 | 任务 | 最小可演示成果 | 状态 | 证据/提交 |
 |---|---|---|---|---|
-| BUILD-00 | 复核现有 POC 和八个 ERP 模块 | 当前环境/已有功能/缺的主入口清单 | TODO | 待执行 |
+| BUILD-00 | 复核现有 POC 和八个 ERP 模块 | 当前环境/已有功能/缺的主入口清单 | PASS | docs/product/evidence/BUILD-00.md（commit 见 git log） |
 | BUILD-10 | ERP PC 核心模块补齐 | 七角色可点击核心流程、四类订单不回退 | TODO | 待执行 |
 | BUILD-20 | 三入口共用业务 API | 同一 ERP Site 的订单/库存/任务/客户读写接口与权限 | TODO | 待执行 |
 | BUILD-30 | 企业微信组织与用户身份 | 人员映射、账号绑定/撤权、H5 免登 | TODO | 待执行 |
