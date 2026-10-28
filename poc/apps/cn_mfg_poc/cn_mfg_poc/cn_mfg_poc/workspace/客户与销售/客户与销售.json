@@ -24,7 +24,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "\u9500\u552e\u7ebf\u7d22",
+   "label": "\u5ba2\u6237\u62a5\u5907",
    "link_count": 0,
    "link_to": "Lead",
    "link_type": "DocType",
@@ -140,7 +140,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-10-26 08:37:31.404582",
+ "modified": "2026-10-29 03:24:06.914194",
  "modified_by": "Administrator",
  "module": "CN MFG POC",
  "name": "\u5ba2\u6237\u4e0e\u9500\u552e",
