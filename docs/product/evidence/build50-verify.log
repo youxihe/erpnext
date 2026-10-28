@@ -1,0 +1,10 @@
+[PASS] V1 库存：机器人 == Bin 表 · DB={'生产在制仓 - QC': 1.0} BOT={'生产在制仓 - QC': 1.0}
+[PASS] V2 订单进度：机器人 == 销售订单单据 · DB={'status': 'To Deliver and Bill', 'per_delivered': 0.0, 'per_billed': 0.0, 'grand_total': 1800.0} BOT={'status': 'To Deliver and Bill', 'per_delivered': 0.0, 'grand_total': 1800.0}
+[PASS] V3 车间任务：机器人 == Job Card · DB={'status': 'Completed', 'for_quantity': 1.0, 'total_completed_qty': 0.5} BOT={'status': 'Completed', 'for_quantity': 1.0, 'total_completed_qty': 0.5}
+[PASS] V4 经营摘要：机器人 == 服务端聚合 · DB={'cnt': 5, 'amt': 21750.0} BOT={'count': 5, 'amount': 21750.0}
+[PASS] V5 撤权：停用绑定后机器人被拒 · code=NOT_BOUND
+[PASS] V6 复权：重新启用后恢复查询 · code=None
+[PASS] V7 开关：关闭机器人通道后全拒 · code=BOT_DISABLED
+[PASS] V8 只读链路不产生业务写入（Comment 数不变） · 157 → 157
+
+合计 8 项，失败 0 项

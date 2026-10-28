@@ -1,0 +1,63 @@
+ERPNext Bot 适配器本地联调 · 2026-10-28T20:16:45.088Z
+BASE=http://127.0.0.1:18000 · 工具数 6
+
+  李工·我的任务 →
+李工的车间任务（2 张）：
+- PO-JOB00003 装配 · ASSY-X1 已完成 0.5/1（待完成 0.5）· Completed
+- PO-JOB00001 装配 · ASSY-X1 已完成 2/2（待完成 0）· Completed
+
+[PASS] T1 李工 我的车间任务 返回真实数据 · jobs=2 employee=李工
+  李工·库存 →
+ERPNext 实时库存：
+- 传感器（SENSOR）@ 生产在制仓 - QC：1 件
+共 1 行，数据来自 ERP，非模型估算。
+
+[PASS] T2 李工 库存查询命中「传感器」 · rows=1
+[PASS] T3 李工 销售订单被拒（无销售角色） · 您当前的 ERP 角色无权查看该数据（当前角色无权查看销售订单（需要：Sales User、Sales Manager、
+[PASS] T4 李工 经营摘要被拒（非管理角色） · 您当前的 ERP 角色无权查看该数据（当前角色无权查看经营摘要（需要：Manufacturing Manager、Sal
+  王明·我的订单 →
+我的销售订单（5 张）：
+- SAL-ORD-2026-00005 苏州华新装备有限公司 ¥1,800 · 交付 0% · 尚未交付，待安排出库
+- SAL-ORD-2026-00004 苏州华新装备有限公司 ¥800 · 交付 0% · 尚未交付，待安排出库
+- SAL-ORD-2026-00003 苏州华新装备有限公司 ¥750 · 交付 100% · 已交付并已收款，订单完成
+- SAL-ORD-2026-00002 苏州华新装备有限公司 ¥800 · 交付 100% · 已交付并已收款，订单完成
+- SAL-ORD-2026-00001 苏州华新装备有限公司 ¥17,600 · 交付 100% · 已交付并已收款，订单完成
+
+[PASS] T5 王明 我的销售订单可见 · orders=5
+  王明·订单进度 →
+SAL-ORD-2026-00005（苏州华新装备有限公司）
+状态：To Deliver and Bill · 金额 ¥1,800
+交付 0% / 收款 0% — 尚未交付，待安排出库
+出库单：暂无
+发票：暂无
+
+[PASS] T6 王明 订单进度返回真实状态 · 状态：To Deliver and Bill · 金额 ¥1,800
+[PASS] T7 王明 车间任务被拒（非制造角色/无员工） · 您当前的 ERP 角色无权查看该数据（当前角色无权查看车间任务（需要：Manufacturing Manager、Sys
+  张工·库存(SENSOR) →
+ERPNext 实时库存：
+- 传感器（SENSOR）@ 生产在制仓 - QC：1 件
+共 1 行，数据来自 ERP，非模型估算。
+
+[PASS] T8 张工 库存查询命中 SENSOR · rows=1
+[PASS] T8b 张工 无库存的仓库返回空而不是报错 · 未查到库存记录（SENSOR）。
+  张工·经营摘要 →
+经营摘要（2026-09-29 ~ 2026-10-29，昆山启程智能设备有限公司）
+- 销售订单：5 张 / ¥21,750
+- 待交付：2 张 / ¥2,600
+- 生产工单：Completed 1、In Process 1
+- 库存：数量 100 / 价值 ¥3,330
+以上为 ERPNext 服务端聚合，非模型估算。
+
+[PASS] T9 张工 经营摘要（Stock Manager）
+  赵经理·我是谁 →
+已绑定 ERP 账号 zhaojingli@erpnext-poc.localhost（赵经理）
+角色：Accounts User、All、Desk User、Guest、Manufacturing User、Purchase User、Sales User、Stock User、System Manager
+
+[PASS] T10 赵经理 whoami 绑定解析正确 · zhaojingli@erpnext-poc.localhost
+[PASS] T11 未绑定企微账号被拒 · 您的企微账号还没有绑定 ERP 账号（该企微账号尚未绑定 ERP 账号（weixiubao），请管理员在企微应用完成绑定
+[PASS] T12 群聊拒绝（不下发 ERP） · ERP 工具仅支持企微私聊，请勿在群聊中查询业务数据。
+[PASS] T13 非企微通道拒绝 · 当前会话没有可信的企业微信发送者身份，无法执行 ERP 工具。请在企微私聊中操作
+[PASS] T14 篡改签名被拒（BAD_SIGNATURE） · 机器人通道签名校验未通过，已拒绝本次查询（机器人签名校验失败）
+[PASS] T15 订单进度字段完整（状态/交付/收款） · status=To Deliver and Bill delivered=0 billed=0
+
+合计 16 项，失败 0 项

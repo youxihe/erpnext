@@ -1,0 +1,11 @@
+{
+  "name": "@cn-erp/erpnext-bot-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "openclaw": {
+    "extensions": ["./index.js"]
+  },
+  "description": "ERPNext 受控只读机器人工具（企微可信身份 → WeCom User Binding → ERP User），不复用 JSH 业务 ID，不写业务库"
+}

@@ -17,6 +17,10 @@
   "mock_signing_key",
   "section_secret",
   "contact_secret",
+  "section_bot",
+  "bot_enabled",
+  "column_bot",
+  "bot_adapter_secret",
   "section_note",
   "config_note"
  ],
@@ -88,6 +92,28 @@
    "fieldname": "contact_secret",
    "fieldtype": "Password",
    "label": "通讯录 Secret"
+  },
+  {
+   "fieldname": "section_bot",
+   "fieldtype": "Section Break",
+   "label": "AI 机器人通道"
+  },
+  {
+   "default": "1",
+   "description": "关闭后机器人适配器的所有请求一律拒绝（不影响 H5 与 PC）",
+   "fieldname": "bot_enabled",
+   "fieldtype": "Check",
+   "label": "启用机器人通道"
+  },
+  {
+   "fieldname": "column_bot",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "机器人适配器调用 /api/method/cn_mfg_poc.bot.* 的 HMAC-SHA256 共享密钥（适配器侧用环境变量注入，禁止写入 Git 或聊天）",
+   "fieldname": "bot_adapter_secret",
+   "fieldtype": "Password",
+   "label": "适配器共享密钥"
   },
   {
    "fieldname": "section_note",

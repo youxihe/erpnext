@@ -1,0 +1,20 @@
+{
+  "id": "erpnext-bot-tools",
+  "name": "ERPNext Bot Tools",
+  "description": "WeCom trusted-identity ERPNext read-only tools: stock / my orders / order progress / my shop-floor jobs / management summary",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  },
+  "contracts": {
+    "tools": [
+      "erp_whoami",
+      "erp_stock_query",
+      "erp_my_orders",
+      "erp_order_progress",
+      "erp_my_jobs",
+      "erp_mgmt_summary"
+    ]
+  }
+}
