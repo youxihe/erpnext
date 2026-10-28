@@ -1,0 +1,44 @@
+====================================================================================
+PASS | 李工查我的任务                      | 200 (期望 200) | cn_mfg_poc.api.my_jobs
+     └ 任务: {'PO-JOB00001': ('Completed', 2.0), 'PO-JOB00003': ('Completed', 0.5)}
+PASS | [跳过] 李工报工完成 0.5/0.5        | PO-JOB00003 上一轮已完成
+PASS | 重复报工被拒(任务已完成)                | 417 (期望 417) | cn_mfg_poc.api.update_job_progress
+     └ 错误消息: ["{\"message\":\"任务单已提交/取消，不能报工\",\"as_table\":false,\"title\":\"信息\",\"indicator\":\"red\",\"raise_exception\":1,\"__frappe_exc_id\":\"b5a5d2015f9ba17c2ac2e0d5
+PASS | 替张工报工被拒(未分配)                 | 403 (期望 403) | cn_mfg_poc.api.update_job_progress
+     └ 错误消息: ["{\"message\":\"该任务未分配给您（李工）\",\"as_table\":false,\"title\":\"信息\",\"indicator\":\"red\",\"raise_exception\":1,\"__frappe_exc_id\":\"533fd1c1b2745168832a2a9ece
+PASS | 超量报工被拒                       | 417 (期望 417) | cn_mfg_poc.api.update_job_progress
+     └ 错误消息: ["{\"message\":\"报工数量 999.0 超过待完成 1.0\",\"as_table\":false,\"title\":\"信息\",\"indicator\":\"red\",\"raise_exception\":1,\"__frappe_exc_id\":\"dcbde73a89ccd397cb
+PASS | 李工报备客户被拒                     | 403 (期望 403) | cn_mfg_poc.api.report_customer
+     └ 错误消息: ["{\"message\":\"当前角色无权报备客户（需要：Sales Manager、Sales User、System Manager）\",\"as_table\":false,\"title\":\"信息\",\"indicator\":\"red\",\"raise_exception\":1,\"__fr
+PASS | 李工查销售订单被拒                    | 403 (期望 403) | cn_mfg_poc.api.my_orders
+     └ 错误消息: ["{\"message\":\"当前角色无权查看销售订单（需要：Sales Manager、Sales User、System Manager）\",\"as_table\":false,\"title\":\"信息\",\"indicator\":\"red\",\"raise_exception\":1,\"__
+PASS | 王明查客户                        | 200 (期望 200) | cn_mfg_poc.api.search_customers
+PASS | 王明报备新客户                      | 200 (期望 200) | cn_mfg_poc.api.report_customer
+     └ 报备单: CRM-LEAD-2026-00002
+PASS | 重复报备幂等返回原单                   | 200 (期望 200) | cn_mfg_poc.api.report_customer
+PASS | 王明查我的订单                      | 200 (期望 200) | cn_mfg_poc.api.my_orders
+     └ 订单数: 4
+PASS | 销售查库存被拒                      | 403 (期望 403) | cn_mfg_poc.api.stock_balances
+     └ 错误消息: ["{\"message\":\"当前角色无权查询库存（需要：Stock Manager、Manufacturing User、Manufacturing Manager、System Manager、Stock User）\",\"as_table\":false,\"title\":\"信息\",\"indicat
+PASS | 销售报工被拒(未绑员工)                 | 403 (期望 403) | cn_mfg_poc.api.update_job_progress
+     └ 错误消息: ["{\"message\":\"当前角色无权更新任务进度（需要：Manufacturing User、Manufacturing Manager、System Manager）\",\"as_table\":false,\"title\":\"信息\",\"indicator\":\"red\",\"raise_ex
+PASS | 张工查原材料仓                      | 200 (期望 200) | cn_mfg_poc.api.stock_balances
+     └ 库存: {'FASTENER': 40.0}
+PASS | 张工建采购入库草稿                    | 200 (期望 200) | cn_mfg_poc.api.prepare_purchase_draft
+     └ 草稿: PID-00005 [{'item_code': 'FASTENER', 'qty': 10.0, 'rate': 5.0}]
+PASS | 张工确认入库(真实过账)                 | 200 (期望 200) | cn_mfg_poc.api.confirm_purchase_draft
+     └ 采购入库单: MAT-PRE-2026-00007
+PASS | 重复确认幂等(不再过账)                 | 200 (期望 200) | cn_mfg_poc.api.confirm_purchase_draft
+PASS | 确认后库存复核                      | 200 (期望 200) | cn_mfg_poc.api.stock_balances
+     └ FASTENER 现存: [{'item_code': 'FASTENER', 'warehouse': '原材料仓 - QC', 'actual_qty': 50.0, 'stock_value': 250.0}]
+PASS | 无效物料被拒                       | 417 (期望 417) | cn_mfg_poc.api.prepare_purchase_draft
+     └ 错误消息: ["{\"message\":\"第 1 行：物料不存在 NO-SUCH-ITEM\",\"as_table\":false,\"title\":\"信息\",\"indicator\":\"red\",\"raise_exception\":1,\"__frappe_exc_id\":\"4795454b186d87
+PASS | 无效供应商被拒                      | 417 (期望 417) | cn_mfg_poc.api.prepare_purchase_draft
+     └ 错误消息: ["{\"message\":\"供应商不存在或已停用：不存在的供应商\",\"as_table\":false,\"title\":\"信息\",\"indicator\":\"red\",\"raise_exception\":1,\"__frappe_exc_id\":\"8ed5d26258af62d38462
+PASS | 制造员工建采购草稿被拒                  | 403 (期望 403) | cn_mfg_poc.api.prepare_purchase_draft
+     └ 错误消息: ["{\"message\":\"当前角色无权准备Purchase Intake Draft（需要：Stock Manager、System Manager、Stock User）\",\"as_table\":false,\"title\":\"信息\",\"indicator\":\"red\",\"raise_e
+PASS | 匿名调用被拒                       | 403 (期望 403) | cn_mfg_poc.api.my_orders
+     └ 错误消息: ["{\"message\":\"您无权访问此资源。请登录后访问方法 <strong>cn_mfg_poc.api.my_orders</strong> 申明前未添加@frappe.whitelist()装饰器\",\"as_table\":false,\"title\":\"方法不可调用\",\"indicator\
+====================================================================================
+合计 21 项，失败 0 项
+BUILD-20 API 回放全部通过
