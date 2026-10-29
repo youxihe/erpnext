@@ -1,0 +1,13 @@
+BUILD-70 部署与恢复：容器重启前后数据快照比对
+============================================================
+[PASS] 销售订单（sales_orders）重启前后一致
+[PASS] 客户报备单（leads）重启前后一致
+[PASS] 采购入库单（purchase_receipts）重启前后一致
+[PASS] 生产工单（work_orders）重启前后一致
+[PASS] 车间任务单（job_cards）重启前后一致
+[PASS] SENSOR 库存（sensor_bin）重启前后一致
+[PASS] FASTENER 库存（fastener_bin）重启前后一致
+[PASS] Job Card 完工数（job_card_qty）重启前后一致
+[PASS] 企微身份绑定（bindings）重启前后一致
+============================================================
+结论: PASS —— 无丢单、无重复过账、库存与绑定完全一致

@@ -1,0 +1,85 @@
+==============================================================================
+BUILD-70 三入口联合验收  RUN=1029153716  模式=全量
+==============================================================================
+
+—— P0 准备：绑定自举 / 车间任务分配 ——
+[PASS] P0 绑定自举 ligong · → ligong@erpnext-poc.localhost {"message": {"corp_id": "LOCAL-MOCK-CORP", "created_users": 
+[PASS] P0 绑定自举 wangming-wx · → wangming@erpnext-poc.localhost {"message": {"corp_id": "LOCAL-MOCK-CORP", "created_users": 
+[PASS] P0 绑定自举 zhangsan · → zhanggong@erpnext-poc.localhost {"message": {"corp_id": "LOCAL-MOCK-CORP", "created_users": 
+[PASS] P0 车间任务已分配给李工 · PO-JOB00004 employees=['HR-EMP-00001']
+
+—— 场景1 角色与身份一致 ——
+[PASS] J1 三入口映射到同一 ERP 用户 · PC=ligong@erpnext-poc.localhost H5=sid已建立 Bot=ligong@erpnext-poc.localhost
+[PASS] J2 PC 与 Bot 角色集合一致 · ['All', 'Desk User', 'Employee', 'Guest', 'Manufacturing User']
+
+—— 场景2 客户报备（Bot 写入 → PC/H5 同一套数据） ——
+[PASS] J3 Bot 生成待确认报备草稿 · draft=BD-00028
+[PASS] J4 确认后 PC 侧存在正式报备单且归属本人 · lead=CRM-LEAD-2026-00009 owner=wangming@erpnext-poc.localhost
+[PASS] J5 H5 报备同一客户被查重拦截（与 Bot 共享数据） · status=200 {"message": {"existing": "lead", "lead": "CRM-LEAD-2026-00009", "message": "已有未关闭的报备单，请勿重复报备"}}
+
+—— 场景3 销售订单（同一订单号/状态/金额 三入口一致） ——
+[PASS] J6 Bot 与 PC 订单状态/金额一致 · PC={'status': 'To Deliver and Bill', 'grand_total': 1800.0, 'per_delivered': 0.0} Bot={'status':To Deliver and Bill,'total':1800.0}
+[PASS] J7 H5 与 PC 订单状态/金额一致 · H5 status=To Deliver and Bill
+[PASS] J8 越权订单：Bot 拒绝 · code=PERMISSION_DENIED
+[PASS] J9 越权订单：H5 拒绝 · status=403
+
+—— 场景4 车间任务（H5 报工 → PC / Bot 立即一致） ——
+[PASS] J10 H5 本人报工成功 · status=200 {"message": {"job_card": "PO-JOB00004", "status": "Work In Progress", "completed": 0.5, "for_quantity": 1.0, "
+[PASS] J11 Bot 读到的完工数 == PC · PC=0.5 Bot=0.5
+[PASS] J12 H5 读到的完工数 == PC · PC=0.5 H5=0.5
+
+—— 场景5 仓库存量（三入口同值 / 无权限拒绝） ——
+[PASS] J13 Bot 库存 == PC Bin · PC={'原材料仓 - QC': 35.0, '生产在制仓 - QC': 1.0} Bot={'原材料仓 - QC': 35.0, '生产在制仓 - QC': 1.0}
+[PASS] J14 H5 库存 == PC Bin · PC={'原材料仓 - QC': 35.0, '生产在制仓 - QC': 1.0} H5={'原材料仓 - QC': 35.0, '生产在制仓 - QC': 1.0}
+[PASS] J15 无库存角色（销售）：Bot 拒绝 · code=PERMISSION_DENIED
+[PASS] J16 无库存角色（销售）：H5 拒绝 · status=403
+
+—— 场景6 Excel 采购入库（Bot 预览→确认 → 库存只变一次） ——
+[PASS] J17 Excel 解析生成待确认草稿 · draft=PID-00029
+[PASS] J18 预览阶段库存零变化 · 36.0 → 36.0
+[PASS] J19 确认后生成正式采购入库单 · PR=MAT-PRE-2026-00015 库存 36.0 → 41.0
+[PASS] J20 库存增量 == 入库单数量（一次过账） · Δ库存=5.0 单据=5.0
+[PASS] J21 重复确认不重复入库 · 41.0 → 41.0
+[PASS] J22 H5 看到的库存 == PC（入库后） · PC=41.0 H5=41.0
+
+—— 场景7 账号停用撤权（三入口同时失效） ——
+[PASS] J23 Bot：停用后身份不再可用 · code=USER_DISABLED msg=ERP 账号已停用：ligong@erpnext-poc.localhost
+[PASS] J24 H5：停用后旧会话被拒 · status=401
+[PASS] J25 H5：停用后无法重新免登 · status=403
+[PASS] J26 Bot：停用后业务查询被拒 · code=USER_DISABLED
+[PASS] J27 恢复启用后 Bot 与 H5 均恢复 · Bot=ligong@erpnext-poc.localhost H5=ok
+
+==============================================================================
+[PASS] P0 绑定自举 ligong · → ligong@erpnext-poc.localhost {"message": {"corp_id": "LOCAL-MOCK-CORP", "created_users": 
+[PASS] P0 绑定自举 wangming-wx · → wangming@erpnext-poc.localhost {"message": {"corp_id": "LOCAL-MOCK-CORP", "created_users": 
+[PASS] P0 绑定自举 zhangsan · → zhanggong@erpnext-poc.localhost {"message": {"corp_id": "LOCAL-MOCK-CORP", "created_users": 
+[PASS] P0 车间任务已分配给李工 · PO-JOB00004 employees=['HR-EMP-00001']
+[PASS] J1 三入口映射到同一 ERP 用户 · PC=ligong@erpnext-poc.localhost H5=sid已建立 Bot=ligong@erpnext-poc.localhost
+[PASS] J2 PC 与 Bot 角色集合一致 · ['All', 'Desk User', 'Employee', 'Guest', 'Manufacturing User']
+[PASS] J3 Bot 生成待确认报备草稿 · draft=BD-00028
+[PASS] J4 确认后 PC 侧存在正式报备单且归属本人 · lead=CRM-LEAD-2026-00009 owner=wangming@erpnext-poc.localhost
+[PASS] J5 H5 报备同一客户被查重拦截（与 Bot 共享数据） · status=200 {"message": {"existing": "lead", "lead": "CRM-LEAD-2026-00009", "message": "已有未关闭的报备单，请勿重复报备"}}
+[PASS] J6 Bot 与 PC 订单状态/金额一致 · PC={'status': 'To Deliver and Bill', 'grand_total': 1800.0, 'per_delivered': 0.0} Bot={'status':To Deliver and Bill,'total':1800.0}
+[PASS] J7 H5 与 PC 订单状态/金额一致 · H5 status=To Deliver and Bill
+[PASS] J8 越权订单：Bot 拒绝 · code=PERMISSION_DENIED
+[PASS] J9 越权订单：H5 拒绝 · status=403
+[PASS] J10 H5 本人报工成功 · status=200 {"message": {"job_card": "PO-JOB00004", "status": "Work In Progress", "completed": 0.5, "for_quantity": 1.0, "
+[PASS] J11 Bot 读到的完工数 == PC · PC=0.5 Bot=0.5
+[PASS] J12 H5 读到的完工数 == PC · PC=0.5 H5=0.5
+[PASS] J13 Bot 库存 == PC Bin · PC={'原材料仓 - QC': 35.0, '生产在制仓 - QC': 1.0} Bot={'原材料仓 - QC': 35.0, '生产在制仓 - QC': 1.0}
+[PASS] J14 H5 库存 == PC Bin · PC={'原材料仓 - QC': 35.0, '生产在制仓 - QC': 1.0} H5={'原材料仓 - QC': 35.0, '生产在制仓 - QC': 1.0}
+[PASS] J15 无库存角色（销售）：Bot 拒绝 · code=PERMISSION_DENIED
+[PASS] J16 无库存角色（销售）：H5 拒绝 · status=403
+[PASS] J17 Excel 解析生成待确认草稿 · draft=PID-00029
+[PASS] J18 预览阶段库存零变化 · 36.0 → 36.0
+[PASS] J19 确认后生成正式采购入库单 · PR=MAT-PRE-2026-00015 库存 36.0 → 41.0
+[PASS] J20 库存增量 == 入库单数量（一次过账） · Δ库存=5.0 单据=5.0
+[PASS] J21 重复确认不重复入库 · 41.0 → 41.0
+[PASS] J22 H5 看到的库存 == PC（入库后） · PC=41.0 H5=41.0
+[PASS] J23 Bot：停用后身份不再可用 · code=USER_DISABLED msg=ERP 账号已停用：ligong@erpnext-poc.localhost
+[PASS] J24 H5：停用后旧会话被拒 · status=401
+[PASS] J25 H5：停用后无法重新免登 · status=403
+[PASS] J26 Bot：停用后业务查询被拒 · code=USER_DISABLED
+[PASS] J27 恢复启用后 Bot 与 H5 均恢复 · Bot=ligong@erpnext-poc.localhost H5=ok
+==============================================================================
+合计 31 项，失败 0 项
