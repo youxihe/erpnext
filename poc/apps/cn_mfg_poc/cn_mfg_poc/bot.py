@@ -80,7 +80,7 @@ def _canonical(method, path, ts, nonce, params):
     return "\n".join([method, path, str(ts), str(nonce), body])
 
 
-def _receive(name):
+def _receive(name, module="cn_mfg_poc.bot"):
     """校验签名并解析企微身份。必须在 frappe.set_user 之前调用（set_user 会清空 form_dict）。"""
     params = {
         k: v
@@ -106,7 +106,7 @@ def _receive(name):
     if not secret:
         _deny("BOT_DISABLED", _("未配置机器人适配器共享密钥"))
 
-    path = f"/api/method/cn_mfg_poc.bot.{name}"
+    path = f"/api/method/{module}.{name}"
     expect = hmac.new(
         secret.encode("utf-8"),
         _canonical("POST", path, ts, nonce, params).encode("utf-8"),
@@ -129,10 +129,10 @@ def _receive(name):
     return wecom_userid, params, erp_user
 
 
-def _serve(name, fn):
+def _serve(name, fn, module="cn_mfg_poc.bot"):
     """统一入口：验签 → 换身份 → 执行 → 统一信封。"""
     try:
-        wecom_userid, params, erp_user = _receive(name)
+        wecom_userid, params, erp_user = _receive(name, module)
     except _BotRefusal as e:
         _log("bot_denied", tool=name, reason=e.code, message=e.message)
         return {"ok": False, "code": e.code, "message": e.message, "nature": "REAL_ERP"}

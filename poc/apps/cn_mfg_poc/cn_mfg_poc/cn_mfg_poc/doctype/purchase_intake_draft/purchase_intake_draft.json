@@ -15,7 +15,14 @@
   "section_state",
   "status",
   "column_state",
-  "purchase_receipt"
+  "purchase_receipt",
+  "section_source",
+  "source",
+  "column_source",
+  "file_name",
+  "column_source2",
+  "file_sha256",
+  "wecom_userid"
  ],
  "fields": [
   {
@@ -88,6 +95,42 @@
    "label": "采购入库单",
    "options": "Purchase Receipt",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_source",
+   "fieldtype": "Section Break",
+   "label": "来源（Excel/机器人）"
+  },
+  {
+   "description": "H5 / Bot-Excel / PC",
+   "fieldname": "source",
+   "fieldtype": "Data",
+   "label": "来源渠道"
+  },
+  {
+   "fieldname": "column_source",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "file_name",
+   "fieldtype": "Data",
+   "label": "文件名"
+  },
+  {
+   "fieldname": "column_source2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "同一文件重复上传用于幂等，避免重复建草稿",
+   "fieldname": "file_sha256",
+   "fieldtype": "Data",
+   "label": "文件指纹"
+  },
+  {
+   "description": "发起人的企微 UserID（审计与机器人待确认匹配）",
+   "fieldname": "wecom_userid",
+   "fieldtype": "Data",
+   "label": "企微 UserID"
   }
  ],
  "index_web_pages_for_search": 1,

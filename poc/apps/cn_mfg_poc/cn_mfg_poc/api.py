@@ -349,9 +349,23 @@ def _validate_purchase_lines(lines, warehouse):
 
 
 @frappe.whitelist(methods=["POST"])
-def prepare_purchase_draft(supplier, lines, warehouse=None, source="H5"):
-    """Purchase Intake Draft：接收（Excel 解析后的）行数据，逐行校验后存草稿，不产生任何库存变化。"""
+def prepare_purchase_draft(supplier, lines, warehouse=None, source="H5", file_name=None,
+                          file_sha256=None, wecom_userid=None):
+    """Purchase Intake Draft：接收（Excel 解析后的）行数据，逐行校验后存草稿，不产生任何库存变化。
+
+    幂等：同一用户 + 同一文件指纹（file_sha256）已有未确认草稿时，直接返回原草稿，不重复建。
+    """
     _require_any_role(PURCHASE_ROLES, "准备Purchase Intake Draft")
+    if file_sha256:
+        old = frappe.db.get_value(
+            "Purchase Intake Draft",
+            {"file_sha256": file_sha256, "status": "Draft", "owner": frappe.session.user},
+            "name",
+        )
+        if old:
+            return {"draft": old, "status": "Draft", "replayed": True,
+                    "lines": json.loads(frappe.db.get_value("Purchase Intake Draft", old, "lines_json")),
+                    "message": _("该文件已生成过草稿 {0}，未重复创建").format(old)}
     _require(
         frappe.db.exists("Supplier", {"name": supplier, "disabled": 0}),
         _("供应商不存在或已停用：{0}").format(supplier),
@@ -374,10 +388,29 @@ def prepare_purchase_draft(supplier, lines, warehouse=None, source="H5"):
     d.company = COMPANY
     d.lines_json = json.dumps(clean, ensure_ascii=False)
     d.status = "Draft"
+    d.source = source
+    d.file_name = file_name
+    d.file_sha256 = file_sha256
+    d.wecom_userid = wecom_userid
     d.insert()
     frappe.db.commit()
     _audit("Purchase Intake Draft", d.name, "创建Purchase Intake Draft", f"supplier={supplier} rows={len(clean)} source={source}")
-    return {"draft": d.name, "status": d.status, "lines": clean}
+    return {"draft": d.name, "status": d.status, "lines": clean, "replayed": False}
+
+
+@frappe.whitelist(methods=["POST"])
+def cancel_purchase_draft(draft):
+    """取消尚未过账的采购入库草稿：不改库存、不生成正式单据。已确认的草稿不能取消。"""
+    _require_any_role(PURCHASE_ROLES, "取消Purchase Intake Draft")
+    d = frappe.get_doc("Purchase Intake Draft", draft)
+    _require(d.status == "Draft", _("草稿状态为 {0}，不能取消").format(d.status), frappe.ValidationError)
+    _require(not d.purchase_receipt, _("草稿已关联入库单 {0}，不能取消").format(d.purchase_receipt), frappe.ValidationError)
+    d.status = "Cancelled"
+    d.flags.ignore_permissions = True
+    d.save()
+    frappe.db.commit()
+    _audit("Purchase Intake Draft", d.name, "取消Purchase Intake Draft", "user_cancelled")
+    return {"draft": d.name, "status": "Cancelled", "stock_unchanged": True}
 
 
 @frappe.whitelist(methods=["POST"])

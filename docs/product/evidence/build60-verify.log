@@ -1,0 +1,12 @@
+[PASS] V1 每个已确认草稿都有且只有一张已提交采购入库单 · 草稿 3 张 → 入库单 3 张（MAT-PRE-2026-00010）
+[PASS] V2 库存增量 == 入库单数量（无重复过账、无凭空增加） · Bin=15.0 Σ入库单=15.0
+[PASS] V3 重复确认不再生成新入库单 · before=10 after=10 already=True
+[PASS] V4 取消的草稿没有关联入库单（库存不变） · 取消草稿 3 张
+[PASS] V5 校验失败的文件没有留下任何草稿 · 残留草稿 0 张
+[PASS] V6 报备写入正式 Lead 且归属报备人本人 · CRM-LEAD-2026-00004 owner=wangming@erpnext-poc.localhost
+[PASS] V7 正式单据上有审计 Comment（采购入库/报备） · PR=True Lead=True
+[PASS] V8 撤权前可正常生成草稿 · draft=PID-00019
+[PASS] V9 撤权后确认被拒（NOT_BOUND） · code=NOT_BOUND
+[PASS] V10 撤权后也不能新建草稿 · code=NOT_BOUND
+
+合计 10 项，失败 0 项

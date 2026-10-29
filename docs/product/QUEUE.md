@@ -10,7 +10,7 @@
 | BUILD-30 | 企业微信组织与用户身份 | 人员映射、账号绑定/撤权、H5 免登 | LOCAL_PASS / REAL_WECOM_BLOCKED | docs/product/evidence/BUILD-30.md |
 | BUILD-40 | 企微自建 H5 | 客户报备/我的订单/我的任务/库存查询 | LOCAL_PASS | docs/product/evidence/BUILD-40.md |
 | BUILD-50 | 企业微信 AI ERP 机器人查询 | 真实企微查同一个订单、库存和生产任务 | LOCAL_PASS / REAL_WECOM_BLOCKED | docs/product/evidence/BUILD-50.md + build50-bot.log(16/16) + build50-verify.log(8/8)（提交见 git log） |
-| BUILD-60 | 机器人安全业务写入 | 报备客户、Excel 采购入库预览+本人确认 | TODO | 待执行 |
+| BUILD-60 | 机器人安全业务写入 | 报备客户、Excel 采购入库预览+本人确认 | LOCAL_PASS / REAL_WECOM_BLOCKED | docs/product/evidence/BUILD-60.md + build60-bot-write.log(20/20) + build60-verify.log(10/10) |
 | BUILD-70 | 三入口统一验收 | 同身份/同单据/库存同值，真实客户端证据 | TODO | 待执行 |
 
 ## 公共执行规则
