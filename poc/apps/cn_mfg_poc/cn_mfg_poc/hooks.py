@@ -167,6 +167,13 @@ app_license = "mit"
 # 	}
 # }
 
+# BUILD-80：四类订单服务端约束，PC / H5 / Bot / REST 任一入口均生效
+doc_events = {
+    "Sales Order": {
+        "validate": "cn_mfg_poc.order_rules.validate_sales_order",
+    }
+}
+
 # Scheduled Tasks
 # ---------------
 

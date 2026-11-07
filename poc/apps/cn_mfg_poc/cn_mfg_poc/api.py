@@ -147,7 +147,7 @@ def my_orders(limit=20):
     rows = frappe.get_all(
         "Sales Order",
         filters=filters,
-        fields=["name", "customer", "transaction_date", "grand_total", "status", "per_delivered", "per_billed"],
+        fields=["name", "customer", "business_type", "transaction_date", "grand_total", "status", "per_delivered", "per_billed"],
         order_by="modified desc",
         limit=int(limit),
     )

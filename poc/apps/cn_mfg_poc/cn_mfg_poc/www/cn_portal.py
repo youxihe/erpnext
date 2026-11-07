@@ -27,6 +27,16 @@ ORDER = [
     ("系统设置", "⚙"),
 ]
 
+# 四类订单分类入口（BUILD-80）：Frappe v16 的 Workspace Link 只支持 DocType/Page/Report，
+# 不能放带 query 的 URL，所以由门户在「客户与销售」下虚拟注入，不改 Workspace 数据。
+# 实测 /desk/sales-order?business_type=生产 会被 Frappe 列表应用为筛选条件。
+ORDER_TYPES = [
+    ("生产类订单", "生产"),
+    ("耗材类订单", "耗材"),
+    ("零部件类订单", "零部件"),
+    ("服务类订单", "服务"),
+]
+
 
 def _slug(text):
     text = (text or "").strip().lower()
@@ -106,6 +116,29 @@ def _build_menu(roles):
     return menu
 
 
+def _inject_order_types(menu):
+    """在「客户与销售」模块顶部插入四类订单的分类入口。"""
+    for mod in menu:
+        if mod["label"] != "客户与销售":
+            continue
+        if any(g["label"] == "四类订单" for g in mod["groups"]):
+            continue
+        mod["groups"].insert(0, {
+            "label": "四类订单",
+            "items": [
+                {
+                    "label": label,
+                    "url": "/desk/sales-order?business_type=" + quote(value),
+                    "kind": "DocType",
+                    "target": "Sales Order",
+                }
+                for label, value in ORDER_TYPES
+            ],
+        })
+        mod["count"] = sum(len(g["items"]) for g in mod["groups"])
+    return menu
+
+
 def get_context(context):
     if frappe.session.user == "Guest":
         frappe.redirect("/login?redirect-to=%2Fcn_portal")
@@ -116,5 +149,5 @@ def get_context(context):
     context.user_fullname = frappe.utils.get_fullname(frappe.session.user)
     context.csrf_token = frappe.sessions.get_csrf_token()
     context.roles_text = " / ".join(sorted(roles - {"All", "Guest"}))
-    context.menu_json = json.dumps(_build_menu(roles), ensure_ascii=False)
+    context.menu_json = json.dumps(_inject_order_types(_build_menu(roles)), ensure_ascii=False)
     context.page_title = "统一导航"

@@ -176,7 +176,7 @@ function loadOrders(){
   api("cn_mfg_poc.api.my_orders").then(function(r){
     var h = "";
     r.orders.forEach(function(o){
-      h += '<div class="row"><span><b>'+o.name+'</b><br><span class="tip">'+o.customer+' · ¥'+o.grand_total+'</span></span>'
+      h += '<div class="row"><span><b>'+o.name+'</b><br><span class="tip">'+(o.business_type||'未分类')+' · '+o.customer+' · ¥'+o.grand_total+'</span></span>'
         +  '<span style="text-align:right">'+tag(o.status)+'<br><span class="tip">交付 '+o.per_delivered+'% / 开票 '+o.per_billed+'%</span></span></div>';
     });
     document.getElementById("ordersList").innerHTML = h || '<div class="empty">暂无可见订单</div>';

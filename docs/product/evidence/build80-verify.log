@@ -1,0 +1,89 @@
+=== build80_verify.py ===
+PASS 字段标签=订单类型 | 订单类型
+PASS 列表可见 | 1
+PASS 标准筛选可见 | 1
+PASS 选项为四类且首项为空 | 
+生产
+耗材
+零部件
+服务
+PASS 样本订单覆盖四类 | {'服务', '耗材', '生产', '零部件'}
+PASS 全部订单均有类型
+PASS doc_events.validate 已加载 | ['cn_mfg_poc.order_rules.validate_sales_order']
+PASS 存在库存物料 | FLANGE-ASSY
+PASS 存在服务物料 | INSTALL-SVC
+PASS 未选类型被拦截 | 请先选择订单类型：生产 / 耗材 / 零部件 / 服务
+PASS 服务类混入库存物料被拦截 | 服务类订单只能使用非库存服务物料；FLANGE-ASSY 是库存物料，会导致错误扣减库存
+PASS 耗材类混入服务项被拦截 | 耗材类 / 零部件类订单必须使用库存物料；INSTALL-SVC 不是库存物料
+PASS 生产类正常单据可保存 | None
+PASS 服务类正常单据可保存 | None
+PASS H5/PC 订单接口返回订单类型 | ['生产', '服务', '零部件', '耗材', '生产']
+PASS Bot 订单工具返回订单类型 | ['生产', '服务', '零部件', '耗材', '生产']
+RESULT 16/16
+
+=== build80_http_verify.py ===
+INSERT_STATUS 417
+INSERT_BODY {"exception":"frappe.exceptions.ValidationError: 请先选择订单类型：生产 / 耗材 / 零部件 / 服务","exc_type":"ValidationError","_exc_source":"cn_mfg_poc (app)","exc":"[\"Traceback (most recent call last):\\n  File \\\"apps/frappe/frappe/app.py\\\", line 133, in application\\n    response = frappe.api.handle(request)\\n  File \\\"apps/frappe/frappe/api/__init__.py\\\", line 63, in handle\\n    data = endpoint(**argume
+HTTP_NEGATIVE PASS
+
+=== portal_orders_verify.js ===
+{
+ "menu": {
+  "title": "客户与销售",
+  "badge": "14 项",
+  "groups": [
+   {
+    "label": "四类订单",
+    "items": [
+     "生产类订单",
+     "耗材类订单",
+     "零部件类订单",
+     "服务类订单"
+    ]
+   },
+   {
+    "label": "销售过程",
+    "items": [
+     "客户报备",
+     "商机",
+     "报价单",
+     "销售订单"
+    ]
+   },
+   {
+    "label": "客户资料",
+    "items": [
+     "客户",
+     "联系人",
+     "地址"
+    ]
+   },
+   {
+    "label": "交付与回款",
+    "items": [
+     "交货单",
+     "销售发票",
+     "收付款"
+    ]
+   }
+  ]
+ },
+ "prod": {
+  "url": "http://localhost:8000/desk/selling/sales-order?business_type=%E7%94%9F%E4%BA%A7",
+  "rowCount": 3,
+  "hasProd": true,
+  "hasService": false,
+  "hasTypeColumn": true
+ },
+ "service": {
+  "url": "http://localhost:8000/desk/selling/sales-order?business_type=%E6%9C%8D%E5%8A%A1",
+  "rowCount": 2,
+  "hasProd": false,
+  "hasService": true,
+  "hasTypeColumn": true
+ },
+ "form": {
+  "hasLabel": true,
+  "hasValue": true
+ }
+}

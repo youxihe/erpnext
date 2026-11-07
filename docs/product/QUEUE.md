@@ -12,6 +12,10 @@
 | BUILD-50 | 企业微信 AI ERP 机器人查询 | 真实企微查同一个订单、库存和生产任务 | LOCAL_PASS / REAL_WECOM_BLOCKED | docs/product/evidence/BUILD-50.md + build50-bot.log(16/16) + build50-verify.log(8/8)（提交见 git log） |
 | BUILD-60 | 机器人安全业务写入 | 报备客户、Excel 采购入库预览+本人确认 | LOCAL_PASS / REAL_WECOM_BLOCKED | docs/product/evidence/BUILD-60.md + build60-bot-write.log(20/20) + build60-verify.log(10/10) |
 | BUILD-70 | 三入口统一验收 | 同身份/同单据/库存同值，真实客户端证据 | LOCAL_PASS / REAL_WECOM_BLOCKED | docs/product/evidence/BUILD-70.md + build70-cross.log(31/31) + build70-cross-restart.log(24/24) + build70-restart-diff.log(9/9) + docs/product/HANDOVER.md |
+| BUILD-80 | 四类订单类型化（用户追加，2026-11-07） | 订单类型字段/四类分类入口/流程约束/三入口同步 | PASS(LOCAL) | docs/product/evidence/BUILD-80.md + build80-verify.log(16/16) + 3 张截图（commit 见 git log） |
+
+> 2026-11-07 用户追加：BUILD-00~70 完成后确认 `/cn_portal` 统一导航布局可用，要求按客户原始需求配置「四种订单、BOM 拆分」。
+> BOM 拆分口径用户要求**先等确认**，登记为 BACKLOG `BOM-01` 暂不实施；本阶段先完成 BUILD-80 四类订单类型化。
 
 ## 公共执行规则
 - 只允许一个 IN_PROGRESS。每项完成后修改表格状态，添加实测证据位置、Git SHA，并自动认领下一项，不需要用户逐个提示。
