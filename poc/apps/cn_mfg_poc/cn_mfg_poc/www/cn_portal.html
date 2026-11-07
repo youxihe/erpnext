@@ -107,6 +107,7 @@
       <span class="spacer"></span>
       <button id="btn-back">← 返回首页</button>
       <button id="btn-newwin">新窗口打开</button>
+      <button id="btn-width" title="切换内页宽度：铺满 / 1200px / 原生 900px">内容宽度：铺满</button>
       <button id="btn-chrome">隐藏原生导航</button>
     </div>
     <div class="stage">
@@ -129,6 +130,18 @@
 const MENU = JSON.parse(document.getElementById('menu-data').textContent);
 const $ = (s) => document.querySelector(s);
 let current = 0, currentUrl = '', hideChrome = true;
+
+/* ===== 内页宽度设置（唯一需要改的地方）=====
+   Frappe v16 表单默认 .section-body{max-width:900px;margin:auto}，
+   在已隐藏原生侧栏的 iframe 里会留下左右大片空白。
+   DEFAULT_CONTENT_MAX：0 = 铺满内容区；900 = ERPNext 原生宽度；1200 = 折中。
+   用户可在工具条「内容宽度」按钮切换，选择记在浏览器 localStorage。 */
+const DEFAULT_CONTENT_MAX = 0;
+let contentMax = Number(localStorage.getItem('cn_portal_content_max') ?? DEFAULT_CONTENT_MAX) || 0;
+function syncWidthBtn(){
+  $('#btn-width').textContent = contentMax > 0 ? '内容宽度：' + contentMax + 'px' : '内容宽度：铺满';
+}
+syncWidthBtn();
 
 /* ---------- 顶部一级 ---------- */
 function renderPrimary(){
@@ -170,14 +183,11 @@ function openPage(url, label){
   $('#here').textContent = MENU[current].label + ' / ' + label;
   $('#nav').querySelectorAll('a').forEach(a=>a.classList.toggle('on', a.dataset.url===url));
 }
-/* 同源 iframe：尽力隐藏内层原生导航，失败也不影响使用 */
-function stripChrome(){
-  if(!hideChrome) return;
-  try{
-    const d = $('#frame').contentDocument;
-    if(!d || !d.head || d.getElementById('cn-portal-strip')) return;
-    const s = d.createElement('style'); s.id='cn-portal-strip';
-    s.textContent = `
+/* 同源 iframe：隐藏内层原生导航，并按 contentMax 放开/限制表单宽度 */
+function stripCss(){
+  const max = contentMax > 0 ? contentMax + 'px' : 'none';
+  const margin = contentMax > 0 ? '0 auto' : '0';
+  return `
       .navbar,.navbar-default,.page-head,.sidebar,#navbar-breadcrumbs,.layout-side-section,
       .desk-sidebar,.app-logo,.sidebar-header,
       .dock,.body-sidebar-container,.body-sidebar,.body-sidebar-top,
@@ -185,7 +195,18 @@ function stripChrome(){
       body{padding-top:0!important}
       .main-section,.page-container,.layout-main-section,.page-body{
         margin-left:0!important;padding-left:0!important;width:100%!important;max-width:100%!important}
-      .page-content{margin:0!important}`;
+      .page-content{margin:0!important}
+      /* 关键：解除 ERPNext 原生表单 900px 居中，让字段铺满内容区 */
+      .form-section .section-body,.section-body{max-width:${max}!important;margin:${margin}!important}
+      .form-grid,.grid-body,.grid-row{max-width:100%!important}`;
+}
+function stripChrome(){
+  if(!hideChrome) return;
+  try{
+    const d = $('#frame').contentDocument;
+    if(!d || !d.head || d.getElementById('cn-portal-strip')) return;
+    const s = d.createElement('style'); s.id='cn-portal-strip';
+    s.textContent = stripCss();
     d.head.appendChild(s);
     // Frappe SPA 会异步重排 DOM，补两轮确保样式仍在
     setTimeout(()=>{ if(d.getElementById('cn-portal-strip')) return; stripChrome(); }, 1200);
@@ -199,6 +220,17 @@ $('#btn-chrome').onclick = ()=>{
   $('#btn-chrome').textContent = hideChrome ? '隐藏原生导航' : '显示原生导航';
   if(hideChrome && currentUrl) stripChrome();
   else { const s=$('#frame').contentDocument?.getElementById('cn-portal-strip'); if(s) s.remove(); }
+};
+/* 宽度三态循环：铺满 → 1200px → 原生 900px → 铺满，即时生效无需刷新 */
+$('#btn-width').onclick = ()=>{
+  contentMax = contentMax === 0 ? 1200 : (contentMax === 1200 ? 900 : 0);
+  localStorage.setItem('cn_portal_content_max', String(contentMax));
+  syncWidthBtn();
+  if(!hideChrome) return;
+  try{
+    const s = $('#frame').contentDocument?.getElementById('cn-portal-strip');
+    if(s) s.textContent = stripCss(); else stripChrome();
+  }catch(e){}
 };
 $('#btn-full').onclick = ()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
 

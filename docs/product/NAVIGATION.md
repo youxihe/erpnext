@@ -44,6 +44,30 @@
 - 菜单按角色正确过滤，无残留模板变量
 - 点击「客户与销售 → 销售订单」iframe 加载成功，内层原生导航被隐藏，列表铺满内容区（截图见 `evidence/cn-portal-page.png`）
 
+## 内页宽度设置（2026-11-07 补）
+
+现象：表单页（如潜在客户详情）字段只占中间约 900px，左右各留约 235px 空白。
+根因不是 iframe 或门户布局窄——实测 1600×950 视口下 iframe 宽 1380px、`.page-container` 1370px；
+是 Frappe v16 表单自身的 `.section-body { max-width: 900px; margin: auto }`，
+且列用 `col-sm-4 / max-width: 33.33%`，在 900px 容器里每列只剩 300px。
+
+**两个设置位置，任选其一**：
+1. 页面工具条「**内容宽度**」按钮：`铺满 → 1200px → 原生 900px` 三态循环，点击即时生效，选择记在浏览器 `localStorage`，无需刷新。
+2. 源码 `www/cn_portal.html` 顶部的 `DEFAULT_CONTENT_MAX`：`0` = 铺满（当前默认）、`1200` = 折中、`900` = ERPNext 原生。注入样式集中在 `stripCss()`，只覆盖 `.section-body` 的 `max-width/margin`，不动字段和列结构。
+
+实测（Administrator，Lead 表单）：
+
+| 模式 | `.section-body` 宽 | 首列宽 | 左侧空白 |
+|---|---|---|---|
+| 原生 900px | 900 | 300 | 235 |
+| 1200px | 1200 | 400 | 85 |
+| 铺满（默认） | 1340 | 447 | 0 |
+
+列表页同样铺满（首行 1340px）。证据：`evidence/cn-portal-width-before.png`、`cn-portal-width-after.png`、`cn-portal-width-list.png`。
+
+**部署注意**：`D:\ERP\erpnext\poc\apps\...` 是 Git 工作副本，容器内 `/workspace/development/frappe-bench/apps/cn_mfg_poc/...`
+来自独立 Docker volume，改完必须 `docker cp` 同步，否则页面仍渲染旧模板；浏览器侧需 Ctrl+F5 清缓存。
+
 ## 后续三条路线（待定优先级）
 
 | 路线 | 工作量 | 效果 | 风险 |
