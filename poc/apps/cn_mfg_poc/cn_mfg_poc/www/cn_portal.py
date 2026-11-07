@@ -148,6 +148,12 @@ def get_context(context):
     context.user = frappe.session.user
     context.user_fullname = frappe.utils.get_fullname(frappe.session.user)
     context.csrf_token = frappe.sessions.get_csrf_token()
-    context.roles_text = " / ".join(sorted(roles - {"All", "Guest"}))
+    # Administrator 会带上几十个角色，全部平铺会把左侧栏底部撑成一长串小字；
+    # 这里只显示摘要，完整名单放在 title 里供鼠标悬停查看。
+    visible_roles = sorted(roles - {"All", "Guest"})
+    context.roles_title = " / ".join(visible_roles)
+    context.roles_text = " / ".join(visible_roles[:2]) + (
+        " 等 %d 项" % len(visible_roles) if len(visible_roles) > 2 else ""
+    )
     context.menu_json = json.dumps(_inject_order_types(_build_menu(roles)), ensure_ascii=False)
     context.page_title = "统一导航"

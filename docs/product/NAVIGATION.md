@@ -44,26 +44,58 @@
 - 菜单按角色正确过滤，无残留模板变量
 - 点击「客户与销售 → 销售订单」iframe 加载成功，内层原生导航被隐藏，列表铺满内容区（截图见 `evidence/cn-portal-page.png`）
 
-## 内页宽度设置（2026-11-07 补）
+## 内页宽度设置（2026-11-07，一次修复 + 一次补全）
 
-现象：表单页（如潜在客户详情）字段只占中间约 900px，左右各留约 235px 空白。
-根因不是 iframe 或门户布局窄——实测 1600×950 视口下 iframe 宽 1380px、`.page-container` 1370px；
-是 Frappe v16 表单自身的 `.section-body { max-width: 900px; margin: auto }`，
-且列用 `col-sm-4 / max-width: 33.33%`，在 900px 容器里每列只剩 300px。
+### 第一版（`b3807b6b`）：只修了字段区
+
+现象：表单页字段只占中间约 900px，左右各留约 235px 空白。根因不是 iframe 窄——
+1600×950 视口下 iframe 宽 1380px、`.page-container` 1370px；是 Frappe v16 的
+`.section-body { max-width: 900px; margin: auto }`，加上列 `max-width: 33.33%`，每列只剩 300px。
+第一版只覆盖了 `.section-body`，因此用户反馈「没改全、看着别扭」。
+
+### 第二版：按 DOM 实测把整张表单统一到一个宽度
+
+在 BOM 表单 `BOM-ASSY-X1-001` 上逐层量过，Frappe v16 把**同一张表单的不同区块分别限宽并居中**，漏一处就错位：
+
+| 区块 | 原生规则 | 第一版之后 |
+|---|---|---|
+| 折叠标题 `.section-head` | `max-width: var(--page-max-width)` = 900px + `margin:auto!important` | 仍 900px 居中，比铺满的表格左边缘缩进 235px |
+| 字段区 `.section-body` | 同上（`body:not(.full-width)`） | 已铺满 1340px |
+| 页脚评论/活动 `.form-footer` | `max-width: var(--page-max-width)` = 900px | 仍 900px 居中 |
+| 活动条目 `.timeline-content` | `max-width: var(--timeline-content-max-width)` = 700px | 仍 700px |
+| 子表格 `.form-grid` | `max-width: 100%` | 已铺满 1310px（与上面几块不齐） |
+
+也就是「表格铺满、标题和评论区缩在中间」。另外左侧栏底部把 Administrator 的 46 个角色全平铺出来，
+糊成一长串小字，也是观感问题。
+
+**修法**：`stripCss()` 不再逐块打补丁，而是把 `--page-max-width` / `--timeline-content-max-width`
+两个 CSS 变量与下列容器统一到同一个 `contentMax`：
+`:root`、`.section-head`、`.form-section-description`、`.section-body`（含 `.std-form-layout` / `.form-dashboard-section`）、
+`.form-footer`、`.after-save`、`.comment-box`、`.comment-input-wrapper`、`.new-timeline`、`.timeline-item`、
+`.timeline-content`、`.form-grid`。
+铺满时变量取 `100%` 而不是 `none`（`timeline.scss` 里还有一处 `width: var(--timeline-content-max-width)`，设 `none` 会让宽度失效）。
+左侧栏角色改成「前 2 个 + 等 N 项」摘要，完整名单保留在 `title` 悬停中。
 
 **两个设置位置，任选其一**：
-1. 页面工具条「**内容宽度**」按钮：`铺满 → 1200px → 原生 900px` 三态循环，点击即时生效，选择记在浏览器 `localStorage`，无需刷新。
-2. 源码 `www/cn_portal.html` 顶部的 `DEFAULT_CONTENT_MAX`：`0` = 铺满（当前默认）、`1200` = 折中、`900` = ERPNext 原生。注入样式集中在 `stripCss()`，只覆盖 `.section-body` 的 `max-width/margin`，不动字段和列结构。
+1. 工具条「**内容宽度**」按钮：`铺满 → 1200px → 原生 900px` 三态循环，即时生效，选择存在浏览器 `localStorage`。
+2. 源码 `www/cn_portal.html` 的 `DEFAULT_CONTENT_MAX`：`0` = 铺满（当前默认）、`1200` = 折中、`900` = ERPNext 原生。
 
-实测（Administrator，Lead 表单）：
+实测（Administrator，1600×950，iframe 1380px）：
 
-| 模式 | `.section-body` 宽 | 首列宽 | 左侧空白 |
-|---|---|---|---|
-| 原生 900px | 900 | 300 | 235 |
-| 1200px | 1200 | 400 | 85 |
-| 铺满（默认） | 1340 | 447 | 0 |
+| 容器 | 修复前 | 修复后 |
+|---|---|---|
+| `.section-head` | x=235 w=900 | x=15 w=1340 |
+| `.form-footer` | x=235 w=900 | x=0 w=1370 |
+| `.comment-box` | x=250 w=870 | x=15 w=1340 |
+| `.timeline-content` | max-width 700px | x=50 w=1305，max-width none |
+| `.form-grid` | 1310 | 1310（不变，现已与标题对齐） |
 
-列表页同样铺满（首行 1340px）。证据：`evidence/cn-portal-width-before.png`、`cn-portal-width-after.png`、`cn-portal-width-list.png`。
+回归 `18/18` 通过：BOM 标题/正文/页脚/评论框/时间线全铺满、全页无 900/700px 限宽残留、
+三态（1200 / 900 / 铺满）一致生效且居中、列表页与 Lead 表单不受影响、1100px 窄视口无横向溢出。
+日志 `evidence/cn-portal-width-full-verify.log`，脚本 `product/scripts/portal_width_full_verify.js`。
+截图：`evidence/cn-portal-bom-before.png`（修复前）、`cn-portal-bom-top-fixed.png`、
+`cn-portal-bom-bottom-fixed.png`（评论区/活动区）、`cn-portal-bom-900-fixed.png`、
+`cn-portal-list-fixed.png`、`cn-portal-lead-fixed.png`、`cn-portal-narrow-fixed.png`。
 
 **部署注意**：`D:\ERP\erpnext\poc\apps\...` 是 Git 工作副本，容器内 `/workspace/development/frappe-bench/apps/cn_mfg_poc/...`
 来自独立 Docker volume，改完必须 `docker cp` 同步，否则页面仍渲染旧模板；浏览器侧需 Ctrl+F5 清缓存。

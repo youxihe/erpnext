@@ -1,0 +1,167 @@
+{
+ "pass": 18,
+ "total": 18,
+ "checks": [
+  {
+   "name": "BOM 标题铺满",
+   "ok": true,
+   "detail": {
+    "x": 15,
+    "w": 1340,
+    "maxW": "none"
+   }
+  },
+  {
+   "name": "BOM 正文铺满",
+   "ok": true,
+   "detail": {
+    "x": 15,
+    "w": 1340,
+    "maxW": "none"
+   }
+  },
+  {
+   "name": "BOM 页脚(评论/活动)铺满",
+   "ok": true,
+   "detail": {
+    "x": 0,
+    "w": 1370,
+    "maxW": "none"
+   }
+  },
+  {
+   "name": "BOM 评论框铺满",
+   "ok": true,
+   "detail": {
+    "x": 15,
+    "w": 1340,
+    "maxW": "none"
+   }
+  },
+  {
+   "name": "BOM 时间线解除 700px",
+   "ok": true,
+   "detail": {
+    "x": 50,
+    "w": 1305,
+    "maxW": "none"
+   }
+  },
+  {
+   "name": "BOM 无 900/700 限宽残留",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "标题与表格左边缘对齐(±20px)",
+   "ok": true,
+   "detail": {
+    "head": {
+     "x": 15,
+     "w": 1340,
+     "maxW": "none"
+    },
+    "grid": {
+     "x": 30,
+     "w": 1310,
+     "maxW": "100%"
+    }
+   }
+  },
+  {
+   "name": "评论区可滚动到达",
+   "ok": true,
+   "detail": "ok"
+  },
+  {
+   "name": "1200px 模式：标题限宽",
+   "ok": true,
+   "detail": {
+    "x": 85,
+    "w": 1200,
+    "maxW": "1200px"
+   }
+  },
+  {
+   "name": "900px 模式：标题/页脚统一限宽居中",
+   "ok": true,
+   "detail": {
+    "head": {
+     "x": 235,
+     "w": 900,
+     "maxW": "900px"
+    },
+    "footer": {
+     "x": 235,
+     "w": 900,
+     "maxW": "900px"
+    }
+   }
+  },
+  {
+   "name": "切回铺满：页脚恢复",
+   "ok": true,
+   "detail": {
+    "x": 0,
+    "w": 1370,
+    "maxW": "none"
+   }
+  },
+  {
+   "name": "列表页容器铺满",
+   "ok": true,
+   "detail": {
+    "x": 0,
+    "w": 1370,
+    "maxW": "100%"
+   }
+  },
+  {
+   "name": "列表页无限宽残留",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "Lead 表单正文铺满",
+   "ok": true,
+   "detail": {
+    "x": 15,
+    "w": 1340,
+    "maxW": "none"
+   }
+  },
+  {
+   "name": "Lead 表单标题铺满",
+   "ok": true,
+   "detail": {
+    "x": 15,
+    "w": 1340,
+    "maxW": "none"
+   }
+  },
+  {
+   "name": "Lead 表单无限宽残留",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "1100px 视口无横向溢出",
+   "ok": true,
+   "detail": {
+    "docW": 880,
+    "winW": 880,
+    "W": 880
+   }
+  },
+  {
+   "name": "1100px 视口标题仍铺满",
+   "ok": true,
+   "detail": {
+    "x": 15,
+    "w": 840,
+    "maxW": "none"
+   }
+  }
+ ]
+}
+RESULT 18/18

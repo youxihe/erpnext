@@ -44,7 +44,7 @@
   .grp-items a.on{background:#eef4ff;color:var(--accent);border-left-color:var(--accent);font-weight:600}
   .grp-items a .dot{width:4px;height:4px;border-radius:50%;background:#c6cedb;flex:none}
   .grp-items a.on .dot{background:var(--accent)}
-  .side-foot{padding:12px 18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7}
+  .side-foot{padding:12px 18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7;flex:none;max-height:80px;overflow:hidden;word-break:break-word}
   /* ---------- 内容 ---------- */
   .main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg)}
   .bar{height:42px;flex:none;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;gap:10px;font-size:12.5px}
@@ -95,7 +95,7 @@
     <div class="side-title"><span id="side-title">工作台</span><span class="badge" id="side-badge">0 项</span></div>
     <div class="crumb">首页 / <span id="crumb-mod">工作台</span></div>
     <div class="nav" id="nav"></div>
-    <div class="side-foot">
+    <div class="side-foot" title="{{ roles_title }}">
       当前身份：{{ user_fullname }}<br>
       角色：{{ roles_text }}
     </div>
@@ -132,8 +132,9 @@ const $ = (s) => document.querySelector(s);
 let current = 0, currentUrl = '', hideChrome = true;
 
 /* ===== 内页宽度设置（唯一需要改的地方）=====
-   Frappe v16 表单默认 .section-body{max-width:900px;margin:auto}，
-   在已隐藏原生侧栏的 iframe 里会留下左右大片空白。
+   Frappe v16 表单把 section 标题、正文、页脚(评论/活动)、时间线分别限制在
+   --page-max-width:900px / --timeline-content-max-width:700px 并居中，
+   只改 .section-body 会出现「表格铺满、标题和评论区仍偏窄」的错位。
    DEFAULT_CONTENT_MAX：0 = 铺满内容区；900 = ERPNext 原生宽度；1200 = 折中。
    用户可在工具条「内容宽度」按钮切换，选择记在浏览器 localStorage。 */
 const DEFAULT_CONTENT_MAX = 0;
@@ -185,9 +186,13 @@ function openPage(url, label){
 }
 /* 同源 iframe：隐藏内层原生导航，并按 contentMax 放开/限制表单宽度 */
 function stripCss(){
-  const max = contentMax > 0 ? contentMax + 'px' : 'none';
-  const margin = contentMax > 0 ? '0 auto' : '0';
+  const limited = contentMax > 0;
+  const max = limited ? contentMax + 'px' : 'none';
+  // 变量同时被 max-width 与 width 使用，铺满时用 100%（不能设 none，否则 width 失效）
+  const varMax = limited ? contentMax + 'px' : '100%';
+  const side = limited ? 'auto' : '0';
   return `
+      /* 隐藏内层原生导航，避免与门户双层导航重复 */
       .navbar,.navbar-default,.page-head,.sidebar,#navbar-breadcrumbs,.layout-side-section,
       .desk-sidebar,.app-logo,.sidebar-header,
       .dock,.body-sidebar-container,.body-sidebar,.body-sidebar-top,
@@ -196,8 +201,17 @@ function stripCss(){
       .main-section,.page-container,.layout-main-section,.page-body{
         margin-left:0!important;padding-left:0!important;width:100%!important;max-width:100%!important}
       .page-content{margin:0!important}
-      /* 关键：解除 ERPNext 原生表单 900px 居中，让字段铺满内容区 */
-      .form-section .section-body,.section-body{max-width:${max}!important;margin:${margin}!important}
+      /* Frappe v16 的整页宽度变量：标题/正文/页脚/时间线都要一致，缺一个就错位 */
+      :root{--page-max-width:${varMax};--timeline-content-max-width:${varMax}}
+      .section-head,.form-section-description,
+      .std-form-layout .section-body,.section-body,
+      .form-dashboard-section .section-head,.form-dashboard-section .section-body,
+      .form-footer,.form-tabs,.form-dashboard{
+        max-width:${max}!important;width:auto!important;
+        margin-left:${side}!important;margin-right:${side}!important}
+      .form-footer .after-save,.comment-box,.comment-input-wrapper,.new-timeline,
+      .timeline-item,.timeline-content{
+        max-width:${max}!important;width:auto!important}
       .form-grid,.grid-body,.grid-row{max-width:100%!important}`;
 }
 function stripChrome(){
