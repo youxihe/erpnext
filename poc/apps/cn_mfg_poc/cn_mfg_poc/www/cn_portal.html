@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }} · 昆山启程智能设备有限公司</title>
+<style>
+  :root{
+    --top:#1f2937; --top-hi:#111827; --accent:#2b7cff; --side:#ffffff;
+    --bg:#f4f6f9; --line:#e8ecf2; --text:#1f2937; --muted:#8a94a6;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg);overflow:hidden}
+  button{font-family:inherit;cursor:pointer}
+  /* ---------- 顶部一级 ---------- */
+  .top{height:52px;background:var(--top);display:flex;align-items:stretch;color:#dfe6f0;position:relative;z-index:20}
+  .brand{width:220px;flex:none;display:flex;align-items:center;gap:10px;padding:0 18px;background:var(--top-hi);font-weight:700;font-size:15px;color:#fff;letter-spacing:.5px}
+  .brand .mark{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,#2b7cff,#41d1c7);display:flex;align-items:center;justify-content:center;font-size:14px}
+  .primary{display:flex;align-items:stretch;flex:1;overflow-x:auto;scrollbar-width:none;min-width:0}
+  .primary::-webkit-scrollbar{display:none}
+  .primary button{background:none;border:0;color:#c8d2e0;padding:0 15px;font-size:13.5px;white-space:nowrap;display:flex;align-items:center;gap:7px;position:relative;transition:.15s}
+  .primary button:hover{color:#fff;background:rgba(255,255,255,.06)}
+  .primary button.on{color:#fff;background:rgba(43,124,255,.18)}
+  .primary button.on:after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;background:var(--accent);border-radius:3px 3px 0 0}
+  .primary button .ico{opacity:.75;font-size:14px}
+  .tools{display:flex;align-items:center;gap:6px;padding:0 14px;flex:none}
+  .tools a,.tools button{color:#c8d2e0;background:none;border:0;font-size:12.5px;text-decoration:none;padding:6px 9px;border-radius:5px;white-space:nowrap}
+  .tools a:hover,.tools button:hover{background:rgba(255,255,255,.1);color:#fff}
+  .avatar{width:26px;height:26px;border-radius:50%;background:#2b7cff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+  /* ---------- 主体 ---------- */
+  .body{display:flex;height:calc(100% - 52px)}
+  .side{width:220px;flex:none;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow-y:auto}
+  .side-title{padding:18px 18px 10px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .side-title .badge{margin-left:auto;font-size:11px;font-weight:500;color:var(--muted);background:#f2f5f9;padding:2px 7px;border-radius:10px}
+  .crumb{font-size:11.5px;color:var(--muted);padding:0 18px 12px;border-bottom:1px solid var(--line)}
+  .nav{padding:8px 0 20px;flex:1}
+  .grp{margin-top:6px}
+  .grp-h{font-size:11.5px;color:var(--muted);padding:9px 18px 5px;display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+  .grp-h .arw{font-size:9px;transition:.15s}
+  .grp.closed .arw{transform:rotate(-90deg)}
+  .grp.closed .grp-items{display:none}
+  .grp-items a{display:flex;align-items:center;gap:8px;padding:8px 18px 8px 24px;font-size:13px;color:#45505f;text-decoration:none;border-left:3px solid transparent}
+  .grp-items a:hover{background:#f6f9ff;color:var(--accent)}
+  .grp-items a.on{background:#eef4ff;color:var(--accent);border-left-color:var(--accent);font-weight:600}
+  .grp-items a .dot{width:4px;height:4px;border-radius:50%;background:#c6cedb;flex:none}
+  .grp-items a.on .dot{background:var(--accent)}
+  .side-foot{padding:12px 18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7}
+  /* ---------- 内容 ---------- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg)}
+  .bar{height:42px;flex:none;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;gap:10px;font-size:12.5px}
+  .bar .here{color:var(--muted)}
+  .bar .here b{color:var(--text);font-weight:600}
+  .bar .spacer{flex:1}
+  .bar button{border:1px solid var(--line);background:#fff;color:#556;border-radius:5px;padding:5px 10px;font-size:12px}
+  .bar button:hover{border-color:var(--accent);color:var(--accent)}
+  .stage{flex:1;min-height:0;position:relative}
+  iframe{width:100%;height:100%;border:0;background:#fff}
+  /* ---------- 首页 ---------- */
+  .home{height:100%;overflow:auto;padding:20px 22px 40px}
+  .hello{font-size:19px;font-weight:700;margin:0 0 4px}
+  .sub{font-size:12.5px;color:var(--muted);margin-bottom:18px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:20px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:8px;padding:15px 16px}
+  .kpi .k-label{font-size:12px;color:var(--muted)}
+  .kpi .k-val{font-size:25px;font-weight:700;margin-top:8px;letter-spacing:.5px}
+  .kpi .k-val.blue{color:var(--accent)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:12px}
+  .mod{background:#fff;border:1px solid var(--line);border-radius:8px;padding:15px 16px;cursor:pointer;transition:.15s}
+  .mod:hover{border-color:var(--accent);box-shadow:0 4px 14px rgba(31,41,55,.06);transform:translateY(-1px)}
+  .mod .m-top{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;margin-bottom:9px}
+  .mod .m-ico{width:28px;height:28px;border-radius:7px;background:#eef4ff;color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px}
+  .mod .m-desc{font-size:12px;color:var(--muted);line-height:1.7}
+  .mod .m-links{margin-top:10px;font-size:11.5px;color:#6b7688;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .note{margin-top:22px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:12px 15px;font-size:12px;color:#5b6675;line-height:1.9}
+  .hide{display:none!important}
+  @media(max-width:900px){.brand{width:150px}.side{width:170px}.tools a.lbl{display:none}}
+</style>
+</head>
+<body>
+<script id="menu-data" type="application/json">{{ menu_json | safe }}</script>
+
+<div class="top">
+  <div class="brand"><span class="mark">启</span><span>启程智造 ERP</span></div>
+  <div class="primary" id="primary"></div>
+  <div class="tools">
+    <a class="lbl" href="/desk/home" target="_blank">原生 Desk</a>
+    <a class="lbl" href="/wecom_h5" target="_blank">企微 H5</a>
+    <button id="btn-full" title="全屏">⛶</button>
+    <div class="avatar" title="{{ user }}">{{ user_fullname[:1] }}</div>
+  </div>
+</div>
+
+<div class="body">
+  <aside class="side">
+    <div class="side-title"><span id="side-title">工作台</span><span class="badge" id="side-badge">0 项</span></div>
+    <div class="crumb">首页 / <span id="crumb-mod">工作台</span></div>
+    <div class="nav" id="nav"></div>
+    <div class="side-foot">
+      当前身份：{{ user_fullname }}<br>
+      角色：{{ roles_text }}
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="bar">
+      <span class="here">当前位置：<b id="here">工作台首页</b></span>
+      <span class="spacer"></span>
+      <button id="btn-back">← 返回首页</button>
+      <button id="btn-newwin">新窗口打开</button>
+      <button id="btn-chrome">隐藏原生导航</button>
+    </div>
+    <div class="stage">
+      <div class="home" id="home">
+        <h1 class="hello">你好，{{ user_fullname }}</h1>
+        <div class="sub">所有业务场景集中在这里，顶部切换模块、左侧选择功能，数据与 PC / 企微 H5 / AI 机器人完全一致。</div>
+        <div class="kpis" id="kpis"></div>
+        <div class="cards" id="cards"></div>
+        <div class="note">
+          这是<b>零侵入的统一导航原型</b>：菜单直接读取现有 Workspace / Workspace Link 并按角色过滤，没有新增 DocType、不改框架、不动业务数据。<br>
+          内容区用同源 iframe 打开 ERPNext 原生页面；如果某个页面在框内显示不佳，点右上「新窗口打开」即可。
+        </div>
+      </div>
+      <iframe id="frame" class="hide" title="业务页面"></iframe>
+    </div>
+  </main>
+</div>
+
+<script>
+const MENU = JSON.parse(document.getElementById('menu-data').textContent);
+const $ = (s) => document.querySelector(s);
+let current = 0, currentUrl = '', hideChrome = true;
+
+/* ---------- 顶部一级 ---------- */
+function renderPrimary(){
+  $('#primary').innerHTML = MENU.map((m,i)=>
+    `<button data-i="${i}" class="${i===current?'on':''}"><span class="ico">${m.icon}</span>${m.label}</button>`).join('');
+  $('#primary').querySelectorAll('button').forEach(b=>b.onclick=()=>selectModule(+b.dataset.i, true));
+}
+/* ---------- 左侧二级 ---------- */
+function renderSide(){
+  const m = MENU[current];
+  $('#side-title').textContent = m.label;
+  $('#crumb-mod').textContent = m.label;
+  $('#side-badge').textContent = m.count + ' 项';
+  $('#nav').innerHTML = m.groups.map((g,gi)=>`
+    <div class="grp" data-g="${gi}">
+      <div class="grp-h"><span class="arw">▼</span>${g.label}</div>
+      <div class="grp-items">${g.items.map(it=>
+        `<a href="javascript:;" data-url="${it.url}"><span class="dot"></span>${it.label}</a>`).join('')}</div>
+    </div>`).join('') || '<div style="padding:18px;font-size:12px;color:#8a94a6">该模块暂无快捷菜单，可点顶部「原生 Desk」查看。</div>';
+  $('#nav').querySelectorAll('.grp-h').forEach(h=>h.onclick=()=>h.parentElement.classList.toggle('closed'));
+  $('#nav').querySelectorAll('a[data-url]').forEach(a=>a.onclick=()=>openPage(a.dataset.url, a.textContent.trim()));
+}
+function selectModule(i, showHome){
+  current = i; renderPrimary(); renderSide();
+  if(showHome) showHome_();
+}
+/* ---------- 内容 ---------- */
+function showHome_(){
+  currentUrl = '';
+  $('#frame').classList.add('hide'); $('#frame').src='about:blank';
+  $('#home').classList.remove('hide');
+  $('#here').textContent = MENU[current].label + ' / 首页';
+  $('#nav').querySelectorAll('a').forEach(a=>a.classList.remove('on'));
+}
+function openPage(url, label){
+  currentUrl = url;
+  $('#home').classList.add('hide');
+  const f = $('#frame'); f.classList.remove('hide'); f.src = url;
+  $('#here').textContent = MENU[current].label + ' / ' + label;
+  $('#nav').querySelectorAll('a').forEach(a=>a.classList.toggle('on', a.dataset.url===url));
+}
+/* 同源 iframe：尽力隐藏内层原生导航，失败也不影响使用 */
+function stripChrome(){
+  if(!hideChrome) return;
+  try{
+    const d = $('#frame').contentDocument;
+    if(!d || !d.head || d.getElementById('cn-portal-strip')) return;
+    const s = d.createElement('style'); s.id='cn-portal-strip';
+    s.textContent = `
+      .navbar,.navbar-default,.page-head,.sidebar,#navbar-breadcrumbs,.layout-side-section,
+      .desk-sidebar,.app-logo,.sidebar-header,
+      .dock,.body-sidebar-container,.body-sidebar,.body-sidebar-top,
+      .module-sidebar,.workspace-sidebar,.list-sidebar{display:none!important}
+      body{padding-top:0!important}
+      .main-section,.page-container,.layout-main-section,.page-body{
+        margin-left:0!important;padding-left:0!important;width:100%!important;max-width:100%!important}
+      .page-content{margin:0!important}`;
+    d.head.appendChild(s);
+    // Frappe SPA 会异步重排 DOM，补两轮确保样式仍在
+    setTimeout(()=>{ if(d.getElementById('cn-portal-strip')) return; stripChrome(); }, 1200);
+  }catch(e){}
+}
+$('#frame').addEventListener('load', ()=>{ stripChrome(); setTimeout(stripChrome, 400); setTimeout(stripChrome, 1600); });
+$('#btn-back').onclick = showHome_;
+$('#btn-newwin').onclick = ()=>{ if(currentUrl) window.open(currentUrl,'_blank'); else window.open('/desk/home','_blank'); };
+$('#btn-chrome').onclick = ()=>{
+  hideChrome = !hideChrome;
+  $('#btn-chrome').textContent = hideChrome ? '隐藏原生导航' : '显示原生导航';
+  if(hideChrome && currentUrl) stripChrome();
+  else { const s=$('#frame').contentDocument?.getElementById('cn-portal-strip'); if(s) s.remove(); }
+};
+$('#btn-full').onclick = ()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
+
+/* ---------- 首页看板 ---------- */
+function renderCards(){
+  $('#cards').innerHTML = MENU.map((m,i)=>`
+    <div class="mod" data-i="${i}">
+      <div class="m-top"><span class="m-ico">${m.icon}</span>${m.label}</div>
+      <div class="m-desc">${m.groups.map(g=>g.label).slice(0,3).join(' · ') || '常用入口'}</div>
+      <div class="m-links">${m.groups.flatMap(g=>g.items.map(x=>x.label)).slice(0,5).join(' / ')}</div>
+    </div>`).join('');
+  $('#cards').querySelectorAll('.mod').forEach(c=>c.onclick=()=>selectModule(+c.dataset.i,true));
+}
+async function renderKpis(){
+  const defs = [
+    ['销售订单','Sales Order'], ['客户报备','Lead'], ['车间任务','Job Card'], ['采购入库','Purchase Receipt']
+  ];
+  const box = $('#kpis');
+  box.innerHTML = defs.map(([l])=>`<div class="kpi"><div class="k-label">${l}</div><div class="k-val blue">—</div></div>`).join('');
+  for(let i=0;i<defs.length;i++){
+    try{
+      const r = await fetch('/api/method/frappe.client.get_count?doctype='+encodeURIComponent(defs[i][1]),
+                            {headers:{'Accept':'application/json'}});
+      const j = await r.json();
+      const v = j.message ?? j.data;
+      box.children[i].querySelector('.k-val').textContent = (typeof v==='number') ? v : '—';
+    }catch(e){}
+  }
+}
+renderPrimary(); renderSide(); renderCards(); renderKpis();
+</script>
+</body>
+</html>
