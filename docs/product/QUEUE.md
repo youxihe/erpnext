@@ -22,6 +22,7 @@
 | RELEASE-95 | 轻制造代码 Review Fix + 线上测试发布 | 缺料公式、真人角色权限、迁移兼容与安全门禁后，将 BUILD-90~94 发布至 d.urlxl.cn | ONLINE_PASS(BUILD-90~94 已上线；真实企微仍 REAL_WECOM_BLOCKED) | docs/product/evidence/RELEASE-95.md + build 证据；线上样本 SAL-ORD-2026-00006 / PROJ-0001 / MFG-WO-2026-00003 / MAT-DN-2026-00005；本地 23/23 + 44/44 + 8/8，线上验收 32/32 |
 | UX-96A | 补齐生产进度创建/模板维护/负责人分派入口 | 管理员可从中文门户配置模板、从订单生成项目并分派任务 | ONLINE_PASS | docs/product/evidence/UX-96A.md；线上 38/38 + 浏览器 29/29 + 本地 42/42；样本 SAL-ORD-2026-00005 / PROJ-0002 / TASK-2026-00019~00027，SLE 52→52 |
 | UX-96B | BOM 与销售订单显式确认及双向引用 | 销售订单行选用 BOM、BOM 页查询实际引用订单、区分默认建议 | ONLINE_PASS | docs/product/evidence/UX-96B.md；线上 38/38 + 浏览器 29/29 + 本地 42/42；样本 BOM-ASSY-X1-001/002、SAL-ORD-2026-00006（已确认）/00001（仅建议）/00008（选 002）；新增 custom_bom_confirmed 防默认 BOM 冒充确认 |
+| FLOW-97 | 多订单需求→合并采购→入库→按工单领料的来源追溯 | 先核实 00001/00006 线上真实单据，再补链式双向追溯和共享库存口径 | TODO | docs/product/tasks/FLOW-97.md |
 
 > 2026-11-07 用户追加：BUILD-00~70 完成后确认 `/cn_portal` 统一导航布局可用，要求按客户原始需求配置「四种订单、BOM 拆分」。
 > BOM 拆分口径用户要求**先等确认**，登记为 BACKLOG `BOM-01` 暂不实施；本阶段先完成 BUILD-80 四类订单类型化。
@@ -162,3 +163,8 @@
 - BOM 选用字段为 `Sales Order Item.bom_no`（子表、行级）；当前 order_execution 在该字段为空时回退产品默认 BOM 进行物料展示，必须明确标注**默认建议不是本单已确认 BOM**。BOM 页面需要反向查询显式引用的 Sales Order Item、Work Order。
 - 主要做业务入口、配置和关联导航，不建全新 MES/BOM 库存业务模型，不让 Project Task 操作触发库存事务。
 - 标配权限服务端校验、实际 Administrator/生产经理/销售角色、测试数据、线上 URL/截图。避免退化到只通过脚本操作。
+
+
+## 2026-11-08 新增 FLOW-97：多销售订单共享物料、采购合并追溯
+用户线上反馈 SO 00001/00006 销售相同设备，BOM 共用，但订单执行概览无法理解各自采购需求、采购单、入库单和实际领料关联，尤其是合并采购。属于销售/采购/仓储主流程问题，优先于非关键叶子功能。
+执行前读 docs/product/tasks/FLOW-97.md。先做线上只读事实审计；不要根据同一 BOM、SKU 或时间接近捏造单据关系；审计确认后最小补关联导航和共享库存说明，不新开发 MRP/库存预留引擎。
