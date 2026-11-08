@@ -1,2 +1,8 @@
+[pre_model_sync]
 cn_mfg_poc.patches.v0_0_1.zh_translation_overrides
 cn_mfg_poc.patches.v0_0_2.setup_navigation
+
+[post_model_sync]
+# RELEASE-95：九阶段模板初始化会创建 Task 自定义字段，必须在 DocType schema
+# 同步之后执行；pre_model_sync 阶段 tabDocField 还没有 is_generated 列，会失败。
+cn_mfg_poc.patches.v0_0_3.setup_production_template

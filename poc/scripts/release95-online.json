@@ -1,0 +1,190 @@
+{
+  "steps": [
+    {
+      "name": "销售 角色线上页面全部 200",
+      "ok": true,
+      "detail": "pages=6 bad=[]"
+    },
+    {
+      "name": "仓库 角色线上页面全部 200",
+      "ok": true,
+      "detail": "pages=6 bad=[]"
+    },
+    {
+      "name": "生产 角色线上页面全部 200",
+      "ok": true,
+      "detail": "pages=6 bad=[]"
+    },
+    {
+      "name": "财务 角色线上页面全部 200",
+      "ok": true,
+      "detail": "pages=6 bad=[]"
+    },
+    {
+      "name": "未登录访客不能读销售订单",
+      "ok": true,
+      "detail": "HTTP 403"
+    },
+    {
+      "name": "车间李工不能读收付款凭证",
+      "ok": true,
+      "detail": "HTTP 403 frappe.exceptions.PermissionError: <strong>Payment Entry</strong> 权限不足"
+    },
+    {
+      "name": "销售不能创建采购订单",
+      "ok": true,
+      "detail": "HTTP 403 PermissionError"
+    },
+    {
+      "name": "公网 Mock 选身份免登被拒绝",
+      "ok": true,
+      "detail": "HTTP 403 {\"exc_type\":\"PermissionError\",\"_server_messages\":\"[\\\"{\\\\\\\"message\\\\\\\":\\\\\\\"Mock 免登在本站点已禁用（需 mock_mode=1 且 site_config 显式允"
+    },
+    {
+      "name": "销售生产订单（续跑复用已有样本）",
+      "ok": true,
+      "detail": "SO=SAL-ORD-2026-00006"
+    },
+    {
+      "name": "缺料口径：采购已入库后缺料归零（续跑）",
+      "ok": true,
+      "detail": "{'required_qty': 2.0, 'available_now': 0.0, 'received_qty': 2.0, 'shortage': 0.0}"
+    },
+    {
+      "name": "生产创建固定生产进度项目（幂等）",
+      "ok": true,
+      "detail": "project=PROJ-0001"
+    },
+    {
+      "name": "重复点击创建项目不重复建单",
+      "ok": true,
+      "detail": "project=PROJ-0001"
+    },
+    {
+      "name": "九阶段任务齐全",
+      "ok": true,
+      "detail": "total=9 completed=9"
+    },
+    {
+      "name": "采购创建并提交采购申请(Material Request)",
+      "ok": true,
+      "detail": "MR=MAT-MR-2026-00003"
+    },
+    {
+      "name": "采购创建并提交采购订单",
+      "ok": true,
+      "detail": "PO=PUR-ORD-2026-00003"
+    },
+    {
+      "name": "采购创建并提交采购入库",
+      "ok": true,
+      "detail": "PR=MAT-PRE-2026-00017"
+    },
+    {
+      "name": "仓库角色不能创建生产工单（标准 DocPerm，工单归生产）",
+      "ok": true,
+      "detail": "HTTP 403 PermissionError"
+    },
+    {
+      "name": "采购入库后原材料仓 RACK 备齐，缺料归零（不重复扣已收）",
+      "ok": true,
+      "detail": "RACK@RAW=2.0 shortage=0.0 received=4.0"
+    },
+    {
+      "name": "生产工单（续跑复用已有工单）",
+      "ok": true,
+      "detail": "WO=MFG-WO-2026-00003"
+    },
+    {
+      "name": "仓库领料（续跑复用已有领料单）",
+      "ok": true,
+      "detail": "MAT-STE-2026-00008"
+    },
+    {
+      "name": "九任务全部标记完成",
+      "ok": true,
+      "detail": "completed=9/9"
+    },
+    {
+      "name": "任务全部完成不改变成品库存（生产任务与库存解耦）",
+      "ok": true,
+      "detail": "fg 0.0 -> 0.0"
+    },
+    {
+      "name": "仓库正式完工入库（续跑复用已有 Manufacture）",
+      "ok": true,
+      "detail": "MAT-STE-2026-00009"
+    },
+    {
+      "name": "重复提交已提交单据不重复过账（成品库存与 SLE 均不变）",
+      "ok": true,
+      "detail": "HTTP 200 fg 0.0->0.0 sle 83->83"
+    },
+    {
+      "name": "整机一次发货（续跑复用已有出库单）",
+      "ok": true,
+      "detail": "DN=MAT-DN-2026-00005"
+    },
+    {
+      "name": "发货后成品仓消耗 1 台（成品仓=0）",
+      "ok": true,
+      "detail": "fg=0.0"
+    },
+    {
+      "name": "财务销售发票（续跑复用已有发票）",
+      "ok": true,
+      "detail": "SI=ACC-SINV-2026-00006"
+    },
+    {
+      "name": "财务收款（续跑复用已有收付款单）",
+      "ok": true,
+      "detail": "PE=ACC-PAY-2026-00006"
+    },
+    {
+      "name": "订单执行概览能看到全链单据",
+      "ok": true,
+      "detail": "{'material_request': ['MAT-MR-2026-00003', 'MAT-MR-2026-00002'], 'purchase_order': ['PUR-ORD-2026-00003', 'PUR-ORD-2026-00002'], 'purchase_receipt': ['MAT-PRE-2026-00017', 'MAT-PRE-2026-00016'], 'work_order': ['MFG-WO-2026-00003'], 'stock_entry': ['MAT-STE-2026-00009', 'MAT-STE-2026-00008'], 'delivery_note': ['MAT-DN-2026-00005'], 'sales_invoice': ['ACC-SINV-2026-00006'], 'payment_entry': ['ACC-PAY-2026-00006']}"
+    },
+    {
+      "name": "概览中九任务进度=9/9",
+      "ok": true,
+      "detail": "{'project': 'PROJ-0001', 'project_url': '/desk/project/PROJ-0001', 'started': True, 'total': 9, 'completed': 9, 'overdue': 0, 'due_soon': 0}"
+    },
+    {
+      "name": "概览实物数量：已完工 1、已发货 1，整机一次发货",
+      "ok": true,
+      "detail": "{'produced_qty': 1.0, 'delivered_qty': 1.0, 'once_delivery': True, 'job_cards': 0}"
+    },
+    {
+      "name": "H5/接口更新任务备注后 PC 立即可见",
+      "ok": true,
+      "detail": "task=TASK-2026-00010 user=liugong@erpnext-poc.localhost"
+    }
+  ],
+  "docs": {
+    "sales_order": "SAL-ORD-2026-00006",
+    "project": "PROJ-0001",
+    "material_request": "MAT-MR-2026-00003",
+    "purchase_order": "PUR-ORD-2026-00003",
+    "purchase_receipt": "MAT-PRE-2026-00017",
+    "work_order": "MFG-WO-2026-00003",
+    "stock_entry_transfer": "MAT-STE-2026-00008",
+    "stock_entry_manufacture": "MAT-STE-2026-00009",
+    "delivery_note": "MAT-DN-2026-00005",
+    "sales_invoice": "ACC-SINV-2026-00006",
+    "payment_entry": "ACC-PAY-2026-00006"
+  },
+  "stock": {
+    "fg_before": 0.0,
+    "fg_after_mfg": 0.0,
+    "fg_after_dn": 0.0,
+    "sle": 83
+  },
+  "errors": [],
+  "base": "https://d.urlxl.cn",
+  "summary": {
+    "pass": 32,
+    "total": 32,
+    "errors": 0
+  }
+}
