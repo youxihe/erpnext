@@ -34,3 +34,9 @@ BUILD-00 现状复核 → BUILD-10 ERP PC 大模块补齐 → BUILD-20 共用 AP
 **本阶段先补大模块，不钻细节。**
 已有原生订单/采购/制造/财务尽量复用。新增开发优先客户报备、我的车间任务、角色工作台、统一业务 API、企微同步与身份、H5 常用操作、AI 查询与受控写操作。
 发票取消特殊规则、人工成本、复杂 APS、复杂税控、报表润色等先记 BACKLOG；危及真实数据安全的操作必须先限制权限。
+## 2026-11-08 已确认实施策略：重单据、轻生产
+优先阅读新增 `docs/product/decisions/LIGHT_MANUFACTURING_20261108.md`，并从 `docs/product/QUEUE.md` **BUILD-90** 开始。历史 BUILD-00～80 进度保留；2026-11-08 新增的 BUILD-90～94 是后续活跃开发队列。
+- 仓库/采购/销售/财务必须使用 ERPNext 正式单据，生产人员只更新 Project Task 目标日期/状态/预警/备注。
+- 完工和库存入出库继续采用 Work Order、Stock Entry、Delivery Note 等权威单据。整机一次发货。
+- 保留已有 `/cn_portal` 顶部一级 + 左侧二级中文导航，优先订单执行概览，不改整个 Desk。
+- PC/H5/Bot 使用同 Site、同身份/权限。真实企微 UAT 尚未通过，不得将 LOCAL_PASS 改写为 REAL_PASS。

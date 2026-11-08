@@ -13,6 +13,11 @@
 | BUILD-60 | 机器人安全业务写入 | 报备客户、Excel 采购入库预览+本人确认 | LOCAL_PASS / REAL_WECOM_BLOCKED | docs/product/evidence/BUILD-60.md + build60-bot-write.log(20/20) + build60-verify.log(10/10) |
 | BUILD-70 | 三入口统一验收 | 同身份/同单据/库存同值，真实客户端证据 | LOCAL_PASS / REAL_WECOM_BLOCKED | docs/product/evidence/BUILD-70.md + build70-cross.log(31/31) + build70-cross-restart.log(24/24) + build70-restart-diff.log(9/9) + docs/product/HANDOVER.md |
 | BUILD-80 | 四类订单类型化（用户追加，2026-11-07） | 订单类型字段/四类分类入口/流程约束/三入口同步 | PASS(LOCAL) | docs/product/evidence/BUILD-80.md + build80-verify.log(16/16) + 3 张截图（commit 见 git log） |
+| BUILD-90 | 轻制造基线与无工序制造验证 | 现有模块保留；无 Job Card 必填也能规范领料/入库，清楚记录差距 | TODO | 待执行 |
+| BUILD-91 | 固定生产进度项目与任务 | 销售生产订单关联一个 Project + 九任务模板；负责人/目标日/状态/备注/预警 | TODO | 待执行 |
+| BUILD-92 | 订单执行概览与整机实物流转 | 销售→BOM→缺料→采购→领料→成品入库→一次交货，库存有据；可点击单据链 | TODO | 待执行 |
+| BUILD-93 | H5/Bot 接通 Project Task 和订单汇总 | 三入口看同一任务/库存/交期，H5可更新本人任务，Bot查询逾期和缺料 | TODO | 待执行 |
+| BUILD-94 | 轻制造角色联测和 UAT | 销售/设计/采购/仓库/生产/财务分角色实操；证据、状态及剩余阻断 | TODO | 待执行 |
 
 > 2026-11-07 用户追加：BUILD-00~70 完成后确认 `/cn_portal` 统一导航布局可用，要求按客户原始需求配置「四种订单、BOM 拆分」。
 > BOM 拆分口径用户要求**先等确认**，登记为 BACKLOG `BOM-01` 暂不实施；本阶段先完成 BUILD-80 四类订单类型化。
@@ -83,3 +88,44 @@
 - 提供用户体验清单：PC 地址、企微应用/H5 入口、Bot、账号安全交付方式、四类样本订单、测试 Excel 和操作步骤。
 - 真实客户端 UAT 通过才算最终完成；不把模拟环境/HTTP 200/生成页面算已上线。
 完成：docs/product/ACCEPTANCE.md 的真实结果 + docs/product/evidence/BUILD-70.md、未解决项记录到 BACKLOG.md；等待用户正式体验与反馈。
+
+## 2026-11-08 增量任务：轻生产、重业务单据（优先级覆盖旧 BUILD-10/20 的工序细节）
+正式决策：`docs/product/decisions/LIGHT_MANUFACTURING_20261108.md`。**BUILD-00～80 既有 PASS、LOCAL_PASS、REAL_WECOM_BLOCKED 全部保留**；不重新排队、不重做旧 POC。只对新增功能做增量建设，不破坏现有 PC/H5/机器人能力。按 BUILD-90→94 推进；细节继续写 BACKLOG。
+
+### BUILD-90 先审计，做最小原生验证
+- 检查当前 `git status`、产品分支、部署 Site、`/cn_portal`、`/wecom_h5` 和机器人实际状态，保留 Workbuddy 现有最新改动，不 reset 数据库。
+- 确认原生 Project Template/Project/Task 能按销售订单关联并生成固定任务；若已有能力直接复用，不建立冗余任务表。
+- 关键技术验证：在 ERPNext v16 **BOM 无 Operations/无 Job Card 报工**场景，是否仍可 Work Order→生产领料/转移→Stock Entry Manufacture→成品入库。记录真实测试单据与库存；如不支持，仅选最小配置/替代路径，不强迫生产人员做工时报工。
+- 说明已完成的四类订单/导航与生产模板的改造差异，并输出 `docs/product/evidence/BUILD-90.md`。
+- Gate：制造标准单据仍可靠、不会因任务状态变更触发库存；此任务仅做短验证、不铺大而全 PRD。
+
+### BUILD-91 生产固定任务（用户最关心的简单体验）
+- 以实际客户 Excel 的九阶段为默认**可配置**模板：机架焊接、机加工件加工、内钣金焊接、电控板组装、管道焊接、机构件组装、电气组装、外蒙板组装、调整老化。
+- 一张生产类销售订单可建立/关联一个生产进度 Project，按模板生成 Task；去重、重复点击幂等，能找到原销售订单。
+- 任务最小字段：名称、负责人、目标日期、状态（待开始/进行中/已完成/异常）、完成时间、备注和附件；允许修改/分派。
+- 目标日期已过且未完成=逾期；未来三日内到期且未完成=临期（3 日可配置）；按角色在 PC 查看“我的任务”“订单生产进度”。
+- 保留 ERPNext 原生 Job Card 的后台能力，但本期员工界面不能强制打开或提交 Job Card；不能由 Project Task 自动触发库存过账。
+- 用两个普通角色演示任务更新及权限拒绝，保存真实 Project/Task ID 与 `docs/product/evidence/BUILD-91.md`。
+
+### BUILD-92 订单执行概览 + 标准交易闭环
+- 延续用户已认可的 `/cn_portal` 一级顶部/二级左侧导航；不重构导航，不另写全 ERP。
+- 从一张“整机一次发货”的生产类 Sales Order 出发，聚合 Item/BOM 的订单选用关系、Production Plan/Material Request、Purchase Order/Receipt、Work Order、Stock Entry、Delivery Note 和 Sales Invoice/Payment Entry 的**真实引用/状态**。
+- 销售订单概览可见：产品/数量/承诺交期、BOM、缺料/已采购/已入库/已领料、固定任务完成数和逾期数、实物完工入库、一次交货、开票/回款；点击跳原生单据。财务字段按权限开放。
+- 分角色用真实原生单据执行：采购申请/下单、仓库采购入库、仓库领料、正式制造完工入库、Delivery Note 整机发货；库存数量和价值合理，严禁 Project Task 标记完成即扣库/入库。耗材/零部件直接出库、服务不扣库存继续通过。
+- 优先复用现有 POC 单据与新建测试订单，给出 `docs/product/evidence/BUILD-92.md` 的单据号/库存增减/角色操作路径，不为复杂 BOM 多阶或逐件交货阻塞。
+
+### BUILD-93 三入口接力，不等 ERP 叶子功能完善
+- 优先在原 BUILD-20 共用 API 上增加/调整 `orders.summary`、`production.tasks.mine`、`production.tasks.update`、`materials.shortage` 的轻量契约，返回**真实** ERPNext/Project Task/单据来源、当前授权 User。
+- H5 “我的生产任务”只需本人任务列表、目标日期/临期逾期、状态更新、备注/附件；销售订单与采购缺料用轻量查询即可。
+- 机器人能够基于同一 Site 说出订单当前进度、任务逾期、BOM 缺料；不得让模型根据普通 ToDo 进度编造真实制造完工量。
+- 保存 PC/H5/Bot 本地互相一致的测试证据；真实企业微信成员与真实机器人如仍缺权限，状态保留 `REAL_WECOM_BLOCKED`，列出具体需要用户介入的资源。
+- 不反复重建以前已实现的客户报备/Excel 写入闭环；记录 `docs/product/evidence/BUILD-93.md`。
+
+### BUILD-94 分角色联合验收和交接
+- 用一笔新的或可复现的生产订单、整机一次发货，走销售→设计→采购→仓库→生产进度→仓库完工入库→发货→财务；不同角色分别操作各自页面并保留单据号和库存变化。
+- 至少两名生产人员完成模板任务更新；有目标日期/逾期预警；**所有任务已完成也不能改变成品仓数量**，入库必须有原生 Manufacture 事务。
+- 验证四类型订单依旧可用、服务单不会扣库存、耗材/零部件不触发生产；权限越界和重复写入拒绝。
+- PC 更新任务→H5/Bot 查询一致；H5 更新任务→PC 可见。真实企微是否可用必须单独判定。
+- 输出 `docs/product/evidence/BUILD-94.md`、一页角色操作 UAT、真实单号/页面 URL、未解决 BACKLOG；不因账务叶子功能或 UI 美化延迟交付。
+
+**明确与旧规划的调整**：旧 BUILD-10/40/70 可能仍要求车间员工直接填写 Job Card。本次新方案明确改成 Project Task 状态反馈；原生 Work Order/Stock Entry 仍负责合法入库出库。不要修改历史 BUILD 的 PASS 证据，只应增量核对新业务模型。

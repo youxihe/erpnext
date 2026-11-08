@@ -43,3 +43,11 @@ PC、H5、Bot 可以有会话、文件、预览草稿、临时缓存，不可新
 
 ## 决策暂缓池
 复杂成本核算、发票取消细节、全部财务本地化、扫码硬件、MES/APS、复杂 CRM、完整移动 ERP、全量 Excel 模板、AI 多步骤自主执行等，均不阻断首轮三端演示。涉及越权、数据破坏、重复过账等例外需最小处置。
+
+## 2026-11-08 轻制造用户决策（覆盖前文 Job Card 操作假设）
+权威业务决策：`docs/product/decisions/LIGHT_MANUFACTURING_20261108.md`。
+- 底层 ERPNext 保留 BOM、Work Order、Stock Entry 的领料、实际消耗及成品入库交易；员工不承担 Job Card 正式工序报工、工时、人工成本等义务。
+- 独立“生产进度”优先采用 Project Template + Project/Task，服务于订单级固定阶段任务（负责人、目标日期、状态、预警、备注/附件）。`Task.status` **不是** `Work Order.produced_qty` 或库存数量，不允许自动同步过账。
+- 共用 API 的 `production.tasks.mine` / `production.tasks.update` 应从 Project Task 获取任务，旧基于 Job Card 的 API 需要兼容迁移或收口；默认生产进度展示完成任务数和逾期，而非物理制造完成百分比。
+- 商品销售交付以销售订单成品行和 Delivery Note 表达，第一版整机一次交货；原料采购和使用以正式 Item/BOM/Material Request/Purchase Receipt/Stock Entry 表达。
+- 不用普通“分配/ToDo”代替生产任务，不要求每个项目先创建精细 MES 工序；客户标准/非标 BOM 先按能生成准确需料和本单可追溯的程度实现。
