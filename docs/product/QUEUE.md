@@ -20,6 +20,8 @@
 | BUILD-94 | 轻制造角色联测和 UAT | 销售/设计/采购/仓库/生产/财务分角色实操；证据、状态及剩余阻断 | PASS(LOCAL) | docs/product/evidence/BUILD-94.md + UAT_BUILD94.md + build94-execute.json（12/12）+ build94-verify.json（27/27）+ build94-stock-trace.json；SAL-ORD-2026-00008 全链 11 张原生单据，李工/刘工双人完成 9 任务时成品仓 0、SLE 92→92，Manufacture 后 92→96，发货后 97；真实企微真人 UAT 仍 REAL_WECOM_BLOCKED；线上 d.urlxl.cn 未同步本轮增量 |
 | PORTAL-FIX-01 | 统一导航内页缺「新建/保存」按钮 | 门户 CSS 整体隐藏 `.page-head`，连带藏掉主按钮 | DONE(本地+线上验证) | `docs/product/evidence/RELEASE-95.md` §10；commit `4deba804`；线上列表「添加销售订单」、表单「保存」均可见 |
 | RELEASE-95 | 轻制造代码 Review Fix + 线上测试发布 | 缺料公式、真人角色权限、迁移兼容与安全门禁后，将 BUILD-90~94 发布至 d.urlxl.cn | ONLINE_PASS(BUILD-90~94 已上线；真实企微仍 REAL_WECOM_BLOCKED) | docs/product/evidence/RELEASE-95.md + build 证据；线上样本 SAL-ORD-2026-00006 / PROJ-0001 / MFG-WO-2026-00003 / MAT-DN-2026-00005；本地 23/23 + 44/44 + 8/8，线上验收 32/32 |
+| UX-96A | 补齐生产进度创建/模板维护/负责人分派入口 | 管理员可从中文门户配置模板、从订单生成项目并分派任务 | TODO | docs/product/tasks/UX-96A.md |
+| UX-96B | BOM 与销售订单显式确认及双向引用 | 销售订单行选用 BOM、BOM 页查询实际引用订单、区分默认建议 | TODO | docs/product/tasks/UX-96B.md |
 
 > 2026-11-07 用户追加：BUILD-00~70 完成后确认 `/cn_portal` 统一导航布局可用，要求按客户原始需求配置「四种订单、BOM 拆分」。
 > BOM 拆分口径用户要求**先等确认**，登记为 BACKLOG `BOM-01` 暂不实施；本阶段先完成 BUILD-80 四类订单类型化。
@@ -145,3 +147,13 @@
 - **发布前安全门槛**：核验线上 Site、数据库大小写兼容/迁移补丁、完成数据库+文件备份且可回滚；防止公网 Mock 任意选用户/共用密码泄露，禁止未经授权更改其他客户环境。
 - 完成线上真实验收且无重大风险后才能把 RELEASE-95 标记 `ONLINE_PASS`，反之 `BLOCKED` 并记录准确原因，不能只凭 Git push 或本地 PASS 宣布发布成功。
 - **合并策略**：独立产品分支就是 v16 测试部署来源。默认 `develop` 属于 v17，不创建跨大版本合并 PR，不将 POC 代码直接合并到 `develop`。
+
+## 2026-11-08 用户现场体验反馈：业务管理入口补齐（当前下一组任务）
+用户体验线上 /production_board 和 /order_execution 后反馈：管理员找不到九阶段模板管理、订单项目创建/分派入口；不清楚 Sales Order Item ↔ BOM 的显式绑定与双向引用。
+
+**当前优先 UX-96A → UX-96B，保留 RELEASE-95 ONLINE_PASS，不重复测试或发布历史 POC**。详细要求与 Gate 见 `docs/product/tasks/UX-96A.md`、`UX-96B.md`。两项都完成后发布到既有 d.urlxl.cn 测试站点并进行实名角色验证。
+
+- 生产任务模板是 Project Template「整机生产九阶段」，具体阶段由 Template Task 引用；Project.sales_order ↔ Sales Order.project；Task.project/source_sales_order 关联。现有后端 `production.create_project` / `assign_task` 可复用，目前 /production_board?view=order **只读**，未提供创建/分派 UI。
+- BOM 选用字段为 `Sales Order Item.bom_no`（子表、行级）；当前 order_execution 在该字段为空时回退产品默认 BOM 进行物料展示，必须明确标注**默认建议不是本单已确认 BOM**。BOM 页面需要反向查询显式引用的 Sales Order Item、Work Order。
+- 主要做业务入口、配置和关联导航，不建全新 MES/BOM 库存业务模型，不让 Project Task 操作触发库存事务。
+- 标配权限服务端校验、实际 Administrator/生产经理/销售角色、测试数据、线上 URL/截图。避免退化到只通过脚本操作。
