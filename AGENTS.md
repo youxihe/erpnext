@@ -64,3 +64,7 @@ BUILD-90~94 已有本地 PASS 证据，**当前新任务为 RELEASE-95**：
 约定：**不要**给原生英文 Role 改名/删除（工作台可见性、DocPerm、H5/Bot 判定都按英文标识）；岗位调整只改 `role_setup.PROFILES` 再重跑 `sync_identities()`，它幂等。
 已知限制：销售订单在 Desk 列表无行级隔离（DATA_SCOPE_GAP，需用户确认后才能加 User Permission/if_owner）；采购业务保留 Purchase Manager 是因为订单级追溯用 SENIOR_ROLES 判定；企微真人联调仍 REAL_WECOM_BLOCKED。
 证据：docs/product/evidence/UAT-97R.md。测试账号密码只在执行机 `poc/deploy/uat97r_credentials.online.json`，禁止写入 Git 或聊天。
+
+
+## 2026-11-09 客户报备业务主线（CRM-100）
+客户报备不是销售订单，也不是客户唯一归属凭证。ERPNext 当前客户报备使用原生 Lead，已有 make_customer 转 Customer 原生能力但中文门户缺连贯入口。需补：Lead“转正式客户”→ Customer 保留首次报备人/日期、原始 Lead、当前客户负责人 → 从 Customer“创建销售订单”，不强制 Opportunity/Quotation。已确定的客户允许直接建 Customer 并记录首次报备人；禁止重复客户和未经授权的归属抢占。业务只需轻量 CRM；保留现有 H5/Bot 报备 API 和 UAT-97R A/B 权限边界。具体执行详见 docs/product/tasks/CRM-100.md。
