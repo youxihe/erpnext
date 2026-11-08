@@ -98,6 +98,7 @@ Frappe 在 `User.validate → populate_role_profile_roles` 中会把 `User.roles
 | 设计生产 | liugong@erpnext-poc.localhost | **设计生产-A-刘工** | 设计与生产、经营报表、基础资料、工作台 | 集中采购、业务岗位管理 |
 | 采购业务 | chengong@erpnext-poc.localhost | **采购-A-陈工** | 采购管理、经营报表、基础资料、工作台 | 模板管理、我的任务、业务岗位管理 |
 | 仓库管理 | zhanggong@erpnext-poc.localhost | **仓库-A-张工** | 仓库管理、物流交付、基础资料、工作台 | 模板管理、我的任务、业务岗位管理 |
+| 财务业务 | zhoukaiji@erpnext-poc.localhost | **财务-A-周会计** | 财务管理、基础资料、工作台 | 集中采购、模板管理、我的任务、业务岗位管理 |
 | 车间执行 | ligong@erpnext-poc.localhost | **车间-A-李工** | 设计与生产（我的任务/订单生产进度）、基础资料、工作台 | 集中采购、模板管理、业务岗位管理 |
 | 车间执行（对照） | chejian-b@erpnext-poc.localhost | **车间-B-对照** | 同车间-A（同一档案） | 同上 |
 | 系统管理员 | Administrator | Administrator | 全量后台 | — |
@@ -148,11 +149,13 @@ Frappe 在 `User.validate → populate_role_profile_roles` 中会把 `User.roles
 | 设计生产-A-刘工 | 设计与生产/经营报表/基础资料/工作台 | 403 | 403 | 200 | 200 | 403 | 200 |
 | 采购-A-陈工 | 采购管理/经营报表/基础资料/工作台 | 200 | 403 | 403 | 403 | 200 | 200 |
 | 仓库-A-张工 | 仓库管理/物流交付/基础资料/工作台 | 200 | 403 | 403 | 403 | 200 | 200 |
+| 财务-A-周会计 | 财务管理/基础资料/工作台 | 403 | 403 | 403 | 403 | 403 | 200 |
 | 车间-A-李工 | 设计与生产/基础资料/工作台 | 403 | 403 | 403 | 200 | 403 | 按是否本人订单 |
 | 车间-B-对照 | 同车间-A | 403 | 403 | 403 | 200 | 403 | 403（非本人订单） |
 | Administrator | 全量 | 200 | 200 | 200 | 200 | 200 | 200 |
 
-同时核验 8 个业务的 `/desk`、`/production_board?view=mine`、`/order_execution`、`/wecom_h5` 均可达（200/301/302，无 500）。
+同时核验 9 个业务账号的 `/desk`、`/production_board?view=mine`、`/order_execution`、`/wecom_h5` 均可达（200/301/302，无 500）。
+计数口径：9 个业务账号 × 13 项 + Administrator 1 项 = 118。
 本地同一套脚本 118/118；两轮均 `fail=0`。
 
 ### 6.2 A/B 隔离（线上 14/14，本地 14/14）
