@@ -193,11 +193,26 @@ function stripCss(){
   const side = limited ? 'auto' : '0';
   return `
       /* 隐藏内层原生导航，避免与门户双层导航重复 */
-      .navbar,.navbar-default,.page-head,.sidebar,#navbar-breadcrumbs,.layout-side-section,
+      .navbar,.navbar-default,.sidebar,#navbar-breadcrumbs,.layout-side-section,
       .desk-sidebar,.app-logo,.sidebar-header,
       .dock,.body-sidebar-container,.body-sidebar,.body-sidebar-top,
       .module-sidebar,.workspace-sidebar,.list-sidebar{display:none!important}
       body{padding-top:0!important}
+      /* 保留 .page-head 的操作区：新建 / 保存 / 提交 / 筛选 / 菜单都在这里，
+         之前整体隐藏 .page-head 会让列表页没有「新建」、表单页没有「保存」。
+         只去掉与门户重复的标题与面包屑，并把这条压成 38px 的紧凑操作条。 */
+      .page-head{background:#fff!important;border-bottom:1px solid #e8ecf2!important;
+        padding:0!important;min-height:38px!important;z-index:5!important}
+      .page-head .container{max-width:100%!important;width:100%!important;
+        margin:0!important;padding:0 12px!important}
+      .page-head .page-head-content{height:38px!important;padding:2px 0!important;gap:8px!important}
+      .page-head .page-title{display:none!important}
+      .page-head .standard-items-section{flex:1 1 auto!important;min-width:0!important}
+      .page-head .page-actions{flex:1 1 auto!important;justify-content:flex-end!important;
+        flex-wrap:nowrap!important;gap:6px!important}
+      .page-head .page-actions .filters{flex:0 1 auto!important}
+      .page-head .page-actions .standard-actions{flex:none!important}
+      .page-head .primary-action{white-space:nowrap!important}
       .main-section,.page-container,.layout-main-section,.page-body{
         margin-left:0!important;padding-left:0!important;width:100%!important;max-width:100%!important}
       .page-content{margin:0!important}
