@@ -453,3 +453,67 @@ def confirm_purchase_draft(draft):
     frappe.db.commit()
     _audit("Purchase Receipt", pr.name, "采购入库确认", f"draft={d.name} user={frappe.session.user}")
     return {"purchase_receipt": pr.name, "docstatus": pr.docstatus, "already_confirmed": False}
+
+
+# ---------------------------------------------------------------- BUILD-93 轻量契约
+# 逻辑契约名 → 真实 Frappe 端点。PC / H5 / Bot 都通过当前会话用户调用，
+# 服务端再做角色/负责人校验；数据统一来自 ERPNext 与 BUILD-91/92 的 Project/Task、原生单据。
+CONTRACTS = {
+    "orders.summary": "cn_mfg_poc.api.orders_summary",
+    "production.tasks.mine": "cn_mfg_poc.api.production_tasks_mine",
+    "production.tasks.update": "cn_mfg_poc.api.production_tasks_update",
+    "materials.shortage": "cn_mfg_poc.api.materials_shortage",
+}
+
+
+@frappe.whitelist(methods=["GET"])
+def contracts():
+    """列出三入口共用契约与当前授权 User，便于 H5/Bot 自检。"""
+    return {"user": frappe.session.user, "contracts": CONTRACTS,
+            "nature": "REAL_ERP", "source": "ERPNext Site / Project Task / 原生单据"}
+
+
+@frappe.whitelist(methods=["GET"])
+def orders_summary(sales_order=None, limit=10):
+    """orders.summary：订单执行概览；无单号时返回当前用户可见的生产类订单摘要列表。"""
+    from cn_mfg_poc import order_execution
+
+    _require(_roles() & order_execution.READ_ROLES, _("当前角色无权查看订单汇总"))
+    if not sales_order:
+        from cn_mfg_poc import production
+        rows = production.my_production_orders(limit=int(limit))["orders"]
+        return {"user": frappe.session.user, "nature": "REAL_ERP",
+                "count": len(rows), "orders": rows, "hint": _("传 sales_order 可看单据链详情")}
+    return dict(order_execution.order_summary(sales_order), user=frappe.session.user,
+                nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["GET"])
+def production_tasks_mine(limit=50):
+    """production.tasks.mine：本人 Project Task（不强制 Job Card），含临期/逾期只读计算。"""
+    from cn_mfg_poc import production
+
+    return dict(production.tasks_mine(limit=limit), nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["POST"])
+def production_tasks_update(task, production_status=None, note=None, attachment=None,
+                            exp_end_date=None):
+    """production.tasks.update：仅本人可写状态/备注/附件/目标日期，绝不触发库存。"""
+    from cn_mfg_poc import production
+
+    result = production.tasks_update(
+        task=task, production_status=production_status, note=note,
+        attachment=attachment, exp_end_date=exp_end_date,
+    )
+    _audit("Task", task, "H5/Bot 更新生产任务",
+           f"status={production_status} user={frappe.session.user}")
+    return dict(result, user=frappe.session.user, nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["GET"])
+def materials_shortage(limit=20):
+    """materials.shortage：未完成生产订单的 BOM 缺料（真实单据来源）。"""
+    from cn_mfg_poc import order_execution
+
+    return dict(order_execution.materials_shortage(limit=limit), nature="REAL_ERP")

@@ -392,6 +392,86 @@ def _mgmt_summary(p):
     }
 
 
+# ---------------------------------------------------------------- BUILD-93 查询（轻制造）
+AUTHORITY_NOTE = _(
+    "任务状态只反映过程；完工入库与发货以 ERPNext 原生 Stock Entry / Delivery Note 为唯一凭据，"
+    "不能由 Project Task 完成数推断制造完工量"
+)
+
+
+def _order_execution(p):
+    """订单当前进度：任务、实物完工、一次发货、BOM 缺料都来自真实单据。"""
+    from cn_mfg_poc import api
+
+    name = (p.get("order") or p.get("name") or "").strip()
+    if not name:
+        rows = api.orders_summary(limit=3).get("orders") or []
+        _require(rows, _("您名下暂无可查询的生产类订单"), frappe.ValidationError)
+        name = rows[0]["name"]
+    d = api.orders_summary(sales_order=name)
+    prog, phy, mats = d["progress"], d["physical"], d["materials"]
+    docs = {k: [x["name"] for x in v] for k, v in d["documents"].items()}
+    return {
+        "sales_order": name,
+        "customer_name": d["order"]["customer_name"],
+        "status": d["order"]["status"],
+        "business_type": d["order"]["business_type"],
+        "delivery_date": d["order"]["delivery_date"],
+        "per_delivered": d["order"]["per_delivered"],
+        "per_billed": d["order"]["per_billed"],
+        "project": prog["project"],
+        "tasks": {"total": prog["total"], "completed": prog["completed"],
+                  "overdue": prog["overdue"], "due_soon": prog["due_soon"]},
+        "physical": {"produced_qty": phy["produced_qty"],
+                     "delivered_qty": phy["delivered_qty"],
+                     "once_delivery": phy["once_delivery"],
+                     "job_cards": phy["job_cards"]},
+        "shortage_items": [{"item_code": c["item_code"], "shortage": c["shortage"],
+                            "required_qty": c["required_qty"]}
+                           for c in mats["components"] if c["shortage"] > 0],
+        "documents": docs,
+        "authority_note": AUTHORITY_NOTE,
+        "nature": "REAL_ERP",
+    }
+
+
+def _my_production_tasks(p):
+    """本人九阶段生产任务（Project Task），不强制 Job Card。"""
+    from cn_mfg_poc import api
+
+    r = api.production_tasks_mine(limit=int(p.get("limit") or 20))
+    return {
+        "user": r["user"], "summary": r["summary"], "due_soon_days": r["due_soon_days"],
+        "tasks": [{"name": t["name"], "subject": t["subject"],
+                   "sales_order": t.get("source_sales_order"),
+                   "exp_end_date": str(t.get("exp_end_date") or ""),
+                   "due_state": t["due_state"], "production_status": t["production_status"],
+                   "production_note": t.get("production_note") or ""}
+                  for t in r["tasks"]],
+        "authority_note": AUTHORITY_NOTE,
+        "nature": "REAL_ERP",
+    }
+
+
+def _materials_shortage(p):
+    """未完成生产订单的 BOM 缺料清单（真实单据来源）。"""
+    from cn_mfg_poc import api
+
+    r = api.materials_shortage(limit=int(p.get("limit") or 10))
+    return {
+        "user": r["user"], "count": r["count"],
+        "orders": [{"sales_order": o["sales_order"], "customer": o["customer"],
+                    "delivery_date": o["delivery_date"],
+                    "shortages": [{"item_code": c["item_code"], "shortage": c["shortage"],
+                                   "required_qty": c["required_qty"]}
+                                  for c in o["shortages"]]}
+                   for o in r["orders"]],
+        "shortage_formula": r["shortage_formula"],
+        "authority_note": AUTHORITY_NOTE,
+        "nature": "REAL_ERP",
+    }
+
+
 # ---------------------------------------------------------------- 白名单端点
 
 
@@ -437,3 +517,21 @@ def my_jobs(**kwargs):
 def mgmt_summary(**kwargs):
     """简要经营数据（销售/待交付/生产/库存），仅管理类角色。"""
     return _serve("mgmt_summary", _mgmt_summary)
+
+
+@frappe.whitelist(methods=["POST"])
+def order_execution(**kwargs):
+    """BUILD-93：订单当前进度（任务、原生完工入库、发货、BOM 缺料）。"""
+    return _serve("order_execution", _order_execution)
+
+
+@frappe.whitelist(methods=["POST"])
+def my_production_tasks(**kwargs):
+    """BUILD-93：本人九阶段生产任务与临期/逾期，不强制 Job Card。"""
+    return _serve("my_production_tasks", _my_production_tasks)
+
+
+@frappe.whitelist(methods=["POST"])
+def materials_shortage(**kwargs):
+    """BUILD-93：未完成生产订单的 BOM 缺料。"""
+    return _serve("materials_shortage", _materials_shortage)

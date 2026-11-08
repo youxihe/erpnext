@@ -1,0 +1,99 @@
+{
+ "steps": [
+  {
+   "name": "H5 生产人员可打开 /wecom_h5",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "H5 首屏默认进入「我的任务」",
+   "ok": true,
+   "detail": "switchTab(\"jobs\");\n})();\n</script>\n</bod"
+  },
+  {
+   "name": "H5 含「我的生产任务」与状态/目标日/备注控件",
+   "ok": true,
+   "detail": "{'任务标题': True, '更新接口': True}"
+  },
+  {
+   "name": "H5 明确「任务完成不等于入库」的口径提示",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "name": "H5 销售角色看不到生产任务页签（按角色隐藏）",
+   "ok": true,
+   "detail": "{'status': 200, '含订单页签': True, '含任务页签': False}"
+  },
+  {
+   "name": "H5 销售角色默认进入「我的订单」",
+   "ok": true,
+   "detail": "default_tab=orders"
+  },
+  {
+   "name": "HTTP 生产人员可读本人任务",
+   "ok": true,
+   "detail": "{'status': 200, 'total': 7, 'due_soon_days': 3}"
+  },
+  {
+   "name": "HTTP 销售角色读任务被拒（403）",
+   "ok": true,
+   "detail": "status=403"
+  },
+  {
+   "name": "HTTP 生产人员可按单看进度（本人有任务）",
+   "ok": true,
+   "detail": "{'status': 200, 'so': 'SAL-ORD-2026-00006', 'produced': 1.0}"
+  },
+  {
+   "name": "HTTP 生产人员拿到的是实物完工量而非任务数",
+   "ok": true,
+   "detail": "{'produced': 1.0, 'tasks': 9}"
+  },
+  {
+   "name": "HTTP 生产人员可读缺料（仅本人订单）",
+   "ok": true,
+   "detail": "{'count': 1, 'orders': ['SAL-ORD-2026-00007']}"
+  },
+  {
+   "name": "HTTP 仓库角色可读全局缺料",
+   "ok": true,
+   "detail": "{'count': 1}"
+  },
+  {
+   "name": "HTTP 销售角色读全局缺料被拒（403）",
+   "ok": true,
+   "detail": "status=403"
+  },
+  {
+   "name": "PC 订单执行概览页可按单打开",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "统一导航对生产人员保留任务与进度入口",
+   "ok": true,
+   "detail": "{'status': 200, '我的任务': True, '订单生产进度': True}"
+  },
+  {
+   "name": "统一导航对销售保留只读进度入口、不显示我的任务",
+   "ok": true,
+   "detail": "{'status': 200, '我的任务': False}"
+  },
+  {
+   "name": "未登录访问门户仍被拦到登录",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "四类订单分类入口仍在（生产/耗材/零部件/服务）",
+   "ok": true,
+   "detail": "{'status': 200, 'user': 'sales'}"
+  }
+ ],
+ "summary": {
+  "passed": 18,
+  "total": 18,
+  "failed": []
+ }
+}

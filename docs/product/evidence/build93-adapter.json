@@ -1,0 +1,53 @@
+{
+ "summary": {
+  "passed": 8,
+  "total": 8
+ },
+ "steps": [
+  {
+   "name": "工具已注册 erp_order_execution",
+   "ok": true,
+   "detail": "module=cn_mfg_poc.bot erp=order_execution"
+  },
+  {
+   "name": "工具已注册 erp_my_production_tasks",
+   "ok": true,
+   "detail": "module=cn_mfg_poc.bot erp=my_production_tasks"
+  },
+  {
+   "name": "工具已注册 erp_materials_shortage",
+   "ok": true,
+   "detail": "module=cn_mfg_poc.bot erp=materials_shortage"
+  },
+  {
+   "name": "订单话术含订单号与交期",
+   "ok": true,
+   "detail": "SAL-ORD-2026-00006（苏州华新装备有限公司）· Completed"
+  },
+  {
+   "name": "订单话术把任务数与实物入库分列",
+   "ok": true,
+   "detail": "固定任务：共 9 项，已完成 1，逾期 0，临期 0（项目 PROJ-0003）"
+  },
+  {
+   "name": "订单话术强调任务不等于入库",
+   "ok": true,
+   "detail": "注意：任务状态只反映过程；完工入库与发货以 ERPNext 原生 Stock Entry / Delivery Note 为唯一凭据，不能由 Project Task 完成数推断制造完工量"
+  },
+  {
+   "name": "任务话术列出本人任务与临期/逾期",
+   "ok": true,
+   "detail": "我的生产任务（7 项；逾期 0 / 临期 0 / 完成 1，临期阈值 3 天）："
+  },
+  {
+   "name": "缺料话术给出订单/物料/数量",
+   "ok": true,
+   "detail": "未完成生产订单缺料（1 张订单 / 1 项）： - SAL-ORD-2026-00007（苏州华新装备有限公司，交期 2026-11-22）：RACK 缺 2 / 需 2"
+  }
+ ],
+ "samples": {
+  "order_execution": "SAL-ORD-2026-00006（苏州华新装备有限公司）· Completed\n承诺交期：2026-11-22 · 交付 100% / 开票 100%\n固定任务：共 9 项，已完成 1，逾期 0，临期 0（项目 PROJ-0003）\n【原生实物】完工入库 1 · 已发货 1 · 一次发货：是 · Job Card 0 张\n缺料：无\n库存事务单：MAT-STE-2026-00011、MAT-STE-2026-00010\n发货单：MAT-DN-2026-00005\n注意：任务状态只反映过程；完工入库与发货以 ERPNext 原生 Stock Entry / Delivery Note 为唯一凭据，不能由 Project Task 完成数推断制造完工量",
+  "my_production_tasks": "我的生产任务（7 项；逾期 0 / 临期 0 / 完成 1，临期阈值 3 天）：\n- 机架焊接（TASK-2026-00019）· 目标 2026-11-11 · 已完成 · 已完成 · 焊接完成\n- 机加工件加工（TASK-2026-00029）· 目标 2026-11-15 · 正常 · 进行中 · H5 更新：已上工装\n- 机加工件加工（TASK-2026-00038）· 目标 2026-11-15 · 正常 · 待开始\n- 内钣金焊接（TASK-2026-00030）· 目标 2026-11-18 · 正常 · 待开始\n- 内钣金焊接（TASK-2026-00039）· 目标 2026-11-18 · 正常 · 待开始\n- 电控板组装（TASK-2026-00031）· 目标 2026-11-20 · 正常 · 待开始\n- 电控板组装（TASK-2026-00040）· 目标 2026-11-20 · 正常 · 待开始\n注意：任务状态只反映过程；完工入库与发货以 ERPNext 原生 Stock Entry / Delivery Note 为唯一凭据，不能由 Project Task 完成数推断制造完工量",
+  "materials_shortage": "未完成生产订单缺料（1 张订单 / 1 项）：\n- SAL-ORD-2026-00007（苏州华新装备有限公司，交期 2026-11-22）：RACK 缺 2 / 需 2\n公式：max(0, required - available_now - received_qty - issued_net)\n注意：任务状态只反映过程；完工入库与发货以 ERPNext 原生 Stock Entry / Delivery Note 为唯一凭据，不能由 Project Task 完成数推断制造完工量"
+ }
+}

@@ -1,0 +1,265 @@
+{
+ "steps": [
+  {
+   "name": "四个轻量契约已注册且指向真实端点",
+   "ok": true,
+   "detail": "{'orders.summary': 'cn_mfg_poc.api.orders_summary', 'production.tasks.mine': 'cn_mfg_poc.api.production_tasks_mine', 'production.tasks.update': 'cn_mfg_poc.api.production_tasks_update', 'materials.shortage': 'cn_mfg_poc.api.materials_shortage'}"
+  },
+  {
+   "name": "orders.summary 列表返回可见生产订单",
+   "ok": true,
+   "detail": "['SAL-ORD-2026-00007', 'SAL-ORD-2026-00006', 'SAL-ORD-2026-00005', 'SAL-ORD-2026-00001']"
+  },
+  {
+   "name": "orders.summary 详情与销售订单一致",
+   "ok": true,
+   "detail": "{'api': 'Completed', 'db': 'Completed'}"
+  },
+  {
+   "name": "执行概览覆盖采购→领料→完工→发货→应收全链",
+   "ok": true,
+   "detail": "{'material_request': ['MAT-MR-2026-00002'], 'purchase_order': ['PUR-ORD-2026-00002'], 'purchase_receipt': ['MAT-PRE-2026-00016'], 'work_order': ['MFG-WO-2026-00004'], 'stock_entry': ['MAT-STE-2026-00011', 'MAT-STE-2026-00010'], 'delivery_note': ['MAT-DN-2026-00005'], 'sales_invoice': ['ACC-SINV-2026-00006'], 'payment_entry': ['ACC-PAY-2026-00006']}"
+  },
+  {
+   "name": "任务进度来自 Project Task 实时聚合",
+   "ok": true,
+   "detail": "{'project': 'PROJ-0003', 'api_total': 9, 'db': 9, 'completed': 1, 'overdue': 0}"
+  },
+  {
+   "name": "实物完工数量取自 Work Order，不由任务数推断",
+   "ok": true,
+   "detail": "{'produced_qty': 1.0, 'task_total': 9, 'task_completed': 1}"
+  },
+  {
+   "name": "一次发货：单张 Delivery Note 且已交付 100%",
+   "ok": true,
+   "detail": "{'dn': ['MAT-DN-2026-00005'], 'per_delivered': 100.0}"
+  },
+  {
+   "name": "Job Card 为 0 张仍完成入库（轻制造口径）",
+   "ok": true,
+   "detail": "{'job_cards': 0}"
+  },
+  {
+   "name": "销售角色看不到金额（finance=None / grand_total=None）",
+   "ok": true,
+   "detail": "{'finance': None, 'grand_total': None}"
+  },
+  {
+   "name": "财务角色可见金额与应收",
+   "ok": true,
+   "detail": "{'sales_invoice_total': 5000.0, 'outstanding_amount': 0.0, 'paid_amount': 5000.0}"
+  },
+  {
+   "name": "李工（企微 ligong）能看到分派给自己的任务",
+   "ok": true,
+   "detail": "{'total': 7, 'subjects': ['机架焊接', '机加工件加工', '机加工件加工', '内钣金焊接', '内钣金焊接', '电控板组装', '电控板组装']}"
+  },
+  {
+   "name": "任务含临期/逾期只读判定与阈值",
+   "ok": true,
+   "detail": "{'due_soon_days': 3, 'states': ['已完成', '正常']}"
+  },
+  {
+   "name": "销售角色不能查看生产任务",
+   "ok": true,
+   "detail": "PermissionError: 当前角色无权查看生产任务"
+  },
+  {
+   "name": "本人可更新状态/备注（H5/Bot 同一端点）",
+   "ok": true,
+   "detail": "{'task': 'TASK-2026-00029', 'note': 'H5 更新：已上工装'}"
+  },
+  {
+   "name": "更新后原生 Task.status 同步映射 Working",
+   "ok": true,
+   "detail": "Working"
+  },
+  {
+   "name": "任务更新不产生任何库存变化（库存与任务解耦）",
+   "ok": true,
+   "detail": "{'warehouses': 4, 'diff': {}}"
+  },
+  {
+   "name": "不能代他人更新任务",
+   "ok": true,
+   "detail": "PermissionError: 该任务负责人不是您（liugong@erpnext-poc.localhost），不能代他人更新"
+  },
+  {
+   "name": "非法状态被服务端拒绝",
+   "ok": true,
+   "detail": "ValidationError: 生产状态无效：随便写"
+  },
+  {
+   "name": "缺料契约按 BOM 差额算出真实缺料（尚未采购的订单）",
+   "ok": true,
+   "detail": "{'so': 'SAL-ORD-2026-00007', 'rack': {'item_code': 'RACK', 'required_qty': 2.0, 'available_now': 0, 'shortage': 2.0}, 'count': 1}"
+  },
+  {
+   "name": "普通生产人员只看到自己有任务的订单缺料",
+   "ok": true,
+   "detail": "{'count': 1, 'orders': ['SAL-ORD-2026-00007']}"
+  },
+  {
+   "name": "销售角色不能查看全局缺料清单",
+   "ok": true,
+   "detail": "PermissionError: 当前角色无权查看缺料（生产/仓库/采购职能）"
+  },
+  {
+   "name": "Bot 订单进度 == API 同一数值（任务/实物/发货）",
+   "ok": true,
+   "detail": "{'ok': True, 'erp_user': 'ligong@erpnext-poc.localhost', 'tasks': {'total': 9, 'completed': 1, 'overdue': 0, 'due_soon': 0}, 'physical': {'produced_qty': 1.0, 'delivered_qty': 1.0, 'once_delivery': True, 'job_cards': 0}}"
+  },
+  {
+   "name": "Bot 我的任务 == API 本人任务数",
+   "ok": true,
+   "detail": "{'bot_total': 7, 'api_total': 7, 'first': '机架焊接'}"
+  },
+  {
+   "name": "Bot 缺料 == API 同一用户同一批订单",
+   "ok": true,
+   "detail": "{'bot': 1, 'api_member': 1}"
+  },
+  {
+   "name": "Bot 未绑定企微成员被拒绝（NOT_BOUND）",
+   "ok": true,
+   "detail": "{'code': 'NOT_BOUND', 'message': '该企微账号尚未绑定 ERP 账号（nobody），请管理员在企微应用完成绑定后再问'}"
+  },
+  {
+   "name": "Bot 销售角色查任务被拒绝（权限与 PC 一致）",
+   "ok": true,
+   "detail": "{'code': 'PERMISSION_DENIED', 'erp_user': 'wangming@erpnext-poc.localhost'}"
+  },
+  {
+   "name": "四类订单入口数据未回退",
+   "ok": true,
+   "detail": "{'生产': 4, '耗材': 1, '零部件': 1, '服务': 1}"
+  }
+ ],
+ "errors": [],
+ "ids": {
+  "contracts": {
+   "orders.summary": "cn_mfg_poc.api.orders_summary",
+   "production.tasks.mine": "cn_mfg_poc.api.production_tasks_mine",
+   "production.tasks.update": "cn_mfg_poc.api.production_tasks_update",
+   "materials.shortage": "cn_mfg_poc.api.materials_shortage"
+  },
+  "vouchers": {
+   "material_request": [
+    "MAT-MR-2026-00002"
+   ],
+   "purchase_order": [
+    "PUR-ORD-2026-00002"
+   ],
+   "purchase_receipt": [
+    "MAT-PRE-2026-00016"
+   ],
+   "work_order": [
+    "MFG-WO-2026-00004"
+   ],
+   "stock_entry": [
+    "MAT-STE-2026-00011",
+    "MAT-STE-2026-00010"
+   ],
+   "delivery_note": [
+    "MAT-DN-2026-00005"
+   ],
+   "sales_invoice": [
+    "ACC-SINV-2026-00006"
+   ],
+   "payment_entry": [
+    "ACC-PAY-2026-00006"
+   ]
+  },
+  "member_tasks": [
+   "TASK-2026-00019",
+   "TASK-2026-00029",
+   "TASK-2026-00038",
+   "TASK-2026-00030",
+   "TASK-2026-00039",
+   "TASK-2026-00031",
+   "TASK-2026-00040"
+  ],
+  "updated_task": "TASK-2026-00029",
+  "demo_order": "SAL-ORD-2026-00007"
+ },
+ "samples": {
+  "member_view": [
+   {
+    "task": "TASK-2026-00019",
+    "subject": "机架焊接",
+    "so": "SAL-ORD-2026-00005",
+    "due_state": "已完成",
+    "status": "已完成",
+    "exp_end_date": "2026-11-11 00:00:00"
+   },
+   {
+    "task": "TASK-2026-00029",
+    "subject": "机加工件加工",
+    "so": "SAL-ORD-2026-00006",
+    "due_state": "正常",
+    "status": "进行中",
+    "exp_end_date": "2026-11-15 00:00:00"
+   },
+   {
+    "task": "TASK-2026-00038",
+    "subject": "机加工件加工",
+    "so": "SAL-ORD-2026-00007",
+    "due_state": "正常",
+    "status": "待开始",
+    "exp_end_date": "2026-11-15 00:00:00"
+   },
+   {
+    "task": "TASK-2026-00030",
+    "subject": "内钣金焊接",
+    "so": "SAL-ORD-2026-00006",
+    "due_state": "正常",
+    "status": "待开始",
+    "exp_end_date": "2026-11-18 00:00:00"
+   },
+   {
+    "task": "TASK-2026-00039",
+    "subject": "内钣金焊接",
+    "so": "SAL-ORD-2026-00007",
+    "due_state": "正常",
+    "status": "待开始",
+    "exp_end_date": "2026-11-18 00:00:00"
+   },
+   {
+    "task": "TASK-2026-00031",
+    "subject": "电控板组装",
+    "so": "SAL-ORD-2026-00006",
+    "due_state": "正常",
+    "status": "待开始",
+    "exp_end_date": "2026-11-20 00:00:00"
+   },
+   {
+    "task": "TASK-2026-00040",
+    "subject": "电控板组装",
+    "so": "SAL-ORD-2026-00007",
+    "due_state": "正常",
+    "status": "待开始",
+    "exp_end_date": "2026-11-20 00:00:00"
+   }
+  ],
+  "shortage": [
+   {
+    "so": "SAL-ORD-2026-00007",
+    "customer": "苏州华新装备有限公司",
+    "items": [
+     [
+      "RACK",
+      2.0,
+      0,
+      2.0
+     ]
+    ]
+   }
+  ]
+ },
+ "summary": {
+  "passed": 27,
+  "total": 27,
+  "failed": []
+ }
+}

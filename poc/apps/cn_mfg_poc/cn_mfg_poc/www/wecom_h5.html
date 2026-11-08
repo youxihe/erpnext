@@ -57,9 +57,9 @@
   <span class="who">{{ user }}</span>
 </header>
 <nav>
-  <button class="on" data-tab="report" onclick="switchTab('report')">客户报备</button>
+  <button data-tab="report" onclick="switchTab('report')">客户报备</button>
   <button data-tab="orders" onclick="switchTab('orders')">我的订单</button>
-  <button data-tab="jobs" onclick="switchTab('jobs')">我的任务</button>
+  {% if can_production %}<button data-tab="jobs" onclick="switchTab('jobs')">我的任务</button>{% endif %}
   <button data-tab="stock" onclick="switchTab('stock')">库存查询</button>
 </nav>
 <main>
@@ -84,12 +84,27 @@
   <!-- 我的订单 -->
   <section id="tab-orders" style="display:none;">
     <div class="card"><h3>我的销售订单</h3><div id="ordersList"><div class="empty">加载中…</div></div></div>
+    <div class="card" id="orderExecCard" style="display:none;">
+      <h3 id="orderExecTitle">订单执行进度</h3>
+      <div id="orderExecBody"></div>
+    </div>
   </section>
 
-  <!-- 我的任务 -->
+  <!-- 我的任务（BUILD-93：Project Task，不强制 Job Card） -->
+  {% if can_production %}
   <section id="tab-jobs" style="display:none;">
-    <div class="card"><h3>我的车间任务</h3><div id="jobsList"><div class="empty">加载中…</div></div></div>
+    <div class="card">
+      <h3>我的生产任务</h3>
+      <div id="taskSummary" class="tip"></div>
+      <div id="jobsList"><div class="empty">加载中…</div></div>
+      <p class="tip">任务只反映过程。完工入库、发货以仓库的原生入库单/发货单为准，勾选完成不会改变库存。</p>
+    </div>
+    <div class="card" id="jobCardCard" style="display:none;">
+      <h3>车间报工（旧 Job Card，可选）</h3>
+      <div id="jobCardList"></div>
+    </div>
   </section>
+  {% endif %}
 
   <!-- 库存 -->
   <section id="tab-stock" style="display:none;">
@@ -132,8 +147,10 @@ function mockLogin(){
 /* ---- Tab ---- */
 function switchTab(name){
   ["report","orders","jobs","stock"].forEach(function(t){
-    document.getElementById("tab-"+t).style.display = (t===name)?"":"none";
-    document.querySelector("nav [data-tab="+t+"]").className = (t===name)?"on":"";
+    var sec = document.getElementById("tab-"+t);
+    if(sec) sec.style.display = (t===name)?"":"none";
+    var btn = document.querySelector("nav [data-tab="+t+"]");
+    if(btn) btn.className = (t===name)?"on":"";
   });
   if(name==="orders") loadOrders();
   if(name==="jobs") loadJobs();
@@ -172,34 +189,112 @@ function searchCustomers(){
 }
 
 /* ---- 订单 ---- */
+var ORDER_CACHE = {};
 function loadOrders(){
   api("cn_mfg_poc.api.my_orders").then(function(r){
+    ORDER_CACHE = {};
     var h = "";
     r.orders.forEach(function(o){
+      ORDER_CACHE[o.name] = o;
       h += '<div class="row"><span><b>'+o.name+'</b><br><span class="tip">'+(o.business_type||'未分类')+' · '+o.customer+' · ¥'+o.grand_total+'</span></span>'
-        +  '<span style="text-align:right">'+tag(o.status)+'<br><span class="tip">交付 '+o.per_delivered+'% / 开票 '+o.per_billed+'%</span></span></div>';
+        +  '<span style="text-align:right">'+tag(o.status)+'<br><span class="tip">交付 '+o.per_delivered+'% / 开票 '+o.per_billed+'%</span>'
+        +  '<br><button class="btn gray" style="margin-top:6px;padding:5px 10px;width:auto;font-size:13px;" onclick="showOrderExec(\''+o.name+'\')">看进度</button></span></div>';
     });
     document.getElementById("ordersList").innerHTML = h || '<div class="empty">暂无可见订单</div>';
   }).catch(function(e){ document.getElementById("ordersList").innerHTML = '<div class="empty">'+e.message+'</div>'; });
 }
+function pctText(v){ if(v===null||v===undefined) return '-'; return (Math.round(Number(v)*10)/10)+'%'; }
+function showOrderExec(name){
+  var card = document.getElementById("orderExecCard");
+  card.style.display = "";
+  document.getElementById("orderExecTitle").textContent = name + " 执行进度";
+  document.getElementById("orderExecBody").innerHTML = '<div class="empty">加载中…</div>';
+  api("cn_mfg_poc.api.orders_summary", {sales_order:name}).then(function(d){
+    var t = d.progress||{}, phy = d.physical||{}, mats = d.materials||{}, docs = d.documents||{};
+    var sh = (mats.components||[]).filter(function(c){ return c.shortage > 0; });
+    var docsHtml = "";
+    [["material_request","采购申请"],["purchase_order","采购订单"],["purchase_receipt","采购入库"],
+     ["work_order","生产工单"],["stock_entry","库存事务"],["delivery_note","发货单"],
+     ["sales_invoice","销售发票"],["payment_entry","收款"]].forEach(function(p){
+      var rows = docs[p[0]]||[];
+      if(!rows.length) return;
+      docsHtml += '<div class="row"><span class="tip">'+p[1]+'</span><span class="tip">'+rows.map(function(x){return x.name;}).join('、')+'</span></div>';
+    });
+    document.getElementById("orderExecBody").innerHTML =
+        '<div class="row"><span>客户</span><span>'+(d.order.customer_name||'')+'</span></div>'
+      + '<div class="row"><span>承诺交期</span><span>'+String(d.order.delivery_date||'').slice(0,10)+'</span></div>'
+      + '<div class="row"><span>固定任务</span><span>共 '+(t.total||0)+' · 完成 '+(t.completed||0)+' · 逾期 '+(t.overdue||0)+' · 临期 '+(t.due_soon||0)+'</span></div>'
+      + '<div class="row"><span>实物完工入库</span><span><b>'+(phy.produced_qty||0)+'</b></span></div>'
+      + '<div class="row"><span>已发货</span><span>'+pctText(d.order.per_delivered)+'（'+(phy.delivered_qty||0)+'）</span></div>'
+      + '<div class="row"><span>一次发货</span><span>'+(phy.once_delivery?'是':'否')+'</span></div>'
+      + '<div class="row"><span>Job Card</span><span>'+(phy.job_cards||0)+' 张</span></div>'
+      + '<div class="row"><span>BOM 缺料</span><span>'+(sh.length? sh.map(function(c){return c.item_code+' 缺 '+c.shortage;}).join('、') : '无')+'</span></div>'
+      + '<div class="tip" style="margin-top:8px;">任务完成不等于入库；上面「实物完工入库」来自仓库原生入库单。</div>'
+      + (docsHtml ? '<div style="margin-top:10px;">'+docsHtml+'</div>' : '');
+  }).catch(function(e){
+    document.getElementById("orderExecBody").innerHTML = '<div class="empty">'+e.message+'</div>';
+  });
+}
 
-/* ---- 任务 ---- */
-var JOB_CACHE = {};
+/* ---- 生产任务（Project Task） ---- */
+var TASK_CACHE = {};
+var STATUS_OPTS = ["待开始","进行中","已完成","异常"];
+function dueTag(s){
+  var m = {"逾期":["o","逾期"],"临期":["o","临期"],"已完成":["g","已完成"],"正常":["","正常"]}[s] || ["",s||""];
+  return '<span class="tag '+m[0]+'">'+m[1]+'</span>';
+}
 function loadJobs(){
-  api("cn_mfg_poc.api.my_jobs").then(function(r){
-    JOB_CACHE = {};
+  api("cn_mfg_poc.api.production_tasks_mine", {limit:50}).then(function(r){
+    TASK_CACHE = {};
+    var s = r.summary||{};
+    document.getElementById("taskSummary").textContent =
+      "共 "+(s.total||0)+" 项 · 逾期 "+(s.overdue||0)+" · 临期 "+(s.due_soon||0)+" · 完成 "+(s.completed||0)+"（临期阈值 "+r.due_soon_days+" 天）";
     var h = "";
-    r.jobs.forEach(function(j){
-      JOB_CACHE[j.name] = j;
-      var done = j.total_completed_qty || 0, total = j.for_quantity || 0;
-      var pending = Math.max(total - done, 0);
+    (r.tasks||[]).forEach(function(t){
+      TASK_CACHE[t.name] = t;
+      var st = t.production_status || "待开始";
+      var opts = STATUS_OPTS.map(function(o){ return '<option value="'+o+'"'+(o===st?' selected':'')+'>'+o+'</option>'; }).join('');
+      h += '<div class="card" style="box-shadow:none;border:1px solid #eceef1;padding:12px;">'
+        +  '<div class="row" style="border:0;padding-top:0;"><span><b>'+t.subject+'</b><br><span class="tip">'+t.name
+        +  (t.source_sales_order? ' · '+t.source_sales_order : '')+'</span></span><span style="text-align:right">'+dueTag(t.due_state)+'</span></div>'
+        +  '<label>状态</label><select id="st-'+t.name+'">'+opts+'</select>'
+        +  '<label>目标完成日</label><input type="date" id="ed-'+t.name+'" value="'+String(t.exp_end_date||'').slice(0,10)+'">'
+        +  '<label>备注</label><input id="nt-'+t.name+'" placeholder="如：焊接完成，待打磨" value="'+(t.production_note||'').replace(/"/g,"&quot;")+'">'
+        +  '<button class="btn" onclick="saveTask(\''+t.name+'\')">保存</button>'
+        +  '</div>';
+    });
+    document.getElementById("jobsList").innerHTML = h || '<div class="empty">暂无分配给我的生产任务</div>';
+    loadJobCardsFallback();
+  }).catch(function(e){ document.getElementById("jobsList").innerHTML = '<div class="empty">'+e.message+'</div>'; });
+}
+function saveTask(name){
+  var st = document.getElementById("st-"+name).value;
+  var ed = document.getElementById("ed-"+name).value;
+  var nt = document.getElementById("nt-"+name).value.trim();
+  var data = {task:name, production_status:st, note:nt};
+  if(ed) data.exp_end_date = ed;
+  api("cn_mfg_poc.api.production_tasks_update", null, data).then(function(r){
+    toast("已保存："+r.production_status);
+    loadJobs();
+  }).catch(function(e){ toast(e.message); });
+}
+function loadJobCardsFallback(){
+  api("cn_mfg_poc.api.my_jobs").then(function(r){
+    var jobs = (r.jobs||[]);
+    var card = document.getElementById("jobCardCard");
+    if(!jobs.length){ card.style.display="none"; return; }
+    card.style.display = "";
+    var h = "";
+    jobs.forEach(function(j){
+      var done = j.total_completed_qty||0, total = j.for_quantity||0;
+      var pending = Math.max(total-done,0);
       h += '<div class="row"><span><b>'+j.operation+'</b> · '+j.name+'<br><span class="tip">'+j.production_item+' / '+j.workstation+' · '+done+'/'+total+'</span></span>'
         +  '<span style="text-align:right">'+tag(j.status)
         +  (pending>0 && j.status!=="Completed" ? '<br><button class="btn" style="margin-top:6px;padding:6px 12px;width:auto;" onclick="completeJob(\''+j.name+'\','+pending+')">报工 '+pending+'</button>' : '')
         +  '</span></div>';
     });
-    document.getElementById("jobsList").innerHTML = h || '<div class="empty">暂无分配给我的任务</div>';
-  }).catch(function(e){ document.getElementById("jobsList").innerHTML = '<div class="empty">'+e.message+'</div>'; });
+    document.getElementById("jobCardList").innerHTML = h;
+  }).catch(function(){ document.getElementById("jobCardCard").style.display="none"; });
 }
 function completeJob(name, pending){
   if(!confirm("确认完成 "+name+" 剩余 "+pending+" 件？")) return;
@@ -219,6 +314,12 @@ function loadStock(){
     document.getElementById("stockList").innerHTML = h || '<div class="empty">该范围暂无库存</div>';
   }).catch(function(e){ toast(e.message); });
 }
+
+/* ---- 首屏：生产人员默认进「我的任务」，其余进「我的订单」 ---- */
+(function(){
+  if(!document.querySelector("nav")) return;
+  switchTab("{{ default_tab or 'report' }}");
+})();
 </script>
 </body>
 </html>

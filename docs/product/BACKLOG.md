@@ -69,3 +69,12 @@
 | LM92-03 | 分角色执行时原生单据用 `insert(ignore_permissions=True)` 提交（POC 角色画像未逐一配置每个原生 DocType 的 submit DocPerm），仅以 `frappe.set_user` 记录真实 owner | S1，正式上线前需按最小 DocPerm 收紧，并复测各岗位在原生 Desk 的提交权限 |
 | LM92-04 | `Production Plan` 在新订单链路中未使用；概览只展示实际存在的原生单据，不虚填 | S2。若客户要求按计划自动下单，再评估 Production Plan → Material Request 自动化 |
 | LM92-05 | 财务金额在 `order_summary()` 中对非 Accounts/System Manager 角色剔除（含单据行 `grand_total`），但原生 Desk 的表单权限仍由 ERPNext 自身控制 | S2。上线前需核对原生 Sales Invoice / Payment Entry 的角色权限是否与概览口径一致 |
+
+## BUILD-93 实测后新增观察
+| 编号 | 事项 | 决定 |
+| --- | --- | --- |
+| LM93-01 | 企微绑定账号 `ligong`（李工）此前名下无任务，任务都挂在 `liugong@`（生产经理），导致 H5/机器人「我的任务」为空 | 已修复：由生产经理按工序真实分派（00006 三点 + 00007 三点）。上线时必须先做「企微成员 ↔ 生产负责人」绑定与分派，否则三入口看起来像坏了 |
+| LM93-02 | `Task.production_attachment` 已开放到 `production.tasks.update` 参数，但 H5 与机器人的文件上传未接通（依赖企微文件权限与 `File` 权限） | S1，待真实企微文件授权后补；缺授权期间附件在 PC 原生表单上传 |
+| LM93-03 | 缺料只按订单行 BOM 做单层计算，未展开多层半成品，也未处理替代料与批量合单采购 | S2，归 `BOM-01`；当前口径已在话术中写明，避免用户误以为算了整棵 BOM |
+| LM93-04 | `生产在制仓 - QC` 仍有历史 `RACK` 2 件余料（来自 BUILD-90 两段式流转，非重复过账；BUILD-92 领料 2 + 完工耗用 2 已平） | S2，BUILD-94 盘点时确认是否做期初调整，不在业务单据里手工抹平 |
+| LM93-05 | 李工（Manufacturing User）能按单看进度，是因为新增「本人是该单任务负责人」授权；订单里的采购/发票单据号对其仍按原生权限显示 | S2，若客户要求车间看到完整单据链，需评估是否放开只读单据号（不含金额） |

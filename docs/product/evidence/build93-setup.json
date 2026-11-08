@@ -1,0 +1,102 @@
+{
+ "created": {
+  "bom": "BOM-ASSY-X1-003",
+  "sales_order": "SAL-ORD-2026-00007",
+  "project": "PROJ-0004",
+  "task_count": 9
+ },
+ "assigned": [
+  {
+   "task": "TASK-2026-00038",
+   "subject": "机加工件加工"
+  },
+  {
+   "task": "TASK-2026-00039",
+   "subject": "内钣金焊接"
+  },
+  {
+   "task": "TASK-2026-00040",
+   "subject": "电控板组装"
+  }
+ ],
+ "skipped": [],
+ "summary": {
+  "sales_order": "SAL-ORD-2026-00007",
+  "bom": "BOM-ASSY-X1-003",
+  "project": "PROJ-0004",
+  "assigned": 3,
+  "member_tasks": 7,
+  "shortage_orders": 1
+ },
+ "errors": [],
+ "member_view": {
+  "user": "ligong@erpnext-poc.localhost",
+  "total": 7,
+  "tasks": [
+   {
+    "name": "TASK-2026-00019",
+    "subject": "机架焊接",
+    "sales_order": "SAL-ORD-2026-00005",
+    "due_state": "已完成",
+    "status": "已完成"
+   },
+   {
+    "name": "TASK-2026-00029",
+    "subject": "机加工件加工",
+    "sales_order": "SAL-ORD-2026-00006",
+    "due_state": "正常",
+    "status": "进行中"
+   },
+   {
+    "name": "TASK-2026-00038",
+    "subject": "机加工件加工",
+    "sales_order": "SAL-ORD-2026-00007",
+    "due_state": "正常",
+    "status": "待开始"
+   },
+   {
+    "name": "TASK-2026-00030",
+    "subject": "内钣金焊接",
+    "sales_order": "SAL-ORD-2026-00006",
+    "due_state": "正常",
+    "status": "待开始"
+   },
+   {
+    "name": "TASK-2026-00039",
+    "subject": "内钣金焊接",
+    "sales_order": "SAL-ORD-2026-00007",
+    "due_state": "正常",
+    "status": "待开始"
+   },
+   {
+    "name": "TASK-2026-00031",
+    "subject": "电控板组装",
+    "sales_order": "SAL-ORD-2026-00006",
+    "due_state": "正常",
+    "status": "待开始"
+   },
+   {
+    "name": "TASK-2026-00040",
+    "subject": "电控板组装",
+    "sales_order": "SAL-ORD-2026-00007",
+    "due_state": "正常",
+    "status": "待开始"
+   }
+  ]
+ },
+ "shortage_view": {
+  "user": "ligong@erpnext-poc.localhost",
+  "count": 1,
+  "orders": [
+   {
+    "so": "SAL-ORD-2026-00007",
+    "items": [
+     [
+      "RACK",
+      2.0
+     ]
+    ]
+   }
+  ]
+ }
+}

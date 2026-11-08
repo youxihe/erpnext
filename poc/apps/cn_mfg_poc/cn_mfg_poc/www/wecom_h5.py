@@ -11,3 +11,9 @@ def get_context(context):
     context.mock_mode = bool(s.mock_mode)
     context.csrf_token = frappe.sessions.get_csrf_token() if not context.is_guest else ""
     context.page_title = "轻智造 ERP 移动工作台"
+
+    # BUILD-93：按角色决定默认 Tab，避免非生产角色点进空的任务页
+    roles = set() if context.is_guest else set(frappe.get_roles())
+    staff = {"Employee", "Manufacturing User", "Manufacturing Manager", "System Manager"}
+    context.can_production = bool(roles & staff)
+    context.default_tab = "jobs" if context.can_production else "orders"

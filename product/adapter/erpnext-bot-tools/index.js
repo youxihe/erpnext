@@ -266,6 +266,55 @@ const FORMATTERS = {
       "以上为 ERPNext 服务端聚合，非模型估算。",
     ].join("\n");
   },
+  // ---- BUILD-93：轻制造（任务进度与实物入库严格分列，防止模型从任务数推断完工量）
+  order_execution(d) {
+    if (!d?.sales_order) return "未找到该生产订单。";
+    const t = d.tasks || {};
+    const phy = d.physical || {};
+    const sh = d.shortage_items || [];
+    const docs = d.documents || {};
+    const dn = (docs.delivery_note || []).join("、") || "暂无";
+    const se = (docs.stock_entry || []).join("、") || "暂无";
+    return [
+      `${d.sales_order}（${d.customer_name || ""}）· ${d.status || ""}`,
+      `承诺交期：${d.delivery_date || "-"} · 交付 ${pct(d.per_delivered)} / 开票 ${pct(d.per_billed)}`,
+      `固定任务：共 ${t.total ?? "-"} 项，已完成 ${t.completed ?? "-"}，逾期 ${t.overdue ?? "-"}，临期 ${t.due_soon ?? "-"}（项目 ${d.project || "-"}）`,
+      `【原生实物】完工入库 ${phy.produced_qty ?? "-"} · 已发货 ${phy.delivered_qty ?? "-"} · 一次发货：${phy.once_delivery ? "是" : "否"} · Job Card ${phy.job_cards ?? "-"} 张`,
+      `缺料：${sh.length ? sh.map((x) => `${x.item_code} 缺 ${x.shortage}`).join("、") : "无"}`,
+      `库存事务单：${se}`,
+      `发货单：${dn}`,
+      `注意：${d.authority_note || "完工入库以原生 Stock Entry 为准，任务完成不等于入库"}`,
+    ].join("\n");
+  },
+  my_production_tasks(d) {
+    const rows = d?.tasks || [];
+    const s = d?.summary || {};
+    if (!rows.length) return "当前没有分配给您的生产任务。";
+    const lines = rows.map(
+      (t) =>
+        `- ${t.subject}（${t.name}）· 目标 ${String(t.exp_end_date || "-").slice(0, 10)} · ${t.due_state} · ${t.production_status}${t.production_note ? ` · ${t.production_note}` : ""}`,
+    );
+    return [
+      `我的生产任务（${rows.length} 项；逾期 ${s.overdue || 0} / 临期 ${s.due_soon || 0} / 完成 ${s.completed || 0}，临期阈值 ${d.due_soon_days} 天）：`,
+      ...lines,
+      `注意：${d.authority_note || "任务完成不等于库存入库"}`,
+    ].join("\n");
+  },
+  materials_shortage(d) {
+    const rows = d?.orders || [];
+    if (!rows.length) return `当前未完成生产订单没有 BOM 缺料（公式：${d?.shortage_formula || "-"}）。`;
+    const lines = rows.flatMap((o) =>
+      (o.shortages || []).map(
+        (s) => `- ${o.sales_order}（${o.customer || ""}，交期 ${o.delivery_date || "-"}）：${s.item_code} 缺 ${s.shortage} / 需 ${s.required_qty}`,
+      ),
+    );
+    return [
+      `未完成生产订单缺料（${rows.length} 张订单 / ${lines.length} 项）：`,
+      ...lines,
+      `公式：${d.shortage_formula}`,
+      `注意：${d.authority_note || "缺料为真实单据计算，不代表已入库"}`,
+    ].join("\n");
+  },
 };
 
 const TOOLS = [
@@ -339,6 +388,48 @@ const TOOLS = [
       additionalProperties: false,
     },
     build: (p) => ({ days: p.days || 30 }),
+  },
+  // ---------------- BUILD-93：订单执行概览 / 九阶段任务 / BOM 缺料（只读）
+  {
+    name: "erp_order_execution",
+    module: "cn_mfg_poc.bot",
+    erp: "order_execution",
+    description:
+      "查询一张生产订单当前进度：九阶段任务完成与逾期、原生完工入库数量、一次发货、BOM 缺料、相关原生单号。用户问「这个订单到哪一步/生产进度/还缺料吗」时用。只读。注意：完工入库数量必须照搬返回值的 physical.produced_qty，绝不能由任务完成数推算或编造。",
+    parameters: {
+      type: "object",
+      properties: {
+        order: { type: "string", description: "销售订单号，如 SAL-ORD-2026-00006；不填取最近一张可见的生产订单" },
+      },
+      additionalProperties: false,
+    },
+    build: (p) => ({ order: p.order || "" }),
+  },
+  {
+    name: "erp_my_production_tasks",
+    module: "cn_mfg_poc.bot",
+    erp: "my_production_tasks",
+    description:
+      "查询当前用户负责的九阶段生产任务（Project Task）及目标日期、临期/逾期、状态、备注。用户问「我今天有什么生产任务/有没有逾期」时用。只读，不强制 Job Card。",
+    parameters: {
+      type: "object",
+      properties: { limit: { type: "number", description: "返回条数，默认 20" } },
+      additionalProperties: false,
+    },
+    build: (p) => ({ limit: p.limit || 20 }),
+  },
+  {
+    name: "erp_materials_shortage",
+    module: "cn_mfg_poc.bot",
+    erp: "materials_shortage",
+    description:
+      "按订单 BOM 与真实采购/入库/领料单据计算未完成生产订单的缺料。用户问「还缺什么料/哪张订单缺料」时用。只读。",
+    parameters: {
+      type: "object",
+      properties: { limit: { type: "number", description: "最多检查多少张订单，默认 10" } },
+      additionalProperties: false,
+    },
+    build: (p) => ({ limit: p.limit || 10 }),
   },
   // ---------------- BUILD-60：写操作的「预览/草稿」阶段（确认不在工具里，见 registerConfirmDispatch）
   {

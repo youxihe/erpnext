@@ -1,0 +1,176 @@
+{
+ "order_execution": {
+  "ok": true,
+  "nature": "REAL_ERP",
+  "tool": "order_execution",
+  "wecom_userid": "ligong",
+  "erp_user": "ligong@erpnext-poc.localhost",
+  "as_of": "2026-11-08 12:19:08.011031",
+  "data": {
+   "sales_order": "SAL-ORD-2026-00006",
+   "customer_name": "苏州华新装备有限公司",
+   "status": "Completed",
+   "business_type": "生产",
+   "delivery_date": "2026-11-22",
+   "per_delivered": 100.0,
+   "per_billed": 100.0,
+   "project": "PROJ-0003",
+   "tasks": {
+    "total": 9,
+    "completed": 1,
+    "overdue": 0,
+    "due_soon": 0
+   },
+   "physical": {
+    "produced_qty": 1.0,
+    "delivered_qty": 1.0,
+    "once_delivery": true,
+    "job_cards": 0
+   },
+   "shortage_items": [],
+   "documents": {
+    "material_request": [
+     "MAT-MR-2026-00002"
+    ],
+    "purchase_order": [
+     "PUR-ORD-2026-00002"
+    ],
+    "purchase_receipt": [
+     "MAT-PRE-2026-00016"
+    ],
+    "work_order": [
+     "MFG-WO-2026-00004"
+    ],
+    "stock_entry": [
+     "MAT-STE-2026-00011",
+     "MAT-STE-2026-00010"
+    ],
+    "delivery_note": [
+     "MAT-DN-2026-00005"
+    ],
+    "sales_invoice": [
+     "ACC-SINV-2026-00006"
+    ],
+    "payment_entry": [
+     "ACC-PAY-2026-00006"
+    ]
+   },
+   "authority_note": "任务状态只反映过程；完工入库与发货以 ERPNext 原生 Stock Entry / Delivery Note 为唯一凭据，不能由 Project Task 完成数推断制造完工量",
+   "nature": "REAL_ERP"
+  }
+ },
+ "my_production_tasks": {
+  "ok": true,
+  "nature": "REAL_ERP",
+  "tool": "my_production_tasks",
+  "wecom_userid": "ligong",
+  "erp_user": "ligong@erpnext-poc.localhost",
+  "as_of": "2026-11-08 12:19:08.031310",
+  "data": {
+   "user": "ligong@erpnext-poc.localhost",
+   "summary": {
+    "total": 7,
+    "overdue": 0,
+    "due_soon": 0,
+    "completed": 1
+   },
+   "due_soon_days": 3,
+   "tasks": [
+    {
+     "name": "TASK-2026-00019",
+     "subject": "机架焊接",
+     "sales_order": "SAL-ORD-2026-00005",
+     "exp_end_date": "2026-11-11 00:00:00",
+     "due_state": "已完成",
+     "production_status": "已完成",
+     "production_note": "焊接完成"
+    },
+    {
+     "name": "TASK-2026-00029",
+     "subject": "机加工件加工",
+     "sales_order": "SAL-ORD-2026-00006",
+     "exp_end_date": "2026-11-15 00:00:00",
+     "due_state": "正常",
+     "production_status": "进行中",
+     "production_note": "H5 更新：已上工装"
+    },
+    {
+     "name": "TASK-2026-00038",
+     "subject": "机加工件加工",
+     "sales_order": "SAL-ORD-2026-00007",
+     "exp_end_date": "2026-11-15 00:00:00",
+     "due_state": "正常",
+     "production_status": "待开始",
+     "production_note": ""
+    },
+    {
+     "name": "TASK-2026-00030",
+     "subject": "内钣金焊接",
+     "sales_order": "SAL-ORD-2026-00006",
+     "exp_end_date": "2026-11-18 00:00:00",
+     "due_state": "正常",
+     "production_status": "待开始",
+     "production_note": ""
+    },
+    {
+     "name": "TASK-2026-00039",
+     "subject": "内钣金焊接",
+     "sales_order": "SAL-ORD-2026-00007",
+     "exp_end_date": "2026-11-18 00:00:00",
+     "due_state": "正常",
+     "production_status": "待开始",
+     "production_note": ""
+    },
+    {
+     "name": "TASK-2026-00031",
+     "subject": "电控板组装",
+     "sales_order": "SAL-ORD-2026-00006",
+     "exp_end_date": "2026-11-20 00:00:00",
+     "due_state": "正常",
+     "production_status": "待开始",
+     "production_note": ""
+    },
+    {
+     "name": "TASK-2026-00040",
+     "subject": "电控板组装",
+     "sales_order": "SAL-ORD-2026-00007",
+     "exp_end_date": "2026-11-20 00:00:00",
+     "due_state": "正常",
+     "production_status": "待开始",
+     "production_note": ""
+    }
+   ],
+   "authority_note": "任务状态只反映过程；完工入库与发货以 ERPNext 原生 Stock Entry / Delivery Note 为唯一凭据，不能由 Project Task 完成数推断制造完工量",
+   "nature": "REAL_ERP"
+  }
+ },
+ "materials_shortage": {
+  "ok": true,
+  "nature": "REAL_ERP",
+  "tool": "materials_shortage",
+  "wecom_userid": "zhangsan",
+  "erp_user": "zhanggong@erpnext-poc.localhost",
+  "as_of": "2026-11-08 12:19:08.067174",
+  "data": {
+   "user": "zhanggong@erpnext-poc.localhost",
+   "count": 1,
+   "orders": [
+    {
+     "sales_order": "SAL-ORD-2026-00007",
+     "customer": "苏州华新装备有限公司",
+     "delivery_date": "2026-11-22",
+     "shortages": [
+      {
+       "item_code": "RACK",
+       "shortage": 2.0,
+       "required_qty": 2.0
+      }
+     ]
+    }
+   ],
+   "shortage_formula": "max(0, required - available_now - received_qty - issued_net)",
+   "authority_note": "任务状态只反映过程；完工入库与发货以 ERPNext 原生 Stock Entry / Delivery Note 为唯一凭据，不能由 Project Task 完成数推断制造完工量",
+   "nature": "REAL_ERP"
+  }
+ }
+}

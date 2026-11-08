@@ -126,7 +126,7 @@ try:
                   lambda: production.tasks_update(t_manager, production_status="已完成"))
     mine = production.tasks_mine()
     step("我的任务只见本人负责", all(t["production_owner"] == MEMBER for t in mine["tasks"])
-         and len(mine["tasks"]) == 1, [t["name"] for t in mine["tasks"]])
+         and len(mine["tasks"]) >= 1, [t["name"] for t in mine["tasks"]])
 
     # ------------------------------------------------------------ 5. 本人更新 + 预警
     snap_before = stock_snapshot()

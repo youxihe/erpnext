@@ -18,11 +18,27 @@ READ_ROLES = {
     "Accounts User", "Accounts Manager", "System Manager",
 }
 FINANCE_ROLES = {"Accounts User", "Accounts Manager", "System Manager"}
+# 缺料属于生产/仓库/采购职能；销售按单看进度即可，不开放全局缺料清单。
+SHORTAGE_ROLES = {
+    "Manufacturing User", "Manufacturing Manager", "Stock User", "Stock Manager",
+    "Purchase User", "Purchase Manager", "System Manager",
+}
+SENIOR_ROLES = {"System Manager", "Manufacturing Manager", "Stock Manager",
+                "Purchase Manager", "Accounts Manager", "Sales Manager"}
 SOURCE_WAREHOUSE = "原材料仓 - QC"
 
 
 def _roles():
     return set(frappe.get_roles())
+
+
+def _is_order_worker(sales_order):
+    """当前用户是否是这张订单上某个生产任务的负责人（生产人员按单看进度）。"""
+    return bool(frappe.db.exists("Task", {
+        "source_sales_order": sales_order,
+        "production_owner": frappe.session.user,
+        "status": ("not in", ["Template", "Cancelled"]),
+    }))
 
 
 def _require(cond, msg, exc=frappe.PermissionError):
@@ -99,8 +115,7 @@ def order_summary(sales_order):
     )
     _require(so, _("销售订单不存在：{0}").format(sales_order), frappe.ValidationError)
     _require(frappe.has_permission("Sales Order", "read", doc=sales_order)
-             or (_roles() & {"System Manager", "Manufacturing Manager", "Stock Manager",
-                             "Purchase Manager", "Accounts Manager"}),
+             or (_roles() & SENIOR_ROLES) or _is_order_worker(sales_order),
              _("无权查看该销售订单"))
 
     finance = bool(_roles() & FINANCE_ROLES)
@@ -267,15 +282,22 @@ def order_summary(sales_order):
 
 @frappe.whitelist(methods=["GET"])
 def materials_shortage(limit=20):
-    """BUILD-93 轻量契约：未完成生产订单的 BOM 缺料清单（真实单据来源）。"""
-    _require(_roles() & READ_ROLES, _("当前角色无权查看缺料"))
+    """BUILD-93 轻量契约：未完成生产订单的 BOM 缺料清单（真实单据来源）。
+
+    仅生产/仓库/采购/系统角色可用；普通生产人员只看到自己有任务的订单，
+    避免用一条命令扫出全公司订单的物料缺口。
+    """
+    _require(_roles() & SHORTAGE_ROLES, _("当前角色无权查看缺料（生产/仓库/采购职能）"))
     orders = frappe.get_all(
         "Sales Order", filters={"business_type": "生产", "docstatus": 1,
                                 "status": ("not in", ["Completed", "Cancelled", "Closed"])},
         fields=["name", "delivery_date", "customer_name"], order_by="delivery_date", limit=int(limit),
     )
+    senior = bool(_roles() & SENIOR_ROLES)
     result = []
     for o in orders:
+        if not senior and not _is_order_worker(o["name"]):
+            continue
         try:
             summary = order_summary(o["name"])
         except Exception:

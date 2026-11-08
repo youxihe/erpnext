@@ -66,4 +66,4 @@
 | 库存与任务解耦 | 任务全完成不会自动导致成品入库；采购、领料、制造完工和发货均有原生单号 | PASS(LOCAL)（BUILD-91 任务侧 SLE 73→73；BUILD-92 全链路 SLE 73→85 共 12 条且全部来自 PR/领料/完工/发货 4 张原生单据，任务完成后 Bin 一致、SLE 恒 85；Task/Project 无库存 doc_events） |
 | 整机一次发货 | Delivery Note 来自 Sales Order，仓库和发货状态真实一致 | PASS(LOCAL)（BUILD-92：`MAT-DN-2026-00005` 由 `make_delivery_note(SAL-ORD-2026-00006)` 生成，ASSY-X1 产成品仓 1→0，`per_delivered=100%`，1 张 DN） |
 | 订单执行概览 | BOM、缺料、采购、领料、生产任务、入库、发货及应收可按权限追溯 | PASS(LOCAL)（BUILD-92：`/order_execution` + `order_summary()`，9 个原生单据链接 HTTP 200，5 类角色金额隔离 26/26 + 44/44；财务仅 Accounts/System Manager 可见） |
-| PC/H5/Bot | 三端同一 Project Task、订单和库存；H5 更新任务 PC 可见，Bot 能查询 | TODO（REAL_WECOM 另验） |
+| PC/H5/Bot | 三端同一 Project Task、订单和库存；H5 更新任务 PC 可见，Bot 能查询 | PASS(LOCAL)（BUILD-93：`production.tasks.mine` / `orders.summary` / `materials.shortage` 三个契约三端共用；李工 H5 与 Bot 同 7 项任务、`SAL-ORD-2026-00006` 同 9 任务/`produced_qty=1`/`job_cards=0`；更新 `TASK-2026-00029` 后 SLE 恒 85；27/27 + 18/18 + 8/8；证据 BUILD-93.md）／真实企微通道 UAT 仍 REAL_WECOM_BLOCKED |
