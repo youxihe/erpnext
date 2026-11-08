@@ -27,6 +27,9 @@
   .tools a,.tools button{color:#c8d2e0;background:none;border:0;font-size:12.5px;text-decoration:none;padding:6px 9px;border-radius:5px;white-space:nowrap}
   .tools a:hover,.tools button:hover{background:rgba(255,255,255,.1);color:#fff}
   .avatar{width:26px;height:26px;border-radius:50%;background:#2b7cff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+  /* 退出登录：模型窗口/共用电脑切号时必须显眼，hover 用红底提示这是会中断会话的动作 */
+  .tools button.logout{border:1px solid rgba(255,255,255,.22);padding:5px 10px}
+  .tools button.logout:hover{background:#c0392b;border-color:#c0392b;color:#fff}
   /* ---------- 主体 ---------- */
   .body{display:flex;height:calc(100% - 52px)}
   .side{width:220px;flex:none;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow-y:auto}
@@ -86,6 +89,7 @@
     <a class="lbl" href="/desk/home" target="_blank">原生 Desk</a>
     <a class="lbl" href="/wecom_h5" target="_blank">企微 H5</a>
     <button id="btn-full" title="全屏">⛶</button>
+    <button id="btn-logout" class="logout" title="退出登录（当前账号：{{ user }}）">退出</button>
     <div class="avatar" title="{{ user }}">{{ user_fullname[:1] }}</div>
   </div>
 </div>
@@ -264,6 +268,26 @@ $('#btn-width').onclick = ()=>{
   }catch(e){}
 };
 $('#btn-full').onclick = ()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
+
+/* ---------- 退出登录 ----------
+   门户是 website 页面，不走 Desk 的 boot 数据，拿不到 frappe.csrf_token，
+   所以令牌由 cn_portal.get_context 注入。Frappe 只在会话已经下发过 csrf_token
+   之后才校验 POST，一旦进入校验就必须带对 X-Frappe-CSRF-Token，否则 400「无效请求」。 */
+const CSRF_TOKEN = "{{ csrf_token | e }}";
+$('#btn-logout').onclick = async ()=>{
+  const b = $('#btn-logout');
+  b.disabled = true; b.textContent = '退出中…';
+  try{
+    /* 路径必须是 /api/method/logout（v16 映射到 frappe.handler.logout，
+       allow_guest + methods=["POST"]）；写成 frappe.auth.logout 会 417「无法获取命令」。 */
+    await fetch('/api/method/logout', {
+      method:'POST',
+      headers:{'X-Frappe-CSRF-Token': CSRF_TOKEN, 'Accept':'application/json'},
+      credentials:'same-origin'
+    });
+  }catch(e){ /* 网络异常也照样跳登录页，避免用户卡在已失效的会话里 */ }
+  location.replace('/login');
+};
 
 /* ---------- 首页看板 ---------- */
 function renderCards(){

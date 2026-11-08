@@ -78,3 +78,13 @@ BUILD-90~94 已有本地 PASS 证据，**当前新任务为 RELEASE-95**：
 - 门户「客户与销售 → 客户报备/客户」已改为指向 `/customer_center`（`cn_portal._rewrite_crm_links`），Desk 仍可用。
 已知限制：DATA_SCOPE_GAP 未变（Desk 客户/订单仍无行级隔离）；海尔等历史客户 `lead_name` 缺失，报备人留空不猜；企微真人仍 REAL_WECOM_BLOCKED。
 证据：docs/product/evidence/CRM-100.md。
+
+## 2026-11-09 PORTAL-LOGOUT 已完成（ONLINE_PASS）
+- 门户 `/cn_portal` 与 `/role_profiles` 现在都有真实登出入口；纯模板改动，无 schema / 无数据变更。
+- **登出接口只能用 `/api/method/logout`**（v16 映射到 `frappe.handler.logout`，`allow_guest=True` + `methods=["POST"]`）。
+  `frappe.auth.logout` 不存在，调用返回 417「无法获取命令」——不要再写成这个。
+- www 页面没有 Desk 的 boot 数据，`frappe.csrf_token` 拿不到；令牌必须由 `get_context` 注入到模板再放进 `X-Frappe-CSRF-Token`。
+- **Frappe 的 CSRF 是惰性校验**：会话里还没有 `csrf_token` 时，POST 一律放行（未访问页面直接调 logout 会 200）；
+  一旦页面下发过 token，缺令牌或令牌错误都是 400 `CSRFTokenError`。写测试时反例必须先 GET 一次页面，否则会误判「没有 CSRF 保护」。
+- 其它中文页（customer_center / customer_detail / lead_detail）没有单独退出按钮，靠「返回门户」链路；如需统一，另开任务。
+证据：docs/product/evidence/PORTAL-LOGOUT.md。

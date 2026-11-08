@@ -30,12 +30,27 @@
   .muted{color:#8a94a6;font-size:11.5px}
   a{color:#2b7cff;text-decoration:none}
   a:hover{text-decoration:underline}
+  /* 切号动作区：本页文案要求「切换账号前请先退出登录」，所以退出入口必须在这页可达 */
+  .head{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  .head .acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .btn{border:1px solid #dfe4ec;background:#fff;border-radius:5px;padding:6px 12px;font-size:12px;color:#45505f;cursor:pointer;text-decoration:none;white-space:nowrap}
+  .btn:hover{border-color:#2b7cff;color:#2b7cff;text-decoration:none}
+  .btn.danger{border-color:#f0c9c4;color:#b43535}
+  .btn.danger:hover{background:#c0392b;border-color:#c0392b;color:#fff}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>业务岗位管理</h1>
-  <div class="sub">当前身份：{{ user_fullname }}（{{ user }}） · 只展示 7 个中文业务岗位档案，供测试时识别岗位与切换账号</div>
+  <div class="head">
+    <div>
+      <h1>业务岗位管理</h1>
+      <div class="sub">当前身份：{{ user_fullname }}（{{ user }}） · 只展示 7 个中文业务岗位档案，供测试时识别岗位与切换账号</div>
+    </div>
+    <div class="acts">
+      <a class="btn" href="/cn_portal">返回门户</a>
+      <button class="btn danger" id="btnLogout" title="退出当前账号后回到登录页">退出登录</button>
+    </div>
+  </div>
 
   <div class="warn">
     <b>这不是角色删除。</b>ERPNext / Frappe 的原生技术角色仍然完整保留（本站共 {{ native_roles }} 个 Role、{{ profile_total }} 个 Role Profile），
@@ -98,5 +113,22 @@
     <a href="/desk/role-profile" target="_blank">原生角色档案</a> 进入。
   </div>
 </div>
+<script>
+/* 令牌由 role_profiles.get_context 注入：www 页面没有 Desk 的 boot 数据。
+   /api/method/logout 在 v16 只接受 POST 且校验 CSRF，空 header 会 400。*/
+(function(){
+  var btn = document.getElementById("btnLogout");
+  if(!btn) return;
+  btn.addEventListener("click", function(){
+    btn.disabled = true;
+    btn.textContent = "退出中…";
+    fetch("/api/method/logout", {
+      method: "POST",
+      headers: {"X-Frappe-CSRF-Token": "{{ csrf_token | e }}", "Accept": "application/json"},
+      credentials: "same-origin"
+    }).catch(function(){}).then(function(){ location.replace("/login"); });
+  });
+})();
+</script>
 </body>
 </html>
