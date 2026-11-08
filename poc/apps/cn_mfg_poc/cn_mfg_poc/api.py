@@ -463,6 +463,16 @@ CONTRACTS = {
     "production.tasks.mine": "cn_mfg_poc.api.production_tasks_mine",
     "production.tasks.update": "cn_mfg_poc.api.production_tasks_update",
     "materials.shortage": "cn_mfg_poc.api.materials_shortage",
+    # UX-96A：管理端入口（模板维护 / 订单建项 / 任务分派）
+    "production.order.board": "cn_mfg_poc.api.production_order_board",
+    "production.order.create": "cn_mfg_poc.api.production_order_create",
+    "production.task.assign": "cn_mfg_poc.api.production_task_assign",
+    "production.template.detail": "cn_mfg_poc.api.production_template_detail",
+    "production.template.update": "cn_mfg_poc.api.production_template_update",
+    "production.template.move": "cn_mfg_poc.api.production_template_move",
+    # UX-96B：BOM 显式选用与双向追溯
+    "bom.options": "cn_mfg_poc.api.bom_options",
+    "bom.references": "cn_mfg_poc.api.bom_references",
 }
 
 
@@ -517,3 +527,85 @@ def materials_shortage(limit=20):
     from cn_mfg_poc import order_execution
 
     return dict(order_execution.materials_shortage(limit=limit), nature="REAL_ERP")
+
+
+# ---------------------------------------------------------------- UX-96A 管理契约
+# PC 管理台 / H5 / Bot 共用；底层仍在 cn_mfg_poc.production 做角色与数据域校验，
+# 这里只做契约命名、审计与 nature 标记，不改变权限口径。
+
+
+@frappe.whitelist(methods=["GET"])
+def production_order_board(sales_order):
+    """production.order.board：订单生产进度管理视图（订单 + 项目 + 任务 + 可管理标记）。"""
+    from cn_mfg_poc import production
+
+    return dict(production.order_board(sales_order), nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["POST"])
+def production_order_create(sales_order, start_date=None, owners=None):
+    """production.order.create：为生产类已确认订单生成九阶段进度（幂等）。"""
+    from cn_mfg_poc import production
+
+    result = production.create_project(sales_order=sales_order, start_date=start_date, owners=owners)
+    _audit("Sales Order", sales_order, "创建生产进度",
+           "project=%s replayed=%s" % (result.get("project"), result.get("replayed")))
+    return dict(result, user=frappe.session.user, nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["POST"])
+def production_task_assign(task, owner, exp_end_date=None, note=None):
+    """production.task.assign：生产经理改负责人/目标日期/备注，不触发库存。"""
+    from cn_mfg_poc import production
+
+    result = production.assign_task(task=task, owner=owner,
+                                    exp_end_date=exp_end_date, note=note)
+    _audit("Task", task, "分派生产任务", "owner=%s" % owner)
+    return dict(result, user=frappe.session.user, nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["GET"])
+def production_template_detail():
+    """production.template.detail：九阶段模板与模板任务（管理员）。"""
+    from cn_mfg_poc import production
+
+    return dict(production.template_detail(), user=frappe.session.user, nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["POST"])
+def production_template_update(task, subject=None, start=None, duration=None, description=None):
+    """production.template.update：维护模板阶段名称/排期（只影响未来新项目）。"""
+    from cn_mfg_poc import production
+
+    result = production.template_update_task(task=task, subject=subject, start=start,
+                                             duration=duration, description=description)
+    _audit("Task", task, "维护生产模板", json.dumps(result.get("updated"), ensure_ascii=False))
+    return dict(result, user=frappe.session.user, nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["POST"])
+def production_template_move(task, direction="up"):
+    """production.template.move：调整模板阶段顺序。"""
+    from cn_mfg_poc import production
+
+    return dict(production.template_move_task(task=task, direction=direction),
+                user=frappe.session.user, nature="REAL_ERP")
+
+
+# ---------------------------------------------------------------- UX-96B BOM 契约
+
+
+@frappe.whitelist(methods=["GET"])
+def bom_options(item_code):
+    """bom.options：草稿订单行可选的 BOM（同产品 / 已提交 / 有效），标明默认建议。"""
+    from cn_mfg_poc import bom_link
+
+    return dict(bom_link.bom_options(item_code), user=frappe.session.user, nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["GET"])
+def bom_references(bom):
+    """bom.references：显式引用本 BOM 的销售订单行与工单（按权限过滤）。"""
+    from cn_mfg_poc import bom_link
+
+    return dict(bom_link.bom_references(bom), user=frappe.session.user, nature="REAL_ERP")

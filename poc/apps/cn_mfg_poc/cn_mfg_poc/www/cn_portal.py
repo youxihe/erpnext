@@ -185,6 +185,13 @@ def _inject_production_links(menu, roles):
             "url": "/production_board?view=order",
             "kind": "URL", "target": "production_board",
         })
+    # UX-96A：模板维护只给生产经理/系统管理员，避免普通生产人员误改后续订单默认阶段
+    if roles & {"Manufacturing Manager", "System Manager"}:
+        items.append({
+            "label": "任务模板管理",
+            "url": "/production_template",
+            "kind": "URL", "target": "production_template",
+        })
     if not items:
         return menu
     _add_group(menu, ["设计与生产", "客户与销售", "工作台"], "固定生产进度", items)

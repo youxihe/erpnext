@@ -156,18 +156,25 @@ def order_summary(sales_order):
         fields=["item_code", "item_name", "qty", "rate", "amount", "warehouse", "bom_no",
                 "delivered_qty", "billed_amt", "delivery_date"], limit=50,
     )
+    from cn_mfg_poc.bom_link import bom_or_default, default_bom
+
     for r in so_items:
+        # UX-96B：把「本单已确认 BOM」和「产品默认建议 BOM」分成两个字段，禁止互相冒充
+        r["default_bom"] = default_bom(r["item_code"])
+        r["bom_confirmed"] = bool(r.get("bom_no"))
+        r["bom_state"] = ("explicit" if r.get("bom_no")
+                          else ("default_suggested" if r["default_bom"] else "none"))
         if not finance:
             r["rate"] = r["amount"] = r["billed_amt"] = None
 
     # ---- 物料覆盖（订单选用 BOM 为准）
     components = []
     bom_names = []
+    suggested_names = []
     for row in so_items:
-        bom_no = row.get("bom_no")
-        if not bom_no:
-            bom_no = frappe.db.get_value("BOM", {"item": row["item_code"], "is_active": 1,
-                                                 "docstatus": 1, "is_default": 1}, "name")
+        bom_no, source = bom_or_default(row["item_code"], row.get("bom_no"))
+        if source == "default" and bom_no:
+            suggested_names.append(bom_no)
         if not bom_no or not frappe.db.exists("BOM", bom_no):
             continue
         bom_names.append(bom_no)
@@ -178,6 +185,7 @@ def order_summary(sales_order):
                 "item_code": b.item_code, "required_qty": float(b.qty or 0) * factor,
                 "warehouse": b.get("source_warehouse") or SOURCE_WAREHOUSE,
                 "bom": bom_no, "bom_url": _desk_url("BOM", bom_no),
+                "bom_source": source,
                 # 用于按“已完工比例”折算剩余需求，不对外暴露内部键
                 "_order_item": row["item_code"], "_order_qty": float(row["qty"] or 0) or 1.0,
             })
@@ -276,6 +284,12 @@ def order_summary(sales_order):
 
     delivered_qty = _sum_qty(_submitted_rows(dn_rows, dn_docs))
     produced_qty = sum(float(w.get("produced_qty") or 0) for w in wo_rows)
+
+    # UX-96B：显式选用 vs 默认建议，两个集合绝不合并成一个模糊的“BOM”
+    explicit_boms = sorted({r["bom_no"] for r in so_items if r.get("bom_no")})
+    suggested_boms = sorted({r["default_bom"] for r in so_items
+                             if not r.get("bom_no") and r.get("default_bom")})
+    unconfirmed_items = [r["item_code"] for r in so_items if not r.get("bom_no")]
     return {
         "user": frappe.session.user,
         "finance_visible": finance,
@@ -291,7 +305,18 @@ def order_summary(sales_order):
             "per_billed": so["per_billed"],
         },
         "items": so_items,
-        "boms": [{"name": n, "url": _desk_url("BOM", n)} for n in sorted(set(bom_names))],
+        "boms": [{"name": n, "url": _desk_url("BOM", n),
+                  "source": "explicit" if n in explicit_boms else "suggested"}
+                 for n in sorted(set(bom_names))],
+        "bom_summary": {
+            "explicit_boms": [{"name": n, "url": _desk_url("BOM", n)} for n in explicit_boms],
+            "suggested_boms": [{"name": n, "url": _desk_url("BOM", n)} for n in suggested_boms],
+            "unconfirmed_items": unconfirmed_items,
+            "all_confirmed": not unconfirmed_items,
+            "note": ("“本单 BOM”= 订单行显式选用的 bom_no，是采购/生产的确认依据；"
+                     "“默认建议 BOM”= 该产品当前默认 BOM，仅用于预览物料需求，"
+                     "不代表本单已确认。"),
+        },
         "materials": {
             "components": components,
             "shortage_formula": _shortage_formula(),

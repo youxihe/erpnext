@@ -10,9 +10,11 @@
   .wrap{padding:18px 20px 40px;max-width:1400px}
   h1{font-size:18px;margin:0 0 3px}
   .sub{color:#8a94a6;font-size:12px;margin-bottom:16px}
-  .tabs{display:flex;gap:4px;border-bottom:1px solid #e8ecf2;margin-bottom:16px}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid #e8ecf2;margin-bottom:16px;align-items:flex-end}
   .tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:9px 16px;font-size:13.5px;color:#6b7688;cursor:pointer}
   .tabs button.on{color:#2b7cff;border-bottom-color:#2b7cff;font-weight:600}
+  .tabs a{margin-left:auto;font-size:12px;color:#2b7cff;text-decoration:none;padding:9px 4px}
+  .tabs a:hover{text-decoration:underline}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
   .kpi{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:12px 14px}
   .kpi .k{font-size:11.5px;color:#8a94a6}
@@ -38,6 +40,7 @@
   .btn:hover{border-color:#2b7cff;color:#2b7cff}
   .btn.pri{background:#2b7cff;border-color:#2b7cff;color:#fff}
   .btn.pri:hover{background:#1f68e0;color:#fff}
+  .btn[disabled]{opacity:.55;cursor:not-allowed}
   .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
   .bar select{min-width:280px}
   .msg{padding:9px 12px;border-radius:6px;font-size:12px;margin-bottom:12px;display:none}
@@ -47,6 +50,15 @@
   .empty{padding:26px;text-align:center;color:#8a94a6;font-size:12.5px}
   .hide{display:none!important}
   a.link{color:#2b7cff;text-decoration:none}
+  .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px;font-size:12.5px}
+  .meta .mi{color:#8a94a6;font-size:11.5px}
+  .meta .mv{font-weight:600;margin-top:2px}
+  .hint{background:#fff8e6;border:1px solid #ffe1a8;color:#8a5a12;border-radius:6px;padding:9px 12px;font-size:12px;margin-bottom:10px;line-height:1.8}
+  .hint.blue{background:#eef4ff;border-color:#cfe0ff;color:#2b5fa8}
+  .rowact{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}
+  .rowact select{max-width:130px}
+  .rowact input[type=date]{width:126px}
+  .rowact input.note{width:120px}
 </style>
 </head>
 <body>
@@ -57,6 +69,7 @@
   <div class="tabs">
     <button id="tab-mine" class="on" onclick="switchTab('mine')">我的任务</button>
     <button id="tab-order" onclick="switchTab('order')">订单生产进度</button>
+    {% if is_manager %}<a href="/production_template" target="_blank">任务模板管理 →</a>{% endif %}
   </div>
   <div id="msg" class="msg"></div>
 
@@ -74,25 +87,37 @@
     <div class="bar">
       <span>生产类销售订单：</span>
       <select id="soSelect" onchange="loadProgress()"></select>
-      <button class="btn" onclick="loadProgress()">刷新</button>
+      <button class="btn" onclick="loadOrders()">刷新列表</button>
+      {% if is_manager %}<a class="btn" href="/production_template" target="_blank" style="text-decoration:none;display:inline-block">任务模板管理</a>{% endif %}
     </div>
+
+    <div class="card" id="orderMetaCard">
+      <div class="meta" id="orderMeta"><div class="empty">请选择订单</div></div>
+    </div>
+
     <div class="kpis" id="orderKpis"></div>
+
     <div class="card">
       <h2>九阶段任务 <span class="tip" id="orderTip"></span></h2>
+      <div id="orderHint"></div>
       <div id="orderTable"><div class="empty">请选择订单</div></div>
+      <div id="orderActions" style="margin-top:12px"></div>
     </div>
   </section>
 
   <div class="note">
     本页只更新 <b>Project / Task</b> 的过程状态、目标日期、备注与附件；<b>任务标记完成不会触发任何库存过账</b>，
     成品入库、领料与发货仍以 ERPNext 原生 Work Order / Stock Entry / Delivery Note 为唯一凭据。<br>
-    逾期 = 目标日期已过且未完成；临期 = 未来 3 日内到期且未完成（阈值可由 site_config 的 production_due_soon_days 调整）。
+    模板修改只影响之后新建的生产进度；已生成订单任务需在本页逐单调整。逾期 = 目标日期已过且未完成；
+    临期 = 未来 3 日内到期且未完成（阈值可由 site_config 的 production_due_soon_days 调整）。
   </div>
 </div>
 
 <script>
 var CSRF = "{{ csrf_token }}";
+var IS_MANAGER = {{ "true" if is_manager else "false" }};
 var $ = function(s){ return document.querySelector(s); };
+var USERS = null;
 function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
   return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
 function api(method, params, data){
@@ -108,7 +133,7 @@ function api(method, params, data){
 }
 function toast(text, kind){
   var el = $("#msg"); el.className = "msg " + (kind || "ok"); el.textContent = text;
-  clearTimeout(el._t); el._t = setTimeout(function(){ el.className = "msg"; }, 4200);
+  clearTimeout(el._t); el._t = setTimeout(function(){ el.className = "msg"; }, 4500);
 }
 function switchTab(name){
   ["mine","order"].forEach(function(t){
@@ -161,39 +186,130 @@ function saveTask(name){
 }
 
 /* ---------- 订单生产进度 ---------- */
+var CURRENT = null;
 function loadOrders(){
   api("cn_mfg_poc.production.my_production_orders", {limit:100}).then(function(r){
     var opts = r.orders.map(function(o){
       return '<option value="' + esc(o.name) + '">' + esc(o.name) + " · " + esc(o.customer_name || "")
-           + " · 交期 " + fmt(o.delivery_date) + "</option>";
+           + " · 交期 " + fmt(o.delivery_date) + (o.has_project ? " · 已建进度" : " · 未建进度") + "</option>";
     }).join("");
+    var keep = $("#soSelect").value;
     $("#soSelect").innerHTML = opts || '<option value="">（无可见的生产类订单）</option>';
+    if(keep && $("#soSelect").querySelector('option[value="' + keep + '"]')) $("#soSelect").value = keep;
     if(r.orders.length) loadProgress();
-    else $("#orderTable").innerHTML = '<div class="empty">当前角色暂无可见的生产类订单</div>';
+    else {
+      $("#orderTable").innerHTML = '<div class="empty">当前角色暂无可见的生产类订单</div>';
+      $("#orderMeta").innerHTML = '<div class="empty">当前角色暂无可见的生产类订单</div>';
+    }
   }).catch(function(e){ $("#orderTable").innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '</div>'; });
 }
+
+function renderOrderMeta(o, project, projectUrl, projectStatus){
+  $("#orderMeta").innerHTML =
+      '<div><div class="mi">销售订单</div><div class="mv">' + esc(o.name) + '</div></div>'
+    + '<div><div class="mi">客户</div><div class="mv">' + esc(o.customer_name || o.customer || "—") + '</div></div>'
+    + '<div><div class="mi">交期 / 下单</div><div class="mv">' + fmt(o.delivery_date) + ' / ' + fmt(o.transaction_date) + '</div></div>'
+    + '<div><div class="mi">订单状态</div><div class="mv">' + esc(o.status) + '（docstatus ' + esc(o.docstatus) + '）</div></div>'
+    + '<div><div class="mi">生产进度项目</div><div class="mv">'
+    + (project ? '<a class="link" href="' + esc(projectUrl) + '" target="_blank">' + esc(project) + '</a>'
+               + (projectStatus ? ' · ' + esc(projectStatus) : '') : '<span style="color:#b8681f">尚未创建</span>')
+    + '</div></div>';
+}
+
 function loadProgress(){
   var so = $("#soSelect").value; if(!so) return;
-  api("cn_mfg_poc.production.order_progress", {sales_order:so}).then(function(r){
-    if(!r.started){
-      kpis($("#orderKpis"), [["生产进度","未启动"]]);
-      $("#orderTable").innerHTML = '<div class="empty">' + esc(r.message || "尚未建立生产进度项目") + '</div>';
+  api("cn_mfg_poc.production.order_board", {sales_order:so}).then(function(r){
+    CURRENT = r;
+    renderOrderMeta(r.order, r.project, r.project_url, r.project_status);
+    if(!r.project){
+      kpis($("#orderKpis"), [["生产进度","未启动"],["阶段总数","—"],["已完成","—"],["逾期","—"]]);
+      $("#orderTip").textContent = "按模板「" + r.template + "」生成九个阶段任务";
+      $("#orderHint").innerHTML = r.can_manage
+        ? (r.create_block_reason
+            ? '<div class="hint">' + esc(r.create_block_reason) + '</div>'
+            : '<div class="hint blue">该订单尚未建立生产进度。点击下方「创建生产进度」按模板生成 9 个阶段任务；重复点击不会重复生成。</div>')
+        : '<div class="hint blue">该订单尚未建立生产进度，请联系生产负责人创建。</div>';
+      $("#orderTable").innerHTML = '<div class="empty">尚未建立生产进度项目</div>';
+      $("#orderActions").innerHTML = (r.can_create
+        ? '<button class="btn pri" id="btnCreate" onclick="createProject()">创建生产进度</button>'
+        : '');
+      if(r.can_create) $("#btnCreate").disabled = false;
       return;
     }
     kpis($("#orderKpis"), [["阶段总数",r.total],["已完成",r.completed,"ok"],
                            ["逾期",r.overdue,"bad"],["临期",r.due_soon,"warn"]]);
-    $("#orderTip").textContent = "项目 " + r.project + " · 只读聚合 · 最近异常：" + (r.last_exception || "无");
+    $("#orderTip").textContent = "项目 " + r.project + " · 按模板顺序 · 临期阈值 " + r.due_soon_days + " 天";
+    $("#orderHint").innerHTML = IS_MANAGER
+      ? '<div class="hint blue">可直接修改负责人、目标日期与备注后点「保存」；也可到「任务模板管理」调整后续订单的默认阶段。'
+        + '任务完成不会产生库存过账。</div>'
+      : '<div class="hint blue">仅生产负责人/系统管理员可改派；您可在「我的任务」更新本人状态与备注。</div>';
+
     var h = '<table><thead><tr><th>阶段</th><th>负责人</th><th>目标日期</th><th>预警</th>'
-          + '<th>状态</th><th>完成时间</th><th>备注</th></tr></thead><tbody>';
+          + '<th>状态</th><th>完成时间</th><th>备注</th>'
+          + (IS_MANAGER ? '<th style="width:270px">管理操作</th>' : '') + '</tr></thead><tbody>';
     r.tasks.forEach(function(t){
-      h += '<tr><td><b>' + esc(t.subject) + '</b></td><td>' + esc(t.production_owner || "未分派") + '</td>'
+      h += '<tr><td><b>' + esc(t.subject) + '</b><br><span style="color:#8a94a6">' + esc(t.name) + '</span></td>'
+        +  '<td>' + esc(t.owner_name || "未分派") + '</td>'
         +  '<td>' + fmt(t.exp_end_date) + '</td><td>' + badge(t.due_state) + '</td>'
-        +  '<td>' + esc(t.production_status) + '</td><td>' + fmt(t.completed_on) + '</td>'
-        +  '<td>' + esc(t.production_note || "") + '</td></tr>';
+        +  '<td><span class="st st-' + esc(t.production_status) + '">' + esc(t.production_status) + '</span></td>'
+        +  '<td>' + fmt(t.completed_on) + '</td><td>' + esc(t.production_note || "") + '</td>';
+      if(IS_MANAGER){
+        h += '<td><div class="rowact">'
+          +  '<select id="o-' + esc(t.name) + '" data-cur="' + esc(t.production_owner || "") + '"></select>'
+          +  '<input type="date" id="d-' + esc(t.name) + '" value="' + esc(t.exp_end_date ? String(t.exp_end_date).slice(0,10) : "") + '">'
+          +  '<input class="note" id="m-' + esc(t.name) + '" placeholder="备注" value="' + esc(t.production_note || "") + '">'
+          +  '<button class="btn" onclick="saveAssign(\'' + esc(t.name) + '\')">保存</button></div></td>';
+      }
+      h += '</tr>';
     });
     $("#orderTable").innerHTML = h + "</tbody></table>";
+    $("#orderActions").innerHTML =
+        '<a class="btn" href="' + esc(r.project_url) + '" target="_blank" style="text-decoration:none;display:inline-block">打开项目 ' + esc(r.project) + '</a>'
+      + (IS_MANAGER ? ' <button class="btn" onclick="createProject()">补齐缺失阶段</button>' : '');
+    if(IS_MANAGER) fillOwners();
   }).catch(function(e){ toast(e.message, "err"); });
 }
+
+function fillOwners(){
+  var load = USERS ? Promise.resolve(USERS) : api("cn_mfg_poc.production.assignable_users", {limit:50})
+      .then(function(r){ USERS = r.users || []; return USERS; });
+  load.then(function(users){
+    document.querySelectorAll('#orderTable select[id^="o-"]').forEach(function(sel){
+      var cur = sel.dataset.cur || "";
+      var seen = {};
+      var opts = '<option value="">未分派</option>';
+      users.forEach(function(u){
+        seen[u.user] = 1;
+        opts += '<option value="' + esc(u.user) + '"' + (u.user === cur ? " selected" : "") + '>'
+             +  esc(u.name) + '</option>';
+      });
+      if(cur && !seen[cur]) opts += '<option value="' + esc(cur) + '" selected>' + esc(cur) + '</option>';
+      sel.innerHTML = opts;
+    });
+  }).catch(function(){});
+}
+
+function createProject(){
+  var so = $("#soSelect").value; if(!so) return;
+  var btn = $("#btnCreate"); if(btn) btn.disabled = true;
+  api("cn_mfg_poc.production.create_project", null, {sales_order: so}).then(function(r){
+    toast((r.replayed ? "该订单已有进度，未重复生成：" : "已创建生产进度：") + r.project + "（9 阶段）");
+    loadOrders();
+  }).catch(function(e){ toast(e.message, "err"); if(btn) btn.disabled = false; });
+}
+
+function saveAssign(name){
+  var owner = $("#o-" + name).value;
+  var due = $("#d-" + name).value;
+  var note = $("#m-" + name).value;
+  if(!owner){ toast("请选择负责人", "err"); return; }
+  api("cn_mfg_poc.production.assign_task", null,
+      {task:name, owner:owner, exp_end_date:due, note:note}).then(function(r){
+    toast("已保存 " + r.subject + " → " + (r.owner_name || owner) + "（库存未变动）");
+    loadProgress();
+  }).catch(function(e){ toast(e.message, "err"); });
+}
+
 var initial = new URLSearchParams(location.search).get("view");
 if(initial === "order") switchTab("order"); else loadMine();
 </script>

@@ -9,6 +9,7 @@
 """
 
 import json
+from urllib.parse import quote
 
 import frappe
 from frappe import _
@@ -59,6 +60,14 @@ def _roles():
 def _require(cond, msg, exc=frappe.PermissionError):
     if not cond:
         frappe.throw(msg, exc)
+
+
+def _desk_url(doctype, name=None):
+    """Desk 路由（与 order_execution._desk_url 同规则），供门户 iframe 与新窗口共用。"""
+    import re
+
+    slug = re.sub(r"[^a-z0-9]+", "-", (doctype or "").lower()).strip("-")
+    return "/desk/" + slug + ("/" + quote(str(name), safe="") if name else "")
 
 
 def _audit(subject_name, action, detail=None):
@@ -202,18 +211,36 @@ def setup_template():
         pt.insert(ignore_permissions=True)
         frappe.db.commit()
 
-    if not frappe.db.exists("Project Template", TEMPLATE_TYPE):
-        tmpl = frappe.new_doc("Project Template")
-        # Project Template 使用 prompt autoname，必须显式给 name
-        tmpl.name = TEMPLATE_TYPE
-        tmpl.project_type = TEMPLATE_TYPE
+    if frappe.db.exists("Project Template", TEMPLATE_TYPE):
+        # UX-96A：模板一旦存在就视为人工配置权威，迁移不得用 STAGES 常量覆盖
+        # （管理员可在 /production_template 改名/调顺序/改默认排期）。
+        # 只有模板被清空（0 行）时才按当前 STAGES 自愈补齐，避免空模板导致无法创建项目。
+        if frappe.db.exists("Project Template Task", {"parent": TEMPLATE_TYPE}):
+            created["project_template"] = TEMPLATE_TYPE
+            created["skipped_existing_template"] = True
+            return created
         for n in task_names:
-            tmpl.append("tasks", {"task": n})
-        tmpl.insert(ignore_permissions=True, set_name=TEMPLATE_TYPE)
+            frappe.get_doc({
+                "doctype": "Project Template Task",
+                "parent": TEMPLATE_TYPE,
+                "parenttype": "Project Template",
+                "parentfield": "tasks",
+                "task": n,
+            }).insert(ignore_permissions=True)
         frappe.db.commit()
-        created["project_template"] = tmpl.name
-    else:
         created["project_template"] = TEMPLATE_TYPE
+        created["repaired_empty_template"] = True
+        return created
+
+    tmpl = frappe.new_doc("Project Template")
+    # Project Template 使用 prompt autoname，必须显式给 name
+    tmpl.name = TEMPLATE_TYPE
+    tmpl.project_type = TEMPLATE_TYPE
+    for n in task_names:
+        tmpl.append("tasks", {"task": n})
+    tmpl.insert(ignore_permissions=True, set_name=TEMPLATE_TYPE)
+    frappe.db.commit()
+    created["project_template"] = tmpl.name
     return created
 
 
@@ -298,6 +325,7 @@ def create_project(sales_order, start_date=None, owners=None):
         if repaired:
             frappe.db.commit()
         return {"project": existing, "replayed": True,
+                "project_url": _desk_url("Project", existing),
                 "tasks": _project_tasks(existing), "repaired_tasks": repaired,
                 "message": _("该订单已有生产进度项目，未重复生成")}
 
@@ -322,6 +350,7 @@ def create_project(sales_order, start_date=None, owners=None):
     _audit(proj.name, "创建生产进度项目", "%s tasks=%d" % (sales_order, len(rows)))
     return {
         "project": proj.name,
+        "project_url": _desk_url("Project", proj.name),
         "replayed": False,
         "sales_order": sales_order,
         "template": TEMPLATE_TYPE,
@@ -418,8 +447,8 @@ def tasks_update(task, production_status=None, note=None, attachment=None, exp_e
 
 
 @frappe.whitelist(methods=["POST"])
-def assign_task(task, owner, exp_end_date=None):
-    """生产经理分派负责人 / 调整目标日期（本人更新之外的管理动作）。"""
+def assign_task(task, owner, exp_end_date=None, note=None):
+    """生产经理分派负责人 / 调整目标日期 / 修改备注（本人更新之外的管理动作）。"""
     _require(_roles() & MANAGER_ROLES, _("仅生产负责人/系统管理员可分派任务"))
     _require(frappe.db.exists("User", owner), _("ERP 用户不存在：{0}").format(owner), frappe.ValidationError)
     row = _task_row(task)
@@ -427,10 +456,14 @@ def assign_task(task, owner, exp_end_date=None):
     values = {"production_owner": owner}
     if exp_end_date:
         values["exp_end_date"] = exp_end_date
+    if note is not None:
+        values["production_note"] = note
+        values["description"] = note
     frappe.db.set_value("Task", task, values, update_modified=False)
     frappe.db.commit()
-    _audit(task, "分派生产任务", "%s %s" % (owner, exp_end_date or ""))
-    return {"task": task, **_serialize(_task_row(task))}
+    _audit(task, "分派生产任务", "%s %s %s" % (owner, exp_end_date or "", (note or "")[:40]))
+    names = _owner_names([{"production_owner": owner}])
+    return {"task": task, "owner_name": names.get(owner, owner), **_serialize(_task_row(task))}
 
 
 @frappe.whitelist(methods=["GET"])
@@ -444,8 +477,12 @@ def my_production_orders(limit=50):
         fields=["name", "customer_name", "delivery_date", "status", "project"],
         order_by="name desc", limit=int(limit),
     )
-    visible = [r for r in rows if is_manager
-               or frappe.has_permission("Sales Order", "read", doc=r["name"])]
+    visible = []
+    for r in rows:
+        if not (is_manager or frappe.has_permission("Sales Order", "read", doc=r["name"])):
+            continue
+        r["has_project"] = bool(r.get("project"))
+        visible.append(r)
     return {"user": frappe.session.user, "orders": visible}
 
 
@@ -480,4 +517,242 @@ def order_progress(sales_order):
             None,
         ),
         "tasks": result,
+    }
+
+
+# ---------------------------------------------------------------- UX-96A 管理入口
+# 用户现场反馈：/production_board?view=order 只能看，不知道模板在哪配、怎么给新订单
+# 生成任务、怎么改负责人。下面补充「模板管理 + 订单建项 + 分派」三组受控接口。
+# 全部只写 Project/Task（过程记录），不触碰 Stock Ledger / Bin / Work Order。
+
+
+def _require_manager():
+    _require(_roles() & MANAGER_ROLES, _("仅生产负责人/系统管理员可执行该操作"))
+
+
+def _owner_names(rows):
+    """把 owner 邮箱补成中文姓名，前端下拉和表格都按姓名展示。"""
+    users = {r.get("production_owner") for r in rows if r.get("production_owner")}
+    if not users:
+        return {}
+    return {
+        u["name"]: (u.get("full_name") or u["name"])
+        for u in frappe.get_all("User", filters={"name": ["in", list(users)]},
+                                fields=["name", "full_name"], limit=100)
+    }
+
+
+def _template_order():
+    """模板当前顺序 → {模板Task: 序号}，用于订单任务按阶段顺序展示。"""
+    try:
+        tmpl = frappe.get_doc("Project Template", TEMPLATE_TYPE)
+    except Exception:
+        return {}
+    return {r.task: i for i, r in enumerate(tmpl.tasks, 1)}
+
+
+@frappe.whitelist(methods=["GET"])
+def template_detail():
+    """九阶段模板详情（管理员/生产经理）。只读，不产生任何业务数据。"""
+    _require_manager()
+    _require(frappe.db.exists("Project Template", TEMPLATE_TYPE),
+             _("九阶段模板尚未初始化，请先执行 migrate"), frappe.ValidationError)
+    tmpl = frappe.get_doc("Project Template", TEMPLATE_TYPE)
+    rows = []
+    for i, row in enumerate(tmpl.tasks, 1):
+        t = frappe.db.get_value(
+            "Task", row.task,
+            ["name", "subject", "start", "duration", "description", "status", "is_template"],
+            as_dict=True,
+        )
+        if not t:
+            continue
+        rows.append({
+            "idx": i,
+            "task": t["name"],
+            "subject": t["subject"],
+            "start": t["start"],
+            "duration": t["duration"],
+            "description": t["description"],
+            "is_template": bool(t["is_template"]),
+        })
+    return {
+        "template": TEMPLATE_TYPE,
+        "project_type": tmpl.project_type,
+        "native_url": "/desk/project-template/" + quote(TEMPLATE_TYPE),
+        "tasks": rows,
+        "total": len(rows),
+        "can_manage": True,
+        "effect_note": _("模板修改只影响之后新建的生产进度；已生成订单任务保持原样，"
+                         "需要调整请到「订单生产进度」逐单修改。"),
+    }
+
+
+def _template_task_names():
+    tmpl = frappe.get_doc("Project Template", TEMPLATE_TYPE)
+    return [r.task for r in tmpl.tasks]
+
+
+@frappe.whitelist(methods=["POST"])
+def template_update_task(task, subject=None, start=None, duration=None, description=None):
+    """维护单个模板阶段：名称 / 相对开始天数 / 工期 / 描述。
+
+    只允许改 is_template=1 的模板 Task；项目下真实任务必须走订单视图的分派接口。
+    """
+    _require_manager()
+    _require(task in _template_task_names(), _("该任务不属于九阶段模板"), frappe.ValidationError)
+    td = frappe.get_doc("Task", task)
+    _require(td.is_template, _("该项目任务不是模板任务，不能在模板里修改"), frappe.ValidationError)
+
+    values = {}
+    if subject is not None:
+        subject = (subject or "").strip()
+        _require(subject, _("阶段名称不能为空"), frappe.ValidationError)
+        values["subject"] = subject
+    if start is not None:
+        try:
+            values["start"] = max(0, int(start))
+        except (TypeError, ValueError):
+            frappe.throw(_("开始天数必须是整数"), frappe.ValidationError)
+    if duration is not None:
+        try:
+            duration = int(duration)
+        except (TypeError, ValueError):
+            frappe.throw(_("工期必须是整数天"), frappe.ValidationError)
+        _require(duration >= 1, _("工期至少 1 天"), frappe.ValidationError)
+        values["duration"] = duration
+    if description is not None:
+        values["description"] = description
+    _require(values, _("没有需要修改的内容"), frappe.ValidationError)
+
+    td.update(values)
+    td.save(ignore_permissions=True)
+    # 子表 subject 是只读 fetch 字段，重命名后同步，避免模板页显示旧名称
+    if "subject" in values:
+        for row in frappe.get_all("Project Template Task",
+                                  filters={"parent": TEMPLATE_TYPE, "task": task},
+                                  fields=["name"], limit=1):
+            frappe.db.set_value("Project Template Task", row["name"], "subject",
+                                values["subject"], update_modified=False)
+    frappe.db.commit()
+    frappe.clear_cache(doctype="Task")
+    _audit(task, "修改生产阶段模板", json.dumps(values, ensure_ascii=False, default=str))
+    return {"template": TEMPLATE_TYPE, "task": task, "updated": values,
+            "effect": _("仅影响之后新建的生产进度项目")}
+
+
+@frappe.whitelist(methods=["POST"])
+def template_move_task(task, direction="up"):
+    """调整阶段顺序（上移/下移），顺序决定新项目生成任务的先后。"""
+    _require_manager()
+    direction = (direction or "").lower()
+    _require(direction in ("up", "down"), _("方向只能是 up 或 down"), frappe.ValidationError)
+    tmpl = frappe.get_doc("Project Template", TEMPLATE_TYPE)
+    rows = list(tmpl.tasks)
+    pos = next((i for i, r in enumerate(rows) if r.task == task), None)
+    _require(pos is not None, _("该任务不属于九阶段模板"), frappe.ValidationError)
+    target = pos - 1 if direction == "up" else pos + 1
+    _require(0 <= target < len(rows), _("已经到边界，无法继续移动"), frappe.ValidationError)
+
+    rows[pos], rows[target] = rows[target], rows[pos]
+    for i, row in enumerate(rows, 1):
+        frappe.db.set_value("Project Template Task", row.name, "idx", i, update_modified=False)
+    frappe.db.commit()
+    frappe.clear_cache(doctype="Project Template")
+    _audit(task, "调整生产阶段顺序", direction)
+    return {"template": TEMPLATE_TYPE, "moved": True, "direction": direction,
+            "order": [{"task": r.task, "idx": i} for i, r in enumerate(rows, 1)]}
+
+
+@frappe.whitelist(methods=["GET"])
+def assignable_users(limit=50):
+    """可被分派生产任务的用户（启用 + 生产相关角色），返回中文姓名。"""
+    _require(_roles() & READ_ROLES, _("当前角色无权查看人员"))
+    rows = frappe.db.sql(
+        """select distinct u.name, u.full_name
+           from `tabUser` u
+           join `tabHas Role` r on r.parent = u.name and r.parenttype = 'User'
+           where u.enabled = 1 and u.name not in ('Administrator', 'Guest')
+             and r.role in ('Manufacturing User', 'Manufacturing Manager', 'Employee')
+           order by u.full_name, u.name limit %s""",
+        (int(limit),), as_dict=True,
+    )
+    return {"users": [{"user": r["name"], "name": r["full_name"] or r["name"]} for r in rows]}
+
+
+@frappe.whitelist(methods=["GET"])
+def order_board(sales_order):
+    """订单生产进度管理视图：订单 + 项目 + 任务（含中文负责人、可管理标记）。
+
+    与 order_progress 的区别：这里面向管理动作，额外返回 can_manage / can_create /
+    可读原因与分派所需字段；只读聚合逻辑仍复用同一批 Task 记录。
+    """
+    _require(_roles() & READ_ROLES, _("当前角色无权查看订单生产进度"))
+    so = frappe.db.get_value(
+        "Sales Order", sales_order,
+        ["name", "customer", "customer_name", "status", "docstatus", "business_type",
+         "delivery_date", "transaction_date"], as_dict=True,
+    )
+    _require(so, _("销售订单不存在：{0}").format(sales_order), frappe.ValidationError)
+    can_manage = bool(_roles() & MANAGER_ROLES)
+    _require(frappe.has_permission("Sales Order", "read", doc=sales_order) or can_manage,
+             _("无权查看该销售订单"))
+
+    project = frappe.db.get_value(
+        "Project", {"sales_order": sales_order},
+        ["name", "status", "expected_start_date", "expected_end_date"], as_dict=True,
+    )
+    order = {
+        "name": so["name"],
+        "customer_name": so["customer_name"],
+        "status": so["status"],
+        "docstatus": so["docstatus"],
+        "business_type": so["business_type"],
+        "delivery_date": str(so["delivery_date"]) if so["delivery_date"] else None,
+        "transaction_date": str(so["transaction_date"]) if so["transaction_date"] else None,
+        "url": _desk_url("Sales Order", sales_order),
+    }
+
+    block = None
+    if so["docstatus"] != 1:
+        block = _("订单尚未提交确认，不能生成生产进度")
+    elif so["business_type"] != "生产":
+        block = _("只有生产类订单才生成生产进度")
+
+    tasks = []
+    if project:
+        order_map = _template_order()
+        rows = frappe.get_all(
+            "Task", filters={"project": project["name"],
+                             "status": ("not in", ["Template", "Cancelled"])},
+            fields=["name", "subject", "project", "source_sales_order", "production_owner",
+                    "production_status", "status", "exp_start_date", "exp_end_date",
+                    "completed_on", "production_note", "template_task"],
+            limit=100,
+        )
+        rows.sort(key=lambda r: (order_map.get(r.get("template_task"), 99), r["name"]))
+        names = _owner_names(rows)
+        for r in rows:
+            d = _serialize(r)
+            d["owner_name"] = names.get(r.get("production_owner")) or (r.get("production_owner") or "")
+            d["template_index"] = order_map.get(r.get("template_task"))
+            tasks.append(d)
+
+    return {
+        "user": frappe.session.user,
+        "order": order,
+        "project": project["name"] if project else None,
+        "project_url": _desk_url("Project", project["name"]) if project else None,
+        "project_status": project["status"] if project else None,
+        "template": TEMPLATE_TYPE,
+        "can_manage": can_manage,
+        "can_create": bool(can_manage and not block),
+        "create_block_reason": block,
+        "due_soon_days": due_soon_days(),
+        "tasks": tasks,
+        "total": len(tasks),
+        "completed": sum(1 for r in tasks if r["due_state"] == "已完成"),
+        "overdue": sum(1 for r in tasks if r["due_state"] == "逾期"),
+        "due_soon": sum(1 for r in tasks if r["due_state"] == "临期"),
+        "stock_note": _("任务完成只记录过程状态，不产生库存过账；入库仍以 Work Order / Stock Entry 为准"),
     }

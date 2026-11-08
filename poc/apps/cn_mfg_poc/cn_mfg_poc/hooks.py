@@ -170,8 +170,18 @@ app_license = "mit"
 # BUILD-80：四类订单服务端约束，PC / H5 / Bot / REST 任一入口均生效
 doc_events = {
     "Sales Order": {
-        "validate": "cn_mfg_poc.order_rules.validate_sales_order",
+        # order_rules 负责四类订单/业务类型校验；bom_link 负责行级 BOM 的一致性与受控变更
+        "validate": [
+            "cn_mfg_poc.order_rules.validate_sales_order",
+            "cn_mfg_poc.bom_link.validate_sales_order_bom",
+        ],
     }
+}
+
+# UX-96B：销售订单「选择本单 BOM」与 BOM「引用关系」入口
+doctype_js = {
+    "Sales Order": "public/js/sales_order_bom.js",
+    "BOM": "public/js/bom_references.js",
 }
 
 # Scheduled Tasks

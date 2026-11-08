@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }} · 启程智造 ERP</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f6f9;color:#1f2937;font:13px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{padding:18px 20px 40px;max-width:1180px}
+  h1{font-size:18px;margin:0 0 3px}
+  .sub{color:#8a94a6;font-size:12px;margin-bottom:16px}
+  .card{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:14px 16px;margin-bottom:14px}
+  .card h2{font-size:14px;margin:0 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card h2 .tip{font-size:11px;font-weight:400;color:#8a94a6}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:8px;border-bottom:1px solid #f0f2f6;vertical-align:middle}
+  th{color:#8a94a6;font-weight:500;background:#fafbfd;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  input,textarea{border:1px solid #dfe4ec;border-radius:5px;padding:5px 7px;font-size:12px;font-family:inherit;background:#fff}
+  input[type=number]{width:64px}
+  input.subj{width:170px;font-weight:600}
+  textarea{width:100%;min-height:34px;resize:vertical}
+  .btn{border:1px solid #dfe4ec;background:#fff;border-radius:5px;padding:5px 11px;font-size:12px;cursor:pointer;color:#45505f;text-decoration:none;display:inline-block}
+  .btn:hover{border-color:#2b7cff;color:#2b7cff}
+  .btn.pri{background:#2b7cff;border-color:#2b7cff;color:#fff}
+  .btn.pri:hover{background:#1f68e0;color:#fff}
+  .btn.mini{padding:2px 7px;font-size:11px}
+  .msg{padding:9px 12px;border-radius:6px;font-size:12px;margin-bottom:12px;display:none}
+  .msg.err{display:block;background:#fdecec;color:#b43535}
+  .msg.ok{display:block;background:#e6f6ee;color:#166b46}
+  .note{background:#fff;border:1px solid #e8ecf2;border-left:3px solid #2b7cff;border-radius:6px;padding:10px 14px;font-size:12px;color:#5b6675;line-height:1.9}
+  .empty{padding:26px;text-align:center;color:#8a94a6;font-size:12.5px}
+  .idx{color:#8a94a6;width:38px}
+  .op{white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>任务模板管理</h1>
+  <div class="sub">当前身份：{{ user_fullname }}（{{ user }}） · 修改只影响之后新建的生产进度，不覆盖已生成订单任务</div>
+
+  <div id="msg" class="msg"></div>
+
+  <div class="card">
+    <h2>
+      模板：<span id="tmplName">加载中…</span>
+      <span class="tip" id="tmplTip"></span>
+      <span style="margin-left:auto"><a class="btn" id="nativeLink" href="#" target="_blank">打开原生 Project Template</a></span>
+    </h2>
+    <div class="note" id="effectNote" style="margin-bottom:12px"></div>
+    <div id="tmplTable"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="note">
+    字段说明：<b>开始</b> = 相对项目开始日的第几天；<b>工期</b> = 持续天数，两者共同决定新项目中每个任务的计划起止日期。<br>
+    调整顺序会影响新项目生成任务的先后（不影响已建项目）。改名后模板表会立即刷新，已生成的历史任务保留原名称。
+  </div>
+</div>
+
+<script>
+var CSRF = "{{ csrf_token }}";
+var $ = function(s){ return document.querySelector(s); };
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function api(method, params, data){
+  var url = "/api/method/" + method, qs = [];
+  if(params){ for(var k in params){ qs.push(k + "=" + encodeURIComponent(params[k])); } url += "?" + qs.join("&"); }
+  var opt = { method: data ? "POST" : "GET", headers: { "Accept": "application/json" } };
+  if(data){ opt.headers["Content-Type"] = "application/json";
+           opt.headers["X-Frappe-CSRF-Token"] = CSRF; opt.body = JSON.stringify(data); }
+  return fetch(url, opt).then(function(r){ return r.json().then(function(j){
+    if(!r.ok){ var m = ""; try { m = JSON.parse(JSON.parse(j._server_messages)[0]).message; }
+              catch(e){ m = j.exception || ("HTTP " + r.status); } throw new Error(m); }
+    return j.message; }); });
+}
+function toast(text, kind){
+  var el = $("#msg"); el.className = "msg " + (kind || "ok"); el.textContent = text;
+  clearTimeout(el._t); el._t = setTimeout(function(){ el.className = "msg"; }, 4500);
+}
+
+var TASKS = [];
+function load(){
+  api("cn_mfg_poc.production.template_detail").then(function(r){
+    TASKS = r.tasks || [];
+    $("#tmplName").textContent = r.template;
+    $("#tmplTip").textContent = "共 " + r.total + " 个阶段 · 项目类型 " + r.project_type;
+    $("#nativeLink").href = r.native_url;
+    $("#effectNote").textContent = r.effect_note;
+    render();
+  }).catch(function(e){
+    $("#tmplTable").innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '</div>';
+  });
+}
+
+function render(){
+  if(!TASKS.length){ $("#tmplTable").innerHTML = '<div class="empty">模板暂无阶段</div>'; return; }
+  var h = '<table><thead><tr><th class="idx">顺序</th><th>阶段名称</th><th>开始(天)</th><th>工期(天)</th>'
+        + '<th>默认描述</th><th class="op">操作</th></tr></thead><tbody>';
+  TASKS.forEach(function(t, i){
+    h += '<tr><td class="idx">' + (i+1) + '</td>'
+      +  '<td><input class="subj" id="s-' + esc(t.task) + '" value="' + esc(t.subject) + '"></td>'
+      +  '<td><input type="number" min="0" id="st-' + esc(t.task) + '" value="' + esc(t.start) + '"></td>'
+      +  '<td><input type="number" min="1" id="du-' + esc(t.task) + '" value="' + esc(t.duration) + '"></td>'
+      +  '<td><textarea id="de-' + esc(t.task) + '" rows="1">' + esc(t.description || "") + '</textarea></td>'
+      +  '<td class="op">'
+      +  '<button class="btn mini" onclick="move(\'' + esc(t.task) + '\',\'up\')" ' + (i === 0 ? "disabled" : "") + '>↑</button> '
+      +  '<button class="btn mini" onclick="move(\'' + esc(t.task) + '\',\'down\')" ' + (i === TASKS.length-1 ? "disabled" : "") + '>↓</button> '
+      +  '<button class="btn pri mini" onclick="save(\'' + esc(t.task) + '\')">保存</button>'
+      +  '</td></tr>';
+  });
+  $("#tmplTable").innerHTML = h + "</tbody></table>";
+}
+
+function save(task){
+  var payload = {
+    task: task,
+    subject: $("#s-" + task).value,
+    start: Number($("#st-" + task).value || 0),
+    duration: Number($("#du-" + task).value || 1),
+    description: $("#de-" + task).value
+  };
+  api("cn_mfg_poc.production.template_update_task", null, payload).then(function(r){
+    toast("已保存阶段「" + payload.subject + "」（仅影响之后新建的进度）");
+    load();
+  }).catch(function(e){ toast(e.message, "err"); });
+}
+
+function move(task, direction){
+  api("cn_mfg_poc.production.template_move_task", null, {task:task, direction:direction}).then(function(){
+    load();
+  }).catch(function(e){ toast(e.message, "err"); });
+}
+
+load();
+</script>
+</body>
+</html>
