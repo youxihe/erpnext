@@ -1,0 +1,142 @@
+{
+ "sales_order": "SAL-ORD-2026-00008",
+ "vouchers": [
+  {
+   "voucher_no": "MAT-PRE-2026-00017",
+   "purpose": "采购入库（RACK 到原材料仓）",
+   "sle_count": 1,
+   "rows": [
+    {
+     "item_code": "RACK",
+     "warehouse": "原材料仓 - QC",
+     "actual_qty": 2.0,
+     "qty_after": 2.0,
+     "posting_date": "2026-11-08"
+    }
+   ]
+  },
+  {
+   "voucher_no": "MAT-STE-2026-00012",
+   "purpose": "领料（原材料仓 → 生产在制仓）",
+   "sle_count": 6,
+   "rows": [
+    {
+     "item_code": "RACK",
+     "warehouse": "原材料仓 - QC",
+     "actual_qty": -2.0,
+     "qty_after": 0.0,
+     "posting_date": "2026-11-08"
+    },
+    {
+     "item_code": "SENSOR",
+     "warehouse": "原材料仓 - QC",
+     "actual_qty": -1.0,
+     "qty_after": 38.0,
+     "posting_date": "2026-11-08"
+    },
+    {
+     "item_code": "FASTENER",
+     "warehouse": "原材料仓 - QC",
+     "actual_qty": -4.0,
+     "qty_after": 42.0,
+     "posting_date": "2026-11-08"
+    },
+    {
+     "item_code": "RACK",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": 2.0,
+     "qty_after": 4.0,
+     "posting_date": "2026-11-08"
+    },
+    {
+     "item_code": "SENSOR",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": 1.0,
+     "qty_after": 2.0,
+     "posting_date": "2026-11-08"
+    },
+    {
+     "item_code": "FASTENER",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": 4.0,
+     "qty_after": 8.0,
+     "posting_date": "2026-11-08"
+    }
+   ]
+  },
+  {
+   "voucher_no": "MAT-STE-2026-00013",
+   "purpose": "Manufacture 完工入库（在制仓耗料 + 成品入成品仓）",
+   "sle_count": 4,
+   "rows": [
+    {
+     "item_code": "RACK",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": -2.0,
+     "qty_after": 2.0,
+     "posting_date": "2026-11-08"
+    },
+    {
+     "item_code": "SENSOR",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": -1.0,
+     "qty_after": 1.0,
+     "posting_date": "2026-11-08"
+    },
+    {
+     "item_code": "FASTENER",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": -4.0,
+     "qty_after": 4.0,
+     "posting_date": "2026-11-08"
+    },
+    {
+     "item_code": "ASSY-X1",
+     "warehouse": "产成品仓 - QC",
+     "actual_qty": 1.0,
+     "qty_after": 1.0,
+     "posting_date": "2026-11-08"
+    }
+   ]
+  },
+  {
+   "voucher_no": "MAT-DN-2026-00006",
+   "purpose": "整机一次发货（成品仓出库）",
+   "sle_count": 1,
+   "rows": [
+    {
+     "item_code": "ASSY-X1",
+     "warehouse": "产成品仓 - QC",
+     "actual_qty": -1.0,
+     "qty_after": 0.0,
+     "posting_date": "2026-11-08"
+    }
+   ]
+  }
+ ],
+ "totals": {
+  "sle_total": 97,
+  "sle_for_this_order": 12,
+  "job_cards": 0
+ },
+ "task_gate": {
+  "tasks_completed": 9,
+  "fg_now": 0.0,
+  "manufacture_produced_qty": 1.0,
+  "note": "9 项任务全部完成时成品仓仍是 0；+1 只发生在 MAT-STE-2026-00013 过账时"
+ },
+ "residual_wip": [
+  {
+   "item_code": "FASTENER",
+   "actual_qty": 4.0
+  },
+  {
+   "item_code": "RACK",
+   "actual_qty": 2.0
+  },
+  {
+   "item_code": "SENSOR",
+   "actual_qty": 1.0
+  }
+ ]
+}

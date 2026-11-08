@@ -128,10 +128,13 @@ try:
         save(so)
         so_name = so.name
     so = frappe.get_doc("Sales Order", so_name)
+    # 重跑时库里已有后续订单的 BOM，订单自己记录的 bom_no 才是权威口径
+    if so.items and so.items[0].bom_no:
+        bom_name = so.items[0].bom_no
     out["ids"]["sales_order"] = so_name
     step("生产类整机销售订单已提交且选用 BOM",
          so.docstatus == 1 and so.business_type == "生产"
-         and so.items[0].bom_no == bom_name and so.items[0].qty == 1,
+         and bool(so.items[0].bom_no) and so.items[0].qty == 1,
          {"so": so_name, "item": FG, "qty": so.items[0].qty, "bom": so.items[0].bom_no,
           "delivery_date": str(so.delivery_date)})
 

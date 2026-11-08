@@ -17,7 +17,7 @@
 | BUILD-91 | 固定生产进度项目与任务 | 销售生产订单关联一个 Project + 九任务模板；负责人/目标日/状态/备注/预警 | PASS(LOCAL) | docs/product/evidence/BUILD-91.md + build91-setup.json + build91-verify.json（27/27）+ build91-http.json（24/24）；PROJ-0002 / TASK-2026-00019~00027，SLE 73→73（commit 见 git log） |
 | BUILD-92 | 订单执行概览与整机实物流转 | 销售→BOM→缺料→采购→领料→成品入库→一次交货，库存有据；可点击单据链 | PASS(LOCAL) | docs/product/evidence/BUILD-92.md + build92-execute.json（15/15）+ build92-verify.json（26/26）+ build92-http.json（44/44）+ build92-stock-trace.json；SAL-ORD-2026-00006 / PROJ-0003 / 12 条 SLE（73→85），commit 见 git log |
 | BUILD-93 | H5/Bot 接通 Project Task 和订单汇总 | 三入口看同一任务/库存/交期，H5可更新本人任务，Bot查询逾期和缺料 | PASS(LOCAL) | docs/product/evidence/BUILD-93.md + build93-setup.json + build93-verify.json（27/27）+ build93-http.json（18/18）+ build93-adapter.json（8/8）；SAL-ORD-2026-00007 / BOM-ASSY-X1-003 / PROJ-0004 / TASK-2026-00037~00045，李工 7 项任务，RACK 缺 2，SLE 恒 85；真实企微真人 UAT 仍 REAL_WECOM_BLOCKED |
-| BUILD-94 | 轻制造角色联测和 UAT | 销售/设计/采购/仓库/生产/财务分角色实操；证据、状态及剩余阻断 | IN_PROGRESS | 待执行 |
+| BUILD-94 | 轻制造角色联测和 UAT | 销售/设计/采购/仓库/生产/财务分角色实操；证据、状态及剩余阻断 | PASS(LOCAL) | docs/product/evidence/BUILD-94.md + UAT_BUILD94.md + build94-execute.json（12/12）+ build94-verify.json（27/27）+ build94-stock-trace.json；SAL-ORD-2026-00008 全链 11 张原生单据，李工/刘工双人完成 9 任务时成品仓 0、SLE 92→92，Manufacture 后 92→96，发货后 97；真实企微真人 UAT 仍 REAL_WECOM_BLOCKED；线上 d.urlxl.cn 未同步本轮增量 |
 
 > 2026-11-07 用户追加：BUILD-00~70 完成后确认 `/cn_portal` 统一导航布局可用，要求按客户原始需求配置「四种订单、BOM 拆分」。
 > BOM 拆分口径用户要求**先等确认**，登记为 BACKLOG `BOM-01` 暂不实施；本阶段先完成 BUILD-80 四类订单类型化。

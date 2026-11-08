@@ -1,0 +1,286 @@
+{
+ "steps": [
+  {
+   "name": "销售→工艺→采购→仓库→生产→入库→发货→财务 全链单据齐全",
+   "ok": true,
+   "detail": "{'sales_order': True, 'project': True, 'material_request': True, 'purchase_order': True, 'purchase_receipt': True, 'work_order': True, 'material_transfer': True, 'manufacture': True, 'delivery_note': True, 'sales_invoice': True, 'payment_entry': True}"
+  },
+  {
+   "name": "订单状态与交付/开票比例真实一致",
+   "ok": true,
+   "detail": "{'status': 'Completed', 'per_delivered': 100.0, 'per_billed': 100.0, 'amount': 5000.0, 'customer': '苏州华新装备有限公司', 'delivery_date': '2026-11-22'}"
+  },
+  {
+   "name": "九阶段任务由两名生产人员全部完成",
+   "ok": true,
+   "detail": "{'total': 9, 'owners': ['ligong@erpnext-poc.localhost', 'liugong@erpnext-poc.localhost'], 'completed': 9}"
+  },
+  {
+   "name": "九项任务全完成时成品仓为 0（入库只认 Manufacture）",
+   "ok": true,
+   "detail": "{'fg_now': 0.0, 'wo_produced': 1.0, 'note': '成品已由 DN 一次性发出，当前成品仓 0'}"
+  },
+  {
+   "name": "成品入库凭据是原生 Manufacture 事务（含成品行 + 耗料行）",
+   "ok": true,
+   "detail": "[{'item_code': 'SENSOR', 'warehouse': '生产在制仓 - QC', 'actual_qty': -1.0}, {'item_code': 'RACK', 'warehouse': '生产在制仓 - QC', 'actual_qty': -2.0}, {'item_code': 'ASSY-X1', 'warehouse': '产成品仓 - QC', 'actual_qty': 1.0}, {'item_code': 'FASTENER', 'warehouse': '生产在制仓 - QC', 'actual_qty': -4.0}]"
+  },
+  {
+   "name": "本次库存变动全部来自 4 张原生单据且条数符合预期",
+   "ok": true,
+   "detail": "{'MAT-DN-2026-00006': 1, 'MAT-PRE-2026-00017': 1, 'MAT-STE-2026-00012': 6, 'MAT-STE-2026-00013': 4, 'note': '领料一进一出=3 物料×2 仓=6 条'}"
+  },
+  {
+   "name": "四类订单都可用（各有已提交订单）",
+   "ok": true,
+   "detail": "{'生产': 5, '耗材': 1, '零部件': 1, '服务': 1}"
+  },
+  {
+   "name": "服务类订单不建工单、不产生库存事务",
+   "ok": true,
+   "detail": "{'so': 'SAL-ORD-2026-00004', 'work_order': 0, 'mr': None, 'dn': None, 'sle': 0}"
+  },
+  {
+   "name": "耗材类订单不触发生产（无工单/无项目）",
+   "ok": true,
+   "detail": "{'so': 'SAL-ORD-2026-00002', 'work_order': 0, 'project': 0}"
+  },
+  {
+   "name": "零部件类订单不触发生产（无工单/无项目）",
+   "ok": true,
+   "detail": "{'so': 'SAL-ORD-2026-00003', 'work_order': 0, 'project': 0}"
+  },
+  {
+   "name": "生产人员不能改他人任务",
+   "ok": true,
+   "detail": "PermissionError: 该任务负责人不是您（liugong@erpnext-poc.localhost），不能代他人更新"
+  },
+  {
+   "name": "销售角色不能创建生产进度项目",
+   "ok": true,
+   "detail": "PermissionError: 仅生产负责人/系统管理员可创建生产进度项目"
+  },
+  {
+   "name": "销售角色不能读全局缺料",
+   "ok": true,
+   "detail": "PermissionError: 当前角色无权查看缺料（生产/仓库/采购职能）"
+  },
+  {
+   "name": "仓库角色只能看到本人任务（不越界看车间任务）",
+   "ok": true,
+   "detail": "{'stock_user_tasks': 0}"
+  },
+  {
+   "name": "已提交的完工入库单不会二次过账（SLE 不变）",
+   "ok": true,
+   "detail": "{'sle': [97, 97], 'error': None}"
+  },
+  {
+   "name": "已提交的发货单不会二次扣库（SLE 不变）",
+   "ok": true,
+   "detail": "{'sle': [97, 97], 'fg': 0.0, 'error': None}"
+  },
+  {
+   "name": "重复创建生产项目幂等（不重复生成任务）",
+   "ok": true,
+   "detail": "{'replayed': True, 'tasks': 9}"
+  },
+  {
+   "name": "同一任务重复提交不重复产生库存流水",
+   "ok": true,
+   "detail": "{'sle': 97, 'task': 'TASK-2026-00049'}"
+  },
+  {
+   "name": "H5（HTTP POST）更新任务成功",
+   "ok": true,
+   "detail": "{'status': 200, 'note': 'BUILD-94 H5 现场更新', 'body': '{\"message\":{\"task\":\"TASK-2026-00049\",\"name\":\"TASK-2026-00049\",\"subject\":\"电控板组装\",\"project\":\"PROJ-0005\",\"source_sales_order\":\"SAL-ORD-2026-00008\",\"production_owner\":\"liugong@erpnext-poc.localhost\",\"prod'}"
+  },
+  {
+   "name": "PC：刘工能看到本单 9 项已完成任务",
+   "ok": true,
+   "detail": "{'pc_total': 37, 'pc_completed': 12}"
+  },
+  {
+   "name": "H5 更新后 PC 立即看到同一条备注",
+   "ok": true,
+   "detail": "{'task': 'TASK-2026-00049', 'note': 'BUILD-94 H5 现场更新'}"
+  },
+  {
+   "name": "Bot：刘工看到同一批任务与同一状态",
+   "ok": true,
+   "detail": "{'bot_total': 37, 'erp_user': 'liugong@erpnext-poc.localhost'}"
+  },
+  {
+   "name": "Bot 查询到的备注与 H5/PC 一致",
+   "ok": true,
+   "detail": "{'task': 'TASK-2026-00049', 'note': 'BUILD-94 H5 现场更新'}"
+  },
+  {
+   "name": "Bot 订单进度与 PC 概览同值（任务/实物/发货）",
+   "ok": true,
+   "detail": "{'pc': {'project': 'PROJ-0005', 'project_url': '/desk/project/PROJ-0005', 'started': True, 'total': 9, 'completed': 9, 'overdue': 0, 'due_soon': 0}, 'bot': {'total': 9, 'completed': 9, 'overdue': 0, 'due_soon': 0}, 'produced': 1.0}"
+  },
+  {
+   "name": "H5 页面 200 且含生产任务卡片与保存入口",
+   "ok": true,
+   "detail": "{'status': 200}"
+  },
+  {
+   "name": "H5 任务视图含四种生产状态与异步加载逻辑",
+   "ok": true,
+   "detail": "{'statuses': True}"
+  },
+  {
+   "name": "成品仓 Bin 与 SLE 汇总一致",
+   "ok": true,
+   "detail": "{'bin': 0.0, 'sle': 0.0}"
+  }
+ ],
+ "errors": [],
+ "ids": {
+  "chain": {
+   "sales_order": "SAL-ORD-2026-00008",
+   "project": "PROJ-0005",
+   "material_request": "MAT-MR-2026-00003",
+   "purchase_order": "PUR-ORD-2026-00003",
+   "purchase_receipt": "MAT-PRE-2026-00017",
+   "work_order": "MFG-WO-2026-00005",
+   "material_transfer": "MAT-STE-2026-00012",
+   "manufacture": "MAT-STE-2026-00013",
+   "delivery_note": "MAT-DN-2026-00006",
+   "sales_invoice": "ACC-SINV-2026-00007",
+   "payment_entry": "ACC-PAY-2026-00007"
+  },
+  "order": {
+   "status": "Completed",
+   "per_delivered": 100.0,
+   "per_billed": 100.0,
+   "amount": 5000.0,
+   "customer": "苏州华新装备有限公司",
+   "delivery_date": "2026-11-22"
+  },
+  "sle_by_voucher": {
+   "MAT-DN-2026-00006": 1,
+   "MAT-PRE-2026-00017": 1,
+   "MAT-STE-2026-00012": 6,
+   "MAT-STE-2026-00013": 4
+  },
+  "order_types": {
+   "生产": [
+    "SAL-ORD-2026-00008",
+    "SAL-ORD-2026-00007",
+    "SAL-ORD-2026-00006",
+    "SAL-ORD-2026-00005",
+    "SAL-ORD-2026-00001"
+   ],
+   "耗材": [
+    "SAL-ORD-2026-00002"
+   ],
+   "零部件": [
+    "SAL-ORD-2026-00003"
+   ],
+   "服务": [
+    "SAL-ORD-2026-00004"
+   ]
+  },
+  "service": {
+   "so": "SAL-ORD-2026-00004",
+   "work_order": 0,
+   "mr": null,
+   "dn": null,
+   "sle": 0
+  },
+  "sle_total": 97,
+  "job_cards": 0
+ },
+ "samples": {
+  "tasks": [
+   {
+    "task": "TASK-2026-00046",
+    "subject": "机架焊接",
+    "owner": "ligong@erpnext-poc.localhost",
+    "status": "已完成",
+    "native": "Completed",
+    "completed_on": "2026-11-08",
+    "completed_by": "ligong@erpnext-poc.localhost"
+   },
+   {
+    "task": "TASK-2026-00047",
+    "subject": "机加工件加工",
+    "owner": "ligong@erpnext-poc.localhost",
+    "status": "已完成",
+    "native": "Completed",
+    "completed_on": "2026-11-08",
+    "completed_by": "ligong@erpnext-poc.localhost"
+   },
+   {
+    "task": "TASK-2026-00048",
+    "subject": "内钣金焊接",
+    "owner": "ligong@erpnext-poc.localhost",
+    "status": "已完成",
+    "native": "Completed",
+    "completed_on": "2026-11-08",
+    "completed_by": "ligong@erpnext-poc.localhost"
+   },
+   {
+    "task": "TASK-2026-00049",
+    "subject": "电控板组装",
+    "owner": "liugong@erpnext-poc.localhost",
+    "status": "已完成",
+    "native": "Completed",
+    "completed_on": "2026-11-08",
+    "completed_by": "liugong@erpnext-poc.localhost"
+   },
+   {
+    "task": "TASK-2026-00050",
+    "subject": "管道焊接",
+    "owner": "liugong@erpnext-poc.localhost",
+    "status": "已完成",
+    "native": "Completed",
+    "completed_on": "2026-11-08",
+    "completed_by": "liugong@erpnext-poc.localhost"
+   },
+   {
+    "task": "TASK-2026-00051",
+    "subject": "机构件组装",
+    "owner": "liugong@erpnext-poc.localhost",
+    "status": "已完成",
+    "native": "Completed",
+    "completed_on": "2026-11-08",
+    "completed_by": "liugong@erpnext-poc.localhost"
+   },
+   {
+    "task": "TASK-2026-00052",
+    "subject": "电气组装",
+    "owner": "liugong@erpnext-poc.localhost",
+    "status": "已完成",
+    "native": "Completed",
+    "completed_on": "2026-11-08",
+    "completed_by": "liugong@erpnext-poc.localhost"
+   },
+   {
+    "task": "TASK-2026-00053",
+    "subject": "外蒙板组装",
+    "owner": "liugong@erpnext-poc.localhost",
+    "status": "已完成",
+    "native": "Completed",
+    "completed_on": "2026-11-08",
+    "completed_by": "liugong@erpnext-poc.localhost"
+   },
+   {
+    "task": "TASK-2026-00054",
+    "subject": "调整老化",
+    "owner": "liugong@erpnext-poc.localhost",
+    "status": "已完成",
+    "native": "Completed",
+    "completed_on": "2026-11-08",
+    "completed_by": "liugong@erpnext-poc.localhost"
+   }
+  ]
+ },
+ "summary": {
+  "passed": 27,
+  "total": 27,
+  "failed": []
+ }
+}

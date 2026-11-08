@@ -105,8 +105,14 @@ try:
         frappe.db.commit()
         existing_receipt = se.name
     after_receipt = bins([FG, RM])
-    step("原料真实入库", "%s@%s" % (RM, RAW) in after_receipt and after_receipt["%s@%s" % (RM, RAW)][0] >= 10,
-         f"单号={existing_receipt} 前后={before_receipt} -> {after_receipt}")
+    receipt_sle = frappe.db.sql(
+        "select item_code, actual_qty from `tabStock Ledger Entry` where voucher_no=%s "
+        "and actual_qty > 0", existing_receipt, as_dict=True)
+    # 重跑时原料可能已被后续生产消耗，Bin 不再保有 10；用入库单自己的流水证明真实入库。
+    step("原料真实入库",
+         "%s@%s" % (RM, RAW) in after_receipt
+         and any(r["item_code"] == RM for r in receipt_sle),
+         f"单号={existing_receipt} SLE={receipt_sle} 前后={before_receipt} -> {after_receipt}")
 
     # ---------------------------------------------------------- 4. 无工序 Work Order（不产生 Job Card）
     wo_name = frappe.db.get_value("Work Order", {"production_item": FG, "bom_no": bom_name}, "name")
@@ -154,12 +160,20 @@ try:
     after = bins([FG, RM])
     sle_after = sle_count()
     wo_after = frappe.db.get_value("Work Order", wo_name, "produced_qty")
+    mfg_sle = frappe.db.sql(
+        "select item_code, warehouse, actual_qty from `tabStock Ledger Entry` "
+        "where voucher_no=%s", manufacture_name, as_dict=True)
+    # 首跑证据记的是 0→1 与 SLE +2；重跑时成品已发出，改用该入库单的流水与 produced_qty 判定，
+    # 避免把「历史单据仍在、库存已流转」误判成功能回退。
     finished_ok = (
-        after.get("%s@%s" % (FG, FGWH), [0])[0] > before.get("%s@%s" % (FG, FGWH), [0])[0]
-        and sle_after > sle_before
+        any(r["item_code"] == FG and r["warehouse"] == FGWH and r["actual_qty"] > 0
+            for r in mfg_sle)
+        and (wo_after or 0) >= 1
     )
     step("无 Job Card 也能原生 Manufacture 完工入库", finished_ok,
-         f"单号={manufacture_name} SLE {sle_before}->{sle_after} 成品仓 {before.get(FG+'@'+FGWH)} -> {after.get(FG+'@'+FGWH)} produced_qty={wo_after}")
+         f"单号={manufacture_name} SLE {sle_before}->{sle_after} "
+         f"成品仓 {before.get(FG+'@'+FGWH)} -> {after.get(FG+'@'+FGWH)} "
+         f"produced_qty={wo_after} mfg_rows={len(mfg_sle)}")
     out["manufacture"] = {
         "work_order": wo_name, "bom": bom_name, "stock_entry": manufacture_name,
         "bins_before": before, "bins_after": after,

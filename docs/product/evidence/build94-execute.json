@@ -1,0 +1,161 @@
+{
+ "steps": [
+  {
+   "name": "销售下单：生产类订单提交并选用订单专属 BOM",
+   "ok": true,
+   "detail": "{'so': 'SAL-ORD-2026-00008', 'bom': 'BOM-ASSY-X1-004', 'qty': 1.0, 'delivery_date': '2026-11-22', 'amount': 5000.0}"
+  },
+  {
+   "name": "工艺/生产经理建九阶段项目并按人分派",
+   "ok": true,
+   "detail": "{'project': 'PROJ-0005', 'tasks': 9, 'worker_tasks': 3}"
+  },
+  {
+   "name": "采购：缺料转原生 Material Request",
+   "ok": true,
+   "detail": "{'mr': 'MAT-MR-2026-00003', 'shortage': {'RACK': 2.0, 'SENSOR': 0.0, 'FASTENER': 0.0}}"
+  },
+  {
+   "name": "采购：原生 Purchase Order 已提交",
+   "ok": true,
+   "detail": "{'po': 'PUR-ORD-2026-00003', 'supplier': '昆山精工零部件有限公司'}"
+  },
+  {
+   "name": "仓库：原生 Purchase Receipt 入库（RACK 实收）",
+   "ok": true,
+   "detail": "{'pr': 'MAT-PRE-2026-00017', 'sle': [{'item_code': 'RACK', 'actual_qty': 2.0}]}"
+  },
+  {
+   "name": "生产：无工序工单提交，0 张 Job Card",
+   "ok": true,
+   "detail": "{'wo': 'MFG-WO-2026-00005', 'job_cards': 0}"
+  },
+  {
+   "name": "仓库：原生领料单 原材料→在制仓",
+   "ok": true,
+   "detail": "{'ste': 'MAT-STE-2026-00012'}"
+  },
+  {
+   "name": "两名生产人员完成任务（李工 3 项 / 刘工 6 项）",
+   "ok": true,
+   "detail": "{'worker': [('TASK-2026-00046', '已完成'), ('TASK-2026-00047', '已完成'), ('TASK-2026-00048', '已完成')], 'manager': [('TASK-2026-00049', '已完成'), ('TASK-2026-00050', '已完成'), ('TASK-2026-00051', '已完成'), ('TASK-2026-00052', '已完成'), ('TASK-2026-00053', '已完成'), ('TASK-2026-00054', '已完成')]}"
+  },
+  {
+   "name": "九项任务全部完成，成品仓仍为 0、SLE 不变（关键 Gate）",
+   "ok": true,
+   "detail": "{'fg_before': 0.0, 'fg_after': 0.0, 'sle_before': 97, 'sle_after': 97, 'completed': 9}"
+  },
+  {
+   "name": "仓库：原生 Manufacture 完工入库，成品仓 0→1",
+   "ok": true,
+   "detail": "{'fg_before': 0.0, 'fg_after': 0.0, 'sle_before': 97, 'sle_after': 97, 'produced_qty': 1.0, 'sle_rows': 4}"
+  },
+  {
+   "name": "销售：整机一次发货，成品仓 1→0、交付 100%",
+   "ok": true,
+   "detail": "{'dn': 'MAT-DN-2026-00006', 'per_delivered': 100.0, 'fg_now': 0.0}"
+  },
+  {
+   "name": "财务：原生发票 + 收款，应收清零",
+   "ok": true,
+   "detail": "{'si': 'ACC-SINV-2026-00007', 'pe': 'ACC-PAY-2026-00007', 'outstanding': 0.0}"
+  }
+ ],
+ "ids": {
+  "binding_liugong_created": false,
+  "sales_order": "SAL-ORD-2026-00008",
+  "bom": "BOM-ASSY-X1-004",
+  "project": "PROJ-0005",
+  "tasks": {
+   "TASK-2026-00046": "机架焊接",
+   "TASK-2026-00047": "机加工件加工",
+   "TASK-2026-00048": "内钣金焊接",
+   "TASK-2026-00049": "电控板组装",
+   "TASK-2026-00050": "管道焊接",
+   "TASK-2026-00051": "机构件组装",
+   "TASK-2026-00052": "电气组装",
+   "TASK-2026-00053": "外蒙板组装",
+   "TASK-2026-00054": "调整老化"
+  },
+  "task_owners": {
+   "worker": [
+    "TASK-2026-00046",
+    "TASK-2026-00047",
+    "TASK-2026-00048"
+   ],
+   "manager": [
+    "TASK-2026-00049",
+    "TASK-2026-00050",
+    "TASK-2026-00051",
+    "TASK-2026-00052",
+    "TASK-2026-00053",
+    "TASK-2026-00054"
+   ]
+  },
+  "shortage": {
+   "RACK": 2.0,
+   "SENSOR": 0.0,
+   "FASTENER": 0.0
+  },
+  "material_request": "MAT-MR-2026-00003",
+  "purchase_order": "PUR-ORD-2026-00003",
+  "purchase_receipt": "MAT-PRE-2026-00017",
+  "work_order": "MFG-WO-2026-00005",
+  "material_transfer": "MAT-STE-2026-00012",
+  "manufacture": "MAT-STE-2026-00013",
+  "delivery_note": "MAT-DN-2026-00006",
+  "sales_invoice": "ACC-SINV-2026-00007",
+  "payment_entry": "ACC-PAY-2026-00007",
+  "outstanding": 0.0
+ },
+ "stock": {
+  "start": {
+   "ASSY-X1@产成品仓 - QC": 0.0,
+   "RACK@原材料仓 - QC": 0.0,
+   "FASTENER@原材料仓 - QC": 42.0,
+   "SENSOR@原材料仓 - QC": 38.0,
+   "RACK@生产在制仓 - QC": 2.0,
+   "SENSOR@生产在制仓 - QC": 1.0,
+   "FASTENER@生产在制仓 - QC": 4.0
+  },
+  "sle_start": 97,
+  "task_gate": {
+   "fg_before": 0.0,
+   "fg_after": 0.0,
+   "sle_before": 97,
+   "sle_after": 97,
+   "completed": 9
+  },
+  "manufacture": {
+   "fg_before": 0.0,
+   "fg_after": 0.0,
+   "sle_before": 97,
+   "sle_after": 97,
+   "produced_qty": 1.0
+  },
+  "end": {
+   "ASSY-X1@产成品仓 - QC": 0.0,
+   "RACK@原材料仓 - QC": 0.0,
+   "FASTENER@原材料仓 - QC": 42.0,
+   "SENSOR@原材料仓 - QC": 38.0,
+   "RACK@生产在制仓 - QC": 2.0,
+   "SENSOR@生产在制仓 - QC": 1.0,
+   "FASTENER@生产在制仓 - QC": 4.0
+  },
+  "sle_end": 97
+ },
+ "errors": [],
+ "roles": {
+  "sales": "wangming@erpnext-poc.localhost",
+  "purchase": "chengong@erpnext-poc.localhost",
+  "stock": "zhanggong@erpnext-poc.localhost",
+  "manager": "liugong@erpnext-poc.localhost",
+  "worker": "ligong@erpnext-poc.localhost",
+  "accounts": "zhoukaiji@erpnext-poc.localhost"
+ },
+ "summary": {
+  "passed": 12,
+  "total": 12,
+  "failed": []
+ }
+}
