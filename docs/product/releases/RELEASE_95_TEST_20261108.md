@@ -1,5 +1,7 @@
 # RELEASE-95：BUILD-90～94 Review Fix 与 d.urlxl.cn 线上测试发布
-> 创建于 2026-11-08。**任务状态：TODO，尚未部署**。负责人：Workbuddy。
+> 创建于 2026-11-08。**任务状态：DONE / ONLINE_PASS（2026-11-08 已发布并线上验收 32/32）**。负责人：Workbuddy。
+> 发布结果、备份标识、迁移输出、逐项断言见 `docs/product/evidence/RELEASE-95.md`。
+> 真实企业微信真人 UAT 仍 `REAL_WECOM_BLOCKED`；发布不改变这一结论。
 > 仓库：youxihe/erpnext；部署源：product/erpnext-wecom-ai-v1-20261029。
 > 创建时已审阅 HEAD：e1b87ec766c1f9f61d7d0bfdb29de1de42d1a2f2；部署时必须核对最新 HEAD。
 

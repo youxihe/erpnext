@@ -18,7 +18,7 @@
 | BUILD-92 | 订单执行概览与整机实物流转 | 销售→BOM→缺料→采购→领料→成品入库→一次交货，库存有据；可点击单据链 | PASS(LOCAL) | docs/product/evidence/BUILD-92.md + build92-execute.json（15/15）+ build92-verify.json（26/26）+ build92-http.json（44/44）+ build92-stock-trace.json；SAL-ORD-2026-00006 / PROJ-0003 / 12 条 SLE（73→85），commit 见 git log |
 | BUILD-93 | H5/Bot 接通 Project Task 和订单汇总 | 三入口看同一任务/库存/交期，H5可更新本人任务，Bot查询逾期和缺料 | PASS(LOCAL) | docs/product/evidence/BUILD-93.md + build93-setup.json + build93-verify.json（27/27）+ build93-http.json（18/18）+ build93-adapter.json（8/8）；SAL-ORD-2026-00007 / BOM-ASSY-X1-003 / PROJ-0004 / TASK-2026-00037~00045，李工 7 项任务，RACK 缺 2，SLE 恒 85；真实企微真人 UAT 仍 REAL_WECOM_BLOCKED |
 | BUILD-94 | 轻制造角色联测和 UAT | 销售/设计/采购/仓库/生产/财务分角色实操；证据、状态及剩余阻断 | PASS(LOCAL) | docs/product/evidence/BUILD-94.md + UAT_BUILD94.md + build94-execute.json（12/12）+ build94-verify.json（27/27）+ build94-stock-trace.json；SAL-ORD-2026-00008 全链 11 张原生单据，李工/刘工双人完成 9 任务时成品仓 0、SLE 92→92，Manufacture 后 92→96，发货后 97；真实企微真人 UAT 仍 REAL_WECOM_BLOCKED；线上 d.urlxl.cn 未同步本轮增量 |
-| RELEASE-95 | 轻制造代码 Review Fix + 线上测试发布 | 缺料公式、真人角色权限、迁移兼容与安全门禁后，将 BUILD-90~94 发布至 d.urlxl.cn | TODO | docs/product/releases/RELEASE_95_TEST_20261108.md |
+| RELEASE-95 | 轻制造代码 Review Fix + 线上测试发布 | 缺料公式、真人角色权限、迁移兼容与安全门禁后，将 BUILD-90~94 发布至 d.urlxl.cn | ONLINE_PASS(BUILD-90~94 已上线；真实企微仍 REAL_WECOM_BLOCKED) | docs/product/evidence/RELEASE-95.md + build 证据；线上样本 SAL-ORD-2026-00006 / PROJ-0001 / MFG-WO-2026-00003 / MAT-DN-2026-00005；本地 23/23 + 44/44 + 8/8，线上验收 32/32 |
 
 > 2026-11-07 用户追加：BUILD-00~70 完成后确认 `/cn_portal` 统一导航布局可用，要求按客户原始需求配置「四种订单、BOM 拆分」。
 > BOM 拆分口径用户要求**先等确认**，登记为 BACKLOG `BOM-01` 暂不实施；本阶段先完成 BUILD-80 四类订单类型化。
@@ -132,7 +132,12 @@
 **明确与旧规划的调整**：旧 BUILD-10/40/70 可能仍要求车间员工直接填写 Job Card。本次新方案明确改成 Project Task 状态反馈；原生 Work Order/Stock Entry 仍负责合法入库出库。不要修改历史 BUILD 的 PASS 证据，只应增量核对新业务模型。
 
 
-## 2026-11-08 发布门槛 RELEASE-95（Workbuddy 下一个执行任务）
+## 2026-11-08 发布门槛 RELEASE-95（已完成，ONLINE_PASS）
+- **结果**：BUILD-90~94 + 本轮 Review Fix 已真实部署到 https://d.urlxl.cn，线上验收 32/32，见 `docs/product/evidence/RELEASE-95.md`。部署源 `12861af4`。
+- 线上样本单：`SAL-ORD-2026-00006` / `PROJ-0001` / `TASK-2026-00010~00018` / `MFG-WO-2026-00003` / `MAT-STE-2026-00008,00009` / `MAT-DN-2026-00005` / `ACC-SINV-2026-00006` / `ACC-PAY-2026-00006`。
+- 真实企业微信真人 UAT 仍 `REAL_WECOM_BLOCKED`；共用测试口令、在制仓余料、多生产员分派等问题见 BACKLOG `SEC-01 / LM94-03 / LM91-05`。
+
+## 2026-11-08 发布门槛 RELEASE-95（原始任务要求，保留备查）
 - **当前产品代码 HEAD** `e1b87ec766c1f9f61d7d0bfdb29de1de42d1a2f2`。BUILD-90~94 为 LOCAL_PASS，线上 `https://d.urlxl.cn` 的 BUILD-90~94 仍未发布，真实企业微信真人 UAT 仍阻断。
 - 详细 release task、发现、Gate、部署与验收步骤见 `docs/product/releases/RELEASE_95_TEST_20261108.md`。执行前先核对本分支最新 HEAD，不能仅按本处旧 SHA 部署。
 - **优先处理两项产品风险**：缺料公式重复计入采购已收数量；原始脚本使用 `insert(ignore_permissions=True)`，不能替代采购、仓库、财务真人账户在标准 PC/API 中的单据提交验收。
