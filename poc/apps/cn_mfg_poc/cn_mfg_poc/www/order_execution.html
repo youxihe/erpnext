@@ -64,6 +64,7 @@
   <div class="card">
     <h2>物料覆盖（订单选用 BOM） <span class="tip" id="matTip"></span></h2>
     <div id="matTable"><div class="empty">加载中…</div></div>
+    <div class="tip" id="matBasis" style="margin-top:8px;line-height:1.6"></div>
   </div>
 
   <div class="card">
@@ -159,16 +160,19 @@ function load(){
     $("#orderTable").innerHTML = h + '</tbody></table>';
 
     $("#matTip").textContent = r.boms.length ? ("BOM：" + r.boms.map(function(b){return b.name;}).join(" / ")) : "未选用 BOM";
-    var m = '<table><thead><tr><th>组件</th><th>来源仓</th><th>需求</th><th>现存</th><th>申请</th><th>已采购</th><th>已入库</th><th>已领料</th><th>已消耗</th><th>预计缺料</th></tr></thead><tbody>';
+    var m = '<table><thead><tr><th>组件</th><th>来源仓</th><th>需求</th><th>剩余需求</th><th>现存</th><th>申请</th><th>已采购</th><th>已入库</th><th>已领料</th><th>已消耗</th><th>预计缺料</th></tr></thead><tbody>';
     r.materials.components.forEach(function(c){
       m += '<tr><td><b>'+esc(c.item_code)+'</b></td><td>'+esc(c.warehouse)+'</td>'
-        +  '<td>'+num(c.required_qty)+'</td><td>'+num(c.available_now)+'</td>'
+        +  '<td>'+num(c.required_qty)+'</td><td>'+num(c.remaining_qty==null?c.required_qty:c.remaining_qty)+'</td>'
+        +  '<td>'+num(c.available_now)+'</td>'
         +  '<td>'+num(c.requested_qty)+'</td><td>'+num(c.purchased_qty)+'</td>'
         +  '<td>'+num(c.received_qty)+'</td><td>'+num(c.issued_qty)+'</td>'
         +  '<td>'+num(c.consumed_qty)+'</td>'
         +  '<td><span class="tag '+(c.shortage>0?"t-bad":"t-ok")+'">'+num(c.shortage)+'</span></td></tr>';
     });
     $("#matTable").innerHTML = r.materials.components.length ? m+'</tbody></table>' : '<div class="empty">该订单未选用 BOM 或无组件</div>';
+    var basisEl = $("#matBasis");
+    if (basisEl) { basisEl.textContent = r.materials.shortage_basis ? ("缺料口径：" + r.materials.shortage_basis) : ""; }
 
     var d = r.documents;
     $("#docs").innerHTML =

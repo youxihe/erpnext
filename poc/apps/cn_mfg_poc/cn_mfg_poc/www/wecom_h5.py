@@ -7,8 +7,9 @@ import frappe
 def get_context(context):
     context.user = frappe.session.user
     context.is_guest = frappe.session.user == "Guest"
-    s = frappe.get_single("WeCom Settings")
-    context.mock_mode = bool(s.mock_mode)
+    # P0-4：Mock 选身份面板只在显式允许的本机/测试站点出现，公网默认关闭
+    from cn_mfg_poc.wecom.oauth import mock_allowed
+    context.mock_mode = mock_allowed()
     context.csrf_token = frappe.sessions.get_csrf_token() if not context.is_guest else ""
     context.page_title = "轻智造 ERP 移动工作台"
 

@@ -63,8 +63,10 @@ def _linked(doctype, child_doctype, so_name, field="sales_order", fields=None):
             parents.append(r["parent"])
     docs = []
     meta = frappe.get_meta(doctype)
-    extra = [f for f in ("docstatus", "status", "posting_date", "supplier", "grand_total", "purpose")
-             if meta.has_field(f)]
+    # docstatus 是标准字段，meta.has_field() 可能返回 False，必须固定带出，否则数量汇总会把
+    # 草稿/已取消单据当成已提交（RELEASE-95 回归中发现）。
+    extra = ["docstatus"] + [f for f in ("status", "posting_date", "supplier", "grand_total", "purpose")
+                             if meta.has_field(f)]
     for name in parents:
         info = {"name": name, "url": _desk_url(doctype, name)}
         if extra:
@@ -79,8 +81,37 @@ def _sum_qty(rows, item_code=None, field="qty"):
                if item_code is None or r.get("item_code") == item_code)
 
 
+def _submitted_rows(rows, docs):
+    """只统计已提交（docstatus=1）的单据行；草稿/已取消单据仅留作追溯展示。"""
+    ok = {d["name"] for d in docs if int(d.get("docstatus") or 0) == 1}
+    return [r for r in rows if r.get("parent") in ok]
+
+
+SHORTAGE_BASIS = (
+    "剩余需求 = BOM 需求 × (1 - 已完工比例)；"
+    "当前可用 = 该物料在 BOM 发料仓的 Bin 实际库存（已含采购入库，不再重复扣 received_qty）；"
+    "已领未耗 = 本单领料到在制仓但尚未在 Manufacture 消耗的数量；"
+    "缺料 = max(0, 剩余需求 - 当前可用 - 已领未耗)。"
+    "未做库存预留，仅按源仓可用量估算；同仓多单共用同一批库存时以交期先后顺序分配，"
+    "因此属于受控的保守估算，不等于最终采购建议。"
+)
+
+
+def compute_shortage(required_qty, produced_factor=0.0, available_now=0.0, issued_net=0.0):
+    """RELEASE-95 P0-1：缺料纯函数（无 DB 依赖，便于单元测试）。
+
+    修正点：`available_now` 来自 Bin 实时库存，采购入库已体现在其中，
+    旧实现再减一次 `received_qty` 会重复计入已收货、低报缺料。
+    已完成生产的部分不再计入需求，避免完工订单继续显示大量缺料。
+    """
+    factor = min(1.0, max(0.0, float(produced_factor or 0.0)))
+    remaining = max(0.0, float(required_qty or 0.0) * (1.0 - factor))
+    shortage = remaining - max(0.0, float(available_now or 0.0)) - max(0.0, float(issued_net or 0.0))
+    return round(max(0.0, shortage), 4)
+
+
 def _shortage_formula():
-    return "max(0, required - available_now - received_qty - issued_net)"
+    return "max(0, required*(1-produced_ratio) - available_now(bin) - issued_net)"
 
 
 def _progress(project):
@@ -147,6 +178,8 @@ def order_summary(sales_order):
                 "item_code": b.item_code, "required_qty": float(b.qty or 0) * factor,
                 "warehouse": b.get("source_warehouse") or SOURCE_WAREHOUSE,
                 "bom": bom_no, "bom_url": _desk_url("BOM", bom_no),
+                # 用于按“已完工比例”折算剩余需求，不对外暴露内部键
+                "_order_item": row["item_code"], "_order_qty": float(row["qty"] or 0) or 1.0,
             })
 
     mr_docs, mr_rows = _linked("Material Request", "Material Request Item", sales_order,
@@ -192,19 +225,32 @@ def order_summary(sales_order):
     consumed_rows = [r for r in se_items if r["parent"] in {
         s["name"] for s in se_rows if s["purpose"] == "Manufacture"}]
 
+    # 已完成生产的数量（按产品行汇总 Work Order 的 produced_qty），用于折算剩余需求
+    produced_by_item = {}
+    for w in wo_rows:
+        key = w.get("production_item")
+        produced_by_item[key] = produced_by_item.get(key, 0.0) + float(w.get("produced_qty") or 0)
+
     for c in components:
         code = c["item_code"]
-        c["available_now"] = frappe.db.get_value(
-            "Bin", {"item_code": code, "warehouse": c["warehouse"]}, "actual_qty") or 0
-        c["purchased_qty"] = _sum_qty(po_rows, code)
-        c["received_qty"] = _sum_qty(pr_rows, code)
+        order_item = c.pop("_order_item", None)
+        order_qty = c.pop("_order_qty", 1.0)
+        produced = min(order_qty, produced_by_item.get(order_item, 0.0))
+        c["produced_factor"] = round(produced / order_qty, 4) if order_qty else 0.0
+        c["remaining_qty"] = round(float(c["required_qty"]) * (1.0 - c["produced_factor"]), 4)
+        c["available_now"] = float(frappe.db.get_value(
+            "Bin", {"item_code": code, "warehouse": c["warehouse"]}, "actual_qty") or 0)
+        c["stock_all_warehouses"] = float(frappe.db.sql(
+            "select coalesce(sum(actual_qty), 0) from tabBin where item_code=%s", code)[0][0] or 0)
+        c["purchased_qty"] = _sum_qty(_submitted_rows(po_rows, po_docs), code)
+        # 仅作展示/追溯；已包含在 available_now 里，不再参与缺料扣减（P0-1）
+        c["received_qty"] = _sum_qty(_submitted_rows(pr_rows, pr_docs), code)
         c["issued_qty"] = _sum_qty([r for r in issued_rows if r.get("item_code") == code])
         c["consumed_qty"] = _sum_qty([r for r in consumed_rows
                                       if r.get("item_code") == code and r.get("s_warehouse")])
         c["issued_net"] = max(0.0, c["issued_qty"] - c["consumed_qty"])
-        c["shortage"] = max(0.0, c["required_qty"] - c["available_now"]
-                            - c["received_qty"] - c["issued_net"])
-        c["requested_qty"] = _sum_qty(mr_rows, code)
+        c["shortage"] = compute_shortage(c["remaining_qty"], 0, c["available_now"], c["issued_net"])
+        c["requested_qty"] = _sum_qty(_submitted_rows(mr_rows, mr_docs), code)
 
     # ---- 项目进度（BUILD-91 的 Project/Task，直接读同一份真实记录）
     project = frappe.db.get_value("Project", {"sales_order": sales_order}, "name")
@@ -228,7 +274,7 @@ def order_summary(sales_order):
                                                        "outstanding_amount") or 0)
                              for d in si_docs)
 
-    delivered_qty = _sum_qty(dn_rows)
+    delivered_qty = _sum_qty(_submitted_rows(dn_rows, dn_docs))
     produced_qty = sum(float(w.get("produced_qty") or 0) for w in wo_rows)
     return {
         "user": frappe.session.user,
@@ -249,6 +295,7 @@ def order_summary(sales_order):
         "materials": {
             "components": components,
             "shortage_formula": _shortage_formula(),
+            "shortage_basis": SHORTAGE_BASIS,
             "total_shortage": sum(c["shortage"] for c in components),
         },
         "documents": {
@@ -295,6 +342,8 @@ def materials_shortage(limit=20):
     )
     senior = bool(_roles() & SENIOR_ROLES)
     result = []
+    # 同仓多单共用同一批库存：按交期先后顺序分配，避免每张单都把同一批库存算成自己的可用量
+    pool = {}
     for o in orders:
         if not senior and not _is_order_worker(o["name"]):
             continue
@@ -302,10 +351,23 @@ def materials_shortage(limit=20):
             summary = order_summary(o["name"])
         except Exception:
             continue
-        shortage = [c for c in summary["materials"]["components"] if c["shortage"] > 0]
+        shortage = []
+        for c in summary["materials"]["components"]:
+            key = (c["item_code"], c["warehouse"])
+            if key not in pool:
+                pool[key] = float(c["available_now"] or 0)
+            need = max(0.0, float(c["remaining_qty"]) - float(c["issued_net"]))
+            take = min(pool[key], need)
+            pool[key] = round(pool[key] - take, 4)
+            c["available_for_order"] = round(take, 4)   # 本单按交期顺序分到的库存
+            c["allocated_from_stock"] = round(take, 4)
+            c["shortage"] = compute_shortage(need, 0, take, 0)
+            if c["shortage"] > 0:
+                shortage.append(c)
         if shortage:
             result.append({"sales_order": o["name"], "url": summary["order"]["url"],
                            "delivery_date": str(o["delivery_date"]),
                            "customer": o["customer_name"], "shortages": shortage})
     return {"user": frappe.session.user, "count": len(result), "orders": result,
-            "shortage_formula": _shortage_formula()}
+            "shortage_formula": _shortage_formula(), "shortage_basis": SHORTAGE_BASIS,
+            "allocation": "按销售订单交期先后顺序分配同仓库存（无预留关系）"}

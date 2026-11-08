@@ -39,6 +39,18 @@ def _settings():
     return s
 
 
+def mock_allowed():
+    """RELEASE-95 P0-4：Mock 免登（客户端自报 userid）只允许在显式白名单的本机/测试站点使用。
+
+    `mock_mode=1` 证明不了环境可信：公网站点一旦开着 Mock，任何访客都能选身份登录成
+    业务人员。因此额外要求 site_config 显式设置 `cn_mfg_poc_allow_mock_login: 1`
+    （本地 POC 单独开启；线上 d.urlxl.cn 不设置，等于强制关闭）。
+    """
+    if not cint(_settings().mock_mode):
+        return False
+    return bool(cint(frappe.conf.get("cn_mfg_poc_allow_mock_login")))
+
+
 def _signing_key():
     key = _settings().get_password("mock_signing_key", raise_exception=False)
     _require(key, _("Mock 签名密钥未配置：请管理员在 WeCom Settings 保存一次以自动生成"), frappe.ValidationError)
@@ -153,9 +165,10 @@ def mock_authorize(wecom_userid, redirect="/app"):
 
     客户端提供的 wecom_userid 仅用于模拟企微服务端返回；生产环境此入口禁用。
     """
-    s = _settings()
-    if not cint(s.mock_mode):
-        frappe.throw(_("Mock 模式已关闭，请走真实 OAuth：cn_mfg_poc.wecom.oauth.login_url"), frappe.PermissionError)
+    if not mock_allowed():
+        frappe.throw(_("Mock 免登在本站点已禁用（需 mock_mode=1 且 site_config 显式允许），"
+                       "请走真实企微 OAuth：cn_mfg_poc.wecom.oauth.login_url"),
+                     frappe.PermissionError)
     state = make_state({"userid": wecom_userid, "redirect": redirect, "ts": time.time()})
     return {"mock_callback_url": f"/api/method/cn_mfg_poc.wecom.oauth.mock_callback?state={state}"}
 
@@ -163,9 +176,9 @@ def mock_authorize(wecom_userid, redirect="/app"):
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 def mock_callback(state=None):
     """【仅限本地联调】模拟企微 OAuth 回调：验签 → 绑定 → ERP 会话（返回 sid Cookie）。"""
-    s = _settings()
-    if not cint(s.mock_mode):
-        frappe.throw(_("Mock 模式已关闭"), frappe.PermissionError)
+    if not mock_allowed():
+        frappe.throw(_("Mock 免登在本站点已禁用（需 mock_mode=1 且 site_config 显式允许）"),
+                     frappe.PermissionError)
     _require(state, _("缺少 state"), frappe.ValidationError)
     payload = read_state(state)
     erp_user = resolve_erp_user(payload["userid"])
