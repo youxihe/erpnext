@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }} · 启程智造 ERP</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f6f9;color:#1f2937;font:13px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{padding:18px 20px 44px;max-width:1400px}
+  h1{font-size:18px;margin:0 0 3px}
+  .sub{color:#8a94a6;font-size:12px;margin-bottom:14px}
+  .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  select{border:1px solid #dfe4ec;border-radius:5px;padding:6px 8px;font-size:12.5px;font-family:inherit;background:#fff;min-width:420px}
+  .btn{border:1px solid #dfe4ec;background:#fff;border-radius:5px;padding:6px 12px;font-size:12px;cursor:pointer;color:#45505f}
+  .btn:hover{border-color:#2b7cff;color:#2b7cff}
+  .card{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:14px 16px;margin-bottom:14px}
+  .card h2{font-size:14px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .card h2 .tip{font-size:11px;font-weight:400;color:#8a94a6;margin-left:auto}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:8px;border-bottom:1px solid #f0f2f6;vertical-align:top}
+  th{color:#8a94a6;font-weight:500;background:#fafbfd;white-space:nowrap}
+  a{color:#2b7cff;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;white-space:nowrap}
+  .t-ok{background:#e6f6ee;color:#1a7d52}.t-warn{background:#fff2e4;color:#b8681f}
+  .t-mute{background:#eef2f7;color:#647084}.t-bad{background:#fdecec;color:#c23b3b}
+  .msg{padding:9px 12px;border-radius:6px;font-size:12px;margin-bottom:12px;display:none}
+  .msg.err{display:block;background:#fdecec;color:#b43535}
+  .note{background:#fff;border:1px solid #e8ecf2;border-left:3px solid #2b7cff;border-radius:6px;padding:10px 14px;font-size:12px;color:#5b6675;line-height:1.9}
+  .empty{padding:24px;text-align:center;color:#8a94a6;font-size:12.5px}
+  .muted{color:#8a94a6;font-size:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>集中采购来源</h1>
+  <div class="sub">当前身份：{{ user_fullname }}（{{ user }}） · 从采购订单反查采购申请、生产计划与各销售订单需求，全部来自原生单据引用</div>
+  <div class="bar">
+    <span>采购订单：</span>
+    <select id="poSelect" onchange="load()"></select>
+    <button class="btn" onclick="load()">刷新</button>
+    <a class="btn" href="/order_execution">订单执行概览 →</a>
+  </div>
+  <div id="msg" class="msg"></div>
+
+  <div class="card">
+    <h2>采购订单 <span class="tip" id="poTip"></span></h2>
+    <div id="poHead"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="card">
+    <h2>采购明细与来源 <span class="tip">一张 PO 可以拉多张采购申请的多行</span></h2>
+    <div id="poItems"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="note" id="poNote" style="display:none"></div>
+</div>
+
+<script>
+var $ = function(s){ return document.querySelector(s); };
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmt(d){ return d ? String(d).slice(0,10) : "—"; }
+function num(v, digits){ if(v == null || v === "") return "—";
+  var n = Number(v); return isNaN(n) ? String(v) : n.toFixed(digits || 0).replace(/\.0+$/,""); }
+function api(method, params){
+  var url = "/api/method/" + method, qs = [];
+  for(var k in params){ qs.push(k + "=" + encodeURIComponent(params[k])); }
+  if(qs.length) url += "?" + qs.join("&");
+  return fetch(url, {headers:{"Accept":"application/json"}}).then(function(r){
+    return r.json().then(function(j){
+      if(!r.ok){ var m=""; try{ m = JSON.parse(JSON.parse(j._server_messages)[0]).message; }
+                 catch(e){ m = j.exception || ("HTTP "+r.status); } throw new Error(m); }
+      return j.message; }); });
+}
+function toast(text){ var el=$("#msg"); el.className="msg err"; el.textContent=text;
+  clearTimeout(el._t); el._t=setTimeout(function(){ el.className="msg"; },6000); }
+
+function srcTag(src, label){
+  var cls = (src === "unverified") ? "t-warn" : (src === "via_plan" ? "t-mute" : "t-ok");
+  return '<span class="tag ' + cls + '">' + esc(label) + '</span>';
+}
+
+function loadList(){
+  api("cn_mfg_poc.procurement_trace.po_options", {limit:30}).then(function(r){
+    $("#poSelect").innerHTML = (r.purchase_orders || []).map(function(p){
+      return '<option value="' + esc(p.name) + '">' + esc(p.name) + ' · ' + esc(p.supplier || '')
+        + ' · ' + fmt(p.transaction_date) + ' · ' + esc(p.status || '') + '</option>';
+    }).join("") || '<option value="">（无可见采购订单）</option>';
+    if ((r.purchase_orders || []).length) load();
+    else $("#poHead").innerHTML = '<div class="empty">无可见采购订单</div>';
+  }).catch(function(e){ toast(e.message); });
+}
+
+function load(){
+  var po = $("#poSelect").value; if(!po) return;
+  api("cn_mfg_poc.procurement_trace.purchase_trace", {purchase_order: po}).then(function(r){
+    var h = r.header || {};
+    $("#poTip").textContent = r.summary.source_note || "";
+    $("#poHead").innerHTML = '<table><tbody>'
+      + '<tr><th style="width:120px">供应商</th><td>' + esc(h.supplier || "—") + '</td>'
+      + '<th style="width:100px">状态</th><td>' + esc(h.status || "") + '</td></tr>'
+      + '<tr><th>下单日期</th><td>' + fmt(h.transaction_date) + '</td>'
+      + '<th>收货比例</th><td>' + num(h.per_received) + '%</td></tr>'
+      + '<tr><th>金额</th><td>' + (h.grand_total == null ? '<span class="muted">按角色隐藏</span>'
+          : (num(h.grand_total, 2) + ' ' + esc(h.currency || ''))) + '</td>'
+      + '<th>涉及订单</th><td>' + ((r.orders || []).map(function(o){
+          return '<a href="' + esc(o.url) + '" target="_blank">' + esc(o.name) + '</a> <span class="muted">'
+            + esc(o.customer || '') + '</span>'; }).join('　') || '<span class="muted">未找到</span>') + '</td></tr>'
+      + '</tbody></table>';
+
+    var warns = r.warnings || [];
+    $("#msg").className = warns.length ? "msg err" : "msg";
+    $("#msg").innerHTML = warns.length ? warns.map(function(w){ return "⚠ " + esc(w); }).join("<br>") : "";
+
+    var t = '<table><thead><tr><th>行</th><th>物料</th><th>订购</th><th>已收</th><th>待收</th>'
+      + '<th>来源</th><th>采购申请</th><th>生产计划 / 销售订单需求</th><th>入库单</th></tr></thead><tbody>';
+    (r.items || []).forEach(function(i){
+      var mr = i.material_request
+        ? ('<a href="' + esc(i.material_request.url) + '" target="_blank">' + esc(i.material_request.name) + '</a>'
+           + '<div class="muted">行' + esc(i.material_request.line) + ' · ' + num(i.material_request.qty)
+           + ' · ' + esc(i.material_request.status || '') + '</div>')
+        : '<span class="tag t-warn">无采购申请</span>';
+      var plan = '';
+      if (i.plan) {
+        plan += '<div>计划 <a href="' + esc(i.plan.url) + '" target="_blank">' + esc(i.plan.name) + '</a>'
+          + (i.plan.shared ? ' <span class="tag t-mute">多订单合并</span>' : '') + '</div>';
+      }
+      if ((i.plan_orders || []).length) {
+        plan += (i.plan_orders || []).map(function(o){
+          return '<div class="muted"><a href="' + esc(o.url) + '" target="_blank">' + esc(o.name) + '</a>'
+            + ' · 需求 ' + num(o.qty) + ' · 本 PO 分摊 ' + num(o.estimated_qty) + '</div>';
+        }).join('');
+      } else if (i.direct_order) {
+        plan += '<div class="muted"><a href="' + esc(i.direct_order.url) + '" target="_blank">'
+          + esc(i.direct_order.name) + '</a> · 订单直接引用</div>';
+      } else if (!i.plan) {
+        plan = '<span class="tag t-warn">来源不可证实</span>';
+      }
+      var receipts = (i.receipts || []).length
+        ? (i.receipts || []).map(function(p){
+            return '<div><a href="' + esc(p.url) + '" target="_blank">' + esc(p.doc) + '</a>'
+              + ' <span class="muted">' + num(p.qty) + '</span>'
+              + (p.docstatus === 2 ? ' <span class="tag t-warn">已取消</span>' : '') + '</div>';
+          }).join('')
+        : '<span class="muted">未收货</span>';
+      t += '<tr><td>' + esc(i.line) + '</td><td><b>' + esc(i.item_code) + '</b>'
+        + '<div class="muted">' + esc(i.warehouse || '') + '</div></td>'
+        + '<td>' + num(i.qty) + '</td><td>' + num(i.received_qty) + '</td><td>' + num(i.pending_qty) + '</td>'
+        + '<td>' + srcTag(i.source, i.source_label) + '</td>'
+        + '<td>' + mr + '</td><td>' + plan + '</td><td>' + receipts + '</td></tr>';
+    });
+    $("#poItems").innerHTML = (r.items || []).length ? (t + '</tbody></table>')
+      : '<div class="empty">该采购订单没有明细行</div>';
+
+    var note = $("#poNote"); note.style.display = "block";
+    note.innerHTML = '<div>' + esc(r.summary.note || '') + '</div>'
+      + '<div style="margin-top:6px">不可证实行：' + num(r.summary.unverifiable_lines) + '　·　'
+      + '合并计划行：' + num(r.summary.shared_plan_lines) + '　·　'
+      + '涉及订单：' + ((r.summary.orders || []).length
+          ? (r.summary.orders || []).map(function(n){ return esc(n); }).join('、')
+          : '<span class="muted">未找到</span>') + '</div>';
+  }).catch(function(e){ toast(e.message); });
+}
+loadList();
+</script>
+</body>
+</html>

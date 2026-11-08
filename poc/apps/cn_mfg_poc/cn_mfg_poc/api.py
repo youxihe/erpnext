@@ -473,6 +473,10 @@ CONTRACTS = {
     # UX-96B：BOM 显式选用与双向追溯
     "bom.options": "cn_mfg_poc.api.bom_options",
     "bom.references": "cn_mfg_poc.api.bom_references",
+    # FLOW-97B：订单级物料履约与集中采购来源
+    "materials.trace": "cn_mfg_poc.api.materials_trace",
+    "purchase.options": "cn_mfg_poc.api.purchase_options",
+    "purchase.trace": "cn_mfg_poc.api.purchase_trace",
 }
 
 
@@ -609,3 +613,33 @@ def bom_references(bom):
     from cn_mfg_poc import bom_link
 
     return dict(bom_link.bom_references(bom), user=frappe.session.user, nature="REAL_ERP")
+
+
+# ---------------------------------------------------------------- FLOW-97B 物料履约
+# 订单执行 / 采购双向追溯：只读原生单据，不新建分配表，不做 MRP 或库存预留。
+
+
+@frappe.whitelist(methods=["GET"])
+def materials_trace(sales_order):
+    """materials.trace：一张订单的 需求 → 申请 → 采购 → 入库 → 领料 逐行追溯。"""
+    from cn_mfg_poc import procurement_trace
+
+    return dict(procurement_trace.order_material_trace(sales_order),
+                user=frappe.session.user, nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["GET"])
+def purchase_options(limit=20):
+    """purchase.options：采购角色可选的采购订单列表（按权限过滤）。"""
+    from cn_mfg_poc import procurement_trace
+
+    return dict(procurement_trace.po_options(limit=limit), nature="REAL_ERP")
+
+
+@frappe.whitelist(methods=["GET"])
+def purchase_trace(purchase_order):
+    """purchase.trace：一张采购订单的集中采购来源（PO 行 → MR → 计划 → 各订单）。"""
+    from cn_mfg_poc import procurement_trace
+
+    return dict(procurement_trace.purchase_trace(purchase_order),
+                user=frappe.session.user, nature="REAL_ERP")

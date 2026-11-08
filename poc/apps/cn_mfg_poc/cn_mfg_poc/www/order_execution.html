@@ -69,6 +69,13 @@
   </div>
 
   <div class="card">
+    <h2>物料需求及采购履约 <span class="tip" id="traceTip"></span></h2>
+    <div id="traceWarn"></div>
+    <div id="traceTable"><div class="empty">加载中…</div></div>
+    <div id="tracePlan" class="note" style="margin-top:10px;display:none"></div>
+  </div>
+
+  <div class="card">
     <h2>原生单据链 <span class="tip">按角色只读展示，单据本身由各岗位在原生 Desk 提交</span></h2>
     <div class="docgrid" id="docs"></div>
   </div>
@@ -123,6 +130,93 @@ function docList(label, rows, key){
       +  (d.purpose ? ' <span style="color:#8a94a6">'+esc(d.purpose)+'</span>' : '') + '</div>';
   });
   return h + '</div>';
+}
+function srcTag(src, label){
+  var cls = (src === "unverified" || src === "no_po") ? "t-warn"
+          : (src === "plan_shared" ? "t-mute" : "t-ok");
+  return '<span class="tag ' + cls + '">' + esc(label) + '</span>';
+}
+function rowsOf(list, kind){
+  return list.map(function(x){
+    var q = (kind === "po")
+      ? ('订 ' + num(x.qty) + ' / 收 ' + num(x.received_qty))
+      : ((x.share && x.share !== 1)
+          ? (num(x.qty) + '（本单约 ' + num(x.estimated_qty) + '）')
+          : num(x.qty));
+    var st = x.docstatus === 2 ? ' <span class="tag t-warn">已取消</span>'
+           : (x.docstatus === 0 ? ' <span class="tag t-mute">草稿</span>' : '');
+    return '<div style="line-height:1.9"><a href="' + esc(x.url) + '" target="_blank">' + esc(x.doc) + '</a>'
+      + '<span style="color:#8a94a6"> · 行' + esc(x.line) + '</span> · ' + q + st + ' '
+      + srcTag(x.source, x.source_label) + '</div>';
+  }).join("");
+}
+function renderTrace(so){
+  api("cn_mfg_poc.procurement_trace.order_material_trace", {sales_order: so}).then(function(t){
+    var plans = t.plans || [];
+    $("#traceTip").textContent = plans.length
+      ? ("生产计划 " + plans.map(function(p){ return p.name; }).join(" / "))
+      : "无生产计划引用";
+
+    var warns = [];
+    (t.components || []).forEach(function(c){
+      (c.warnings || []).forEach(function(w){ warns.push(c.item_code + "：" + w); });
+    });
+    $("#traceWarn").innerHTML = warns.length
+      ? '<div style="background:#fff8e6;border:1px solid #ffe1a8;color:#8a5a12;border-radius:6px;'
+        + 'padding:9px 12px;font-size:12px;line-height:1.9;margin-bottom:10px">'
+        + warns.map(function(w){ return "⚠ " + esc(w); }).join("<br>") + '</div>'
+      : '';
+
+    var h = '<table><thead><tr><th>组件</th><th>需求</th><th>已申请</th><th>已下单</th>'
+      + '<th>已到货</th><th>待收货</th><th>本单已领</th><th>本单已耗</th><th>共享现存</th>'
+      + '<th>来源与单据</th></tr></thead><tbody>';
+    (t.components || []).forEach(function(c){
+      var issued = c.issued_shared
+        ? (num(c.issued_qty) + '<span style="color:#8a94a6">（本单约 ' + num(c.issued_estimated) + '）</span>')
+        : num(c.issued_qty);
+      var consumed = c.issued_shared
+        ? (num(c.consumed_qty) + '<span style="color:#8a94a6">（约 ' + num(c.consumed_estimated) + '）</span>')
+        : num(c.consumed_qty);
+      h += '<tr><td><b>' + esc(c.item_code) + '</b>'
+        + (c.bom_source === "default" ? ' <span class="tag t-warn">按建议 BOM</span>' : '')
+        + '<div style="color:#8a94a6;font-size:11px">' + esc(c.warehouse) + '</div></td>'
+        + '<td>' + num(c.required_qty) + '</td><td>' + num(c.requested_qty) + '</td>'
+        + '<td>' + num(c.ordered_qty) + '</td><td>' + num(c.received_qty) + '</td>'
+        + '<td>' + num(c.pending_qty) + '</td><td>' + issued + '</td><td>' + consumed + '</td>'
+        + '<td>' + num(c.available_now) + '</td>'
+        + '<td style="max-width:520px">'
+        + (c.demand.length ? '<div style="color:#8a94a6;font-size:11px">采购申请</div>' + rowsOf(c.demand, "mr") : '')
+        + (c.purchase.length ? '<div style="color:#8a94a6;font-size:11px;margin-top:4px">采购订单</div>' + rowsOf(c.purchase, "po") : '')
+        + (c.receipt.length ? '<div style="color:#8a94a6;font-size:11px;margin-top:4px">采购入库</div>' + rowsOf(c.receipt, "pr") : '')
+        + ((!c.demand.length && !c.purchase.length && !c.receipt.length)
+            ? (c.issued_qty > 0
+                ? '<span class="tag t-mute">未采购，取自公共库存（不分单）</span>'
+                : '<span class="tag t-mute">无采购记录</span>')
+            : '')
+        + '</td></tr>';
+    });
+    $("#traceTable").innerHTML = (t.components || []).length
+      ? (h + '</tbody></table>')
+      : '<div class="empty">该订单无 BOM 组件</div>';
+
+    var note = [];
+    plans.forEach(function(p){
+      note.push('生产计划 <a href="' + esc(p.url) + '" target="_blank">' + esc(p.name) + '</a> · '
+        + esc(p.status || '') + ' · 计划数量 ' + num(p.total_qty)
+        + (p.refs_missing
+            ? ' · <span class="tag t-warn">无订单引用表，无法按单拆分</span>'
+            : (p.shared
+                ? ' · 合并了 ' + esc(p.other_orders.join('、')) + '，本单占比 ' + Math.round(p.share * 100) + '%'
+                : ' · 仅本订单')));
+    });
+    note.push(t.summary.stock_note);
+    note.push(t.summary.estimate_note);
+    var planEl = $("#tracePlan");
+    planEl.style.display = "block";
+    planEl.innerHTML = note.map(function(x){ return '<div>' + x + '</div>'; }).join('');
+  }).catch(function(e){
+    $("#traceTable").innerHTML = '<div class="empty">' + esc(e.message) + '</div>';
+  });
 }
 function loadOrders(){
   api("cn_mfg_poc.production.my_production_orders", {limit:100}).then(function(r){
@@ -218,6 +312,7 @@ function load(){
       : '<div class="empty">'+(unconfirmed.length ? '该订单尚未确认 BOM，且产品无默认 BOM 可建议' : '该订单未选用 BOM 或无组件')+'</div>';
     var basisEl = $("#matBasis");
     if (basisEl) { basisEl.textContent = r.materials.shortage_basis ? ("缺料口径：" + r.materials.shortage_basis) : ""; }
+    renderTrace(so);
 
     var d = r.documents;
     $("#docs").innerHTML =

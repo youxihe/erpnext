@@ -22,7 +22,7 @@
 | RELEASE-95 | 轻制造代码 Review Fix + 线上测试发布 | 缺料公式、真人角色权限、迁移兼容与安全门禁后，将 BUILD-90~94 发布至 d.urlxl.cn | ONLINE_PASS(BUILD-90~94 已上线；真实企微仍 REAL_WECOM_BLOCKED) | docs/product/evidence/RELEASE-95.md + build 证据；线上样本 SAL-ORD-2026-00006 / PROJ-0001 / MFG-WO-2026-00003 / MAT-DN-2026-00005；本地 23/23 + 44/44 + 8/8，线上验收 32/32 |
 | UX-96A | 补齐生产进度创建/模板维护/负责人分派入口 | 管理员可从中文门户配置模板、从订单生成项目并分派任务 | ONLINE_PASS | docs/product/evidence/UX-96A.md；线上 38/38 + 浏览器 29/29 + 本地 42/42；样本 SAL-ORD-2026-00005 / PROJ-0002 / TASK-2026-00019~00027，SLE 52→52 |
 | UX-96B | BOM 与销售订单显式确认及双向引用 | 销售订单行选用 BOM、BOM 页查询实际引用订单、区分默认建议 | ONLINE_PASS | docs/product/evidence/UX-96B.md；线上 38/38 + 浏览器 29/29 + 本地 42/42；样本 BOM-ASSY-X1-001/002、SAL-ORD-2026-00006（已确认）/00001（仅建议）/00008（选 002）；新增 custom_bom_confirmed 防默认 BOM 冒充确认 |
-| FLOW-97 | 多订单需求→合并采购→入库→按工单领料的来源追溯 | 先核实 00001/00006 线上真实单据，再补链式双向追溯和共享库存口径 | TODO | docs/product/tasks/FLOW-97.md |
+| FLOW-97 | 多订单需求→合并采购→入库→按工单领料的来源追溯 | 先核实 00001/00006 线上真实单据，再补链式双向追溯和共享库存口径 | ONLINE_PASS（FLOW-97A 审计 + FLOW-97B 上线） | docs/product/evidence/FLOW-97A.md（线上只读审计：两单 MR/PO/PR/WO/SE/DN 交集为空，00006 实物来自无 PO 入库 MAT-PRE-2026-00016，PO-00002 未收货 2 件 → 重复到货风险）；docs/product/evidence/FLOW-97B.md（新增 /order_execution 物料履约表 + /procurement_trace 集中采购来源；线上后端 30/30 + 浏览器 20/20、本地合并用例 40/40、UX-96 回归 42/42，库存零变动）；本地合并样本 MFG-PP-2026-00002 / SAL-ORD-2026-00015~00016 / PUR-ORD-2026-00006 |
 
 > 2026-11-07 用户追加：BUILD-00~70 完成后确认 `/cn_portal` 统一导航布局可用，要求按客户原始需求配置「四种订单、BOM 拆分」。
 > BOM 拆分口径用户要求**先等确认**，登记为 BACKLOG `BOM-01` 暂不实施；本阶段先完成 BUILD-80 四类订单类型化。

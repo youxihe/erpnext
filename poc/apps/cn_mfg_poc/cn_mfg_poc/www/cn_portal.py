@@ -210,6 +210,22 @@ def _inject_execution_links(menu, roles):
     return menu
 
 
+PURCHASE_ROLES = {"Purchase User", "Purchase Manager", "Stock User", "Stock Manager",
+                  "System Manager"}
+
+
+def _inject_purchase_links(menu, roles):
+    """FLOW-97B：采购/仓库角色从采购订单反查集中采购来源。"""
+    if not (roles & PURCHASE_ROLES):
+        return menu
+    _add_group(menu, ["采购与库存", "设计与生产", "客户与销售", "工作台"], "集中采购", [{
+        "label": "集中采购来源",
+        "url": "/procurement_trace",
+        "kind": "URL", "target": "procurement_trace",
+    }])
+    return menu
+
+
 def get_context(context):
     if frappe.session.user == "Guest":
         frappe.redirect("/login?redirect-to=%2Fcn_portal")
@@ -230,5 +246,6 @@ def get_context(context):
     menu = _inject_order_types(menu)
     menu = _inject_production_links(menu, roles)
     menu = _inject_execution_links(menu, roles)
+    menu = _inject_purchase_links(menu, roles)
     context.menu_json = json.dumps(menu, ensure_ascii=False)
     context.page_title = "统一导航"
