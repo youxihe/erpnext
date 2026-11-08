@@ -23,6 +23,7 @@
 | UX-96A | 补齐生产进度创建/模板维护/负责人分派入口 | 管理员可从中文门户配置模板、从订单生成项目并分派任务 | ONLINE_PASS | docs/product/evidence/UX-96A.md；线上 38/38 + 浏览器 29/29 + 本地 42/42；样本 SAL-ORD-2026-00005 / PROJ-0002 / TASK-2026-00019~00027，SLE 52→52 |
 | UX-96B | BOM 与销售订单显式确认及双向引用 | 销售订单行选用 BOM、BOM 页查询实际引用订单、区分默认建议 | ONLINE_PASS | docs/product/evidence/UX-96B.md；线上 38/38 + 浏览器 29/29 + 本地 42/42；样本 BOM-ASSY-X1-001/002、SAL-ORD-2026-00006（已确认）/00001（仅建议）/00008（选 002）；新增 custom_bom_confirmed 防默认 BOM 冒充确认 |
 | FLOW-97 | 多订单需求→合并采购→入库→按工单领料的来源追溯 | 先核实 00001/00006 线上真实单据，再补链式双向追溯和共享库存口径 | ONLINE_PASS（FLOW-97A 审计 + FLOW-97B 上线） | docs/product/evidence/FLOW-97A.md（线上只读审计：两单 MR/PO/PR/WO/SE/DN 交集为空，00006 实物来自无 PO 入库 MAT-PRE-2026-00016，PO-00002 未收货 2 件 → 重复到货风险）；docs/product/evidence/FLOW-97B.md（新增 /order_execution 物料履约表 + /procurement_trace 集中采购来源；线上后端 30/30 + 浏览器 20/20、本地合并用例 40/40、UX-96 回归 42/42，库存零变动）；本地合并样本 MFG-PP-2026-00002 / SAL-ORD-2026-00015~00016 / PUR-ORD-2026-00006 |
+| UAT-97R | 线上测试角色和账号整理 | 7 个中文岗位角色档案+管理员；测试账号岗位-A/B可识别，同岗位数据隔离可验证；原生角色保留 | TODO | docs/product/tasks/UAT-97R.md |
 | UAT-98 | 全新隔离验收 Site 和期初准备 | 不清现有 d.urlxl.cn；另建干净 Site、完整主数据与移动平均期初库存，提供真人验收入口 | TODO | docs/product/tasks/UAT-98.md |
 | UAT-99 | 用户本人分角色端到端测试 | 双销售订单、集中采购、独立工单、仓储制造、整机交货、财务成本手工 UAT | WAITING_FOR_USER | docs/product/UAT_MANUAL_V1.md |
 
@@ -175,3 +176,7 @@
 ## 2026-11-09 真人 UAT：UAT-98 → UAT-99
 已确认：采购面向共用物料仓，生产工单按销售订单独立，原材料移动加权平均；车间只管九阶段任务，不做工时与 Job Card 报工。新增阶段不重复开发 ERPNext 原生库存和制造。
 UAT-98 由 Workbuddy 准备隔离站点、基础资料和期初，禁止在现有 d.urlxl.cn 做任何事务清空、公司交易删除、SQL 批量删除或清零库存。UAT-99 必须由用户本人操作，不能拿 Workbuddy 的自动执行脚本冒充人工验收。环境和测试标准详见 docs/product/tasks/UAT-98.md 与 docs/product/UAT_MANUAL_V1.md。
+
+
+## 2026-11-09 用户人工测试优先：UAT-97R
+用户正在 d.urlxl.cn 线上**测试环境**进行人工业务流程测试，优先消除角色过多、账号无法识别的体验问题。Workbuddy 先执行 docs/product/tasks/UAT-97R.md 并上线验证。此任务**不依赖新 Site UAT-98**，不能因其尚未执行而阻断角色整理。UAT-98/99 保留供后续独立干净数据验收；不对当前站点删除历史订单、库存或账务。
