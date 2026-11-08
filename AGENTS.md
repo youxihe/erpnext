@@ -32,7 +32,7 @@
 7. 禁止把密钥、密码、Token、企业通信录隐私写进 Git 或测试报告。使用本地 ignored env，并提供示例模板。
 8. 成果只推本产品分支；不要往 upstream 或默认 develop 合并，遇不确定业务规则先保留最简单可用行为并登记待评估。
 
-**BUILD-90～94 已于 2026-11-08 全部 PASS(LOCAL)，见 docs/product/QUEUE.md 与 docs/product/UAT_BUILD94.md。已完成 BUILD-00～80 为历史成果，不得重复执行。下一步由用户决定优先级：① 把 BUILD-90～94 增量同步到线上 d.urlxl.cn（LM94-01）；② 真实企业微信真人 UAT 所需凭据（仍 REAL_WECOM_BLOCKED）；③ BOM-01 复杂拆分/替代料口径。**
+**BUILD-90～94 已于 2026-11-08 全部 PASS(LOCAL)，并已通过 RELEASE-95 发布到 https://d.urlxl.cn（ONLINE_PASS，线上验收 32/32），见 docs/product/evidence/RELEASE-95.md。已完成 BUILD-00～80 为历史成果，不得重复执行。下一步由用户决定优先级：① 真实企业微信真人 UAT 所需凭据（仍 REAL_WECOM_BLOCKED）；② SEC-01 独立口令与管理员公网访问收紧；③ LM95-01 九阶段负责人分派规则；④ BOM-01 复杂拆分/替代料口径。**
 ## 2026-11-08 用户最终确认：轻制造实施方向（最高优先级）
 - 决策全文：`docs/product/decisions/LIGHT_MANUFACTURING_20261108.md`。与此前「生产必须使用 Job Card 更新工序/工时」的描述冲突时，**以本决策为准**。
 - 业务重点是销售订单、设计 BOM、缺料采购、采购入库、工单领料、实物完工后的成品入库、Delivery Note 整机一次发货、开票收款；采购、仓库、销售、财务须实际使用标准单据。
