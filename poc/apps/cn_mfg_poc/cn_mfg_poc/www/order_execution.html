@@ -85,7 +85,7 @@
 
   <div class="note">
     <b>Task 完成 ≠ 库存入库</b>：九阶段任务只反映过程；领料、完工入库、发货均以原生 Stock Entry / Delivery Note 为唯一库存凭据，本页只读聚合。<br>
-    <b>本单 BOM vs 默认建议</b>：只有销售订单行显式选用的 <code>bom_no</code> 才是本单确认依据；产品默认 BOM 仅用于预览物料需求，会在表头标「建议」。<br>
+    <b>本单 BOM vs 默认建议</b>：只有销售订单行<b>人工确认</b>的 BOM 才是本单确认依据；产品默认 BOM 仅用于预览物料需求，会在表头标「建议」。新建订单行时 ERPNext 会自动带入产品默认 BOM，带入值不算确认（需在草稿行点「选择本单 BOM」）。<br>
     预计缺料 = max(0, 剩余需求 − 原料仓现存 − 已领料未消耗)；采购入库已体现在现存里，不再重复扣减。财务金额按 Accounts / System Manager 角色开放。
   </div>
 </div>
@@ -153,12 +153,16 @@ function load(){
     var explicitBoms = (bomSummary.explicit_boms || []).map(function(b){ return b.name; });
     var suggestedBoms = (bomSummary.suggested_boms || []).map(function(b){ return b.name; });
     var unconfirmed = bomSummary.unconfirmed_items || [];
+    var carried = bomSummary.carried_items || [];
 
     // UX-96B：显式选用与默认建议必须分开说清楚，不能让默认 BOM 冒充“本单已确认”
     $("#bomHint").innerHTML = unconfirmed.length
       ? '<div style="background:#fff8e6;border:1px solid #ffe1a8;color:#8a5a12;border-radius:6px;padding:9px 12px;font-size:12px;line-height:1.8">'
         + '<b>本单尚未确认 BOM</b>：' + esc(unconfirmed.join("、"))
-        + ' 未在订单行选用 BOM。下方物料需求按产品<b>默认建议 BOM</b> 预览，用于估算采购，<b>不代表本单已确认</b>；'
+        + ' 未在订单行确认 BOM。下方物料需求按产品<b>默认建议 BOM</b> 预览，用于估算采购，<b>不代表本单已确认</b>；'
+        + (carried.length
+            ? '（其中 ' + esc(carried.join("、")) + ' 行已有系统自动带入的默认 BOM，带入值同样不算确认）'
+            : '')
         + '请到销售订单草稿行点「选择本单 BOM」后保存。</div>'
       : '<div style="background:#eef4ff;border:1px solid #cfe0ff;color:#2b5fa8;border-radius:6px;padding:9px 12px;font-size:12px;line-height:1.8">'
         + '<b>本单 BOM 已确认</b>：' + esc(explicitBoms.join(" / ") || "—")
@@ -170,7 +174,10 @@ function load(){
       var bomCell = it.bom_no
         ? '<a href="'+esc("/desk/bom/"+encodeURIComponent(it.bom_no))+'" target="_blank">'+esc(it.bom_no)+'</a>'
           + ' <span class="tag t-ok">已确认</span>'
-        : '<span class="tag t-warn">未确认</span>';
+        : '<span class="tag t-warn">未确认</span>'
+          + (it.bom_carried
+              ? '<br><span style="color:#8a94a6;font-size:11px">默认带入 '+esc(it.bom_carried)+'</span>'
+              : '');
       var defCell = it.default_bom
         ? '<a href="'+esc("/desk/bom/"+encodeURIComponent(it.default_bom))+'" target="_blank">'+esc(it.default_bom)+'</a>'
           + ' <span class="tag t-mute">建议</span>'

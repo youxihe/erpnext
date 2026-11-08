@@ -23,6 +23,11 @@ BOM_READ_ROLES = {
     "System Manager", "Item Manager",
 }
 
+# 人工确认标记：ERPNext 原生 get_item_details() 会把 Item.default_bom 自动写进
+# Sales Order Item.bom_no，因此「bom_no 有值」不能等同于「本单已确认」。
+# 只有人工动作（界面选择 / 改动 bom_no）或已提交订单才算确认。
+CONFIRM_FIELD = "custom_bom_confirmed"
+
 
 def _roles():
     return set(frappe.get_roles())
@@ -58,13 +63,39 @@ def bom_or_default(item_code, bom_no):
     return (d, "default") if d else (None, "none")
 
 
+def bom_confirm_state(item_code, bom_no, so_docstatus=0, confirmed_flag=0):
+    """判断一行订单 BOM 的真实状态，返回 (state, confirmed_bom)。
+
+    state:
+      explicit          —— 本单已确认，confirmed_bom 为本单 BOM
+      default_suggested —— 未确认；仅产品默认 BOM 可作建议（bom_no 可能是系统自动带入的）
+      none              —— 该物料没有可用 BOM（服务/非标）
+
+    判定顺序（草稿）：
+      1. 人工确认标记 = 1 → 已确认
+      2. 产品没有默认 BOM，或 bom_no 与默认不同 → 只能是人工选的 → 已确认
+      3. 否则 bom_no 只是 ERPNext 自动带入的默认值 → 仍未确认
+    已提交订单：bom_no 有值即视为确认（提交动作即锁定，生产已按它排程）。
+    """
+    default = default_bom(item_code)
+    if not bom_no:
+        return ("default_suggested" if default else "none"), None
+    if int(so_docstatus or 0) == 1:
+        return "explicit", bom_no
+    if int(confirmed_flag or 0):
+        return "explicit", bom_no
+    if not default or bom_no != default:
+        return "explicit", bom_no
+    return "default_suggested", None
+
+
 def validate_sales_order_bom(doc, method=None):
     """Sales Order validate：行级 BOM 必须与行物料一致、已提交且有效。
 
     同时拦截"已提交订单被直接改写 bom_no"，提示走受控变更流程。
     """
     old_values = {}
-    if doc.docstatus == 1 and not doc.is_new():
+    if not doc.is_new():
         old_values = {
             r.name: r.bom_no
             for r in frappe.get_all(
@@ -95,7 +126,7 @@ def validate_sales_order_bom(doc, method=None):
                 ),
                 frappe.ValidationError,
             )
-        if str(bom_no) in old_values and old_values.get(row.name) not in (None, "", bom_no) \
+        if row.name in old_values and old_values.get(row.name) not in (None, "", bom_no) \
                 and doc.docstatus == 1:
             frappe.throw(
                 _("Sales Order {0} 已提交，不能直接把第 {1} 行 BOM 从 {2} 改为 {3}；"
@@ -103,6 +134,28 @@ def validate_sales_order_bom(doc, method=None):
                     doc.name, row.idx, old_values.get(row.name), bom_no),
                 frappe.ValidationError,
             )
+
+    if doc.docstatus == 0:
+        _mark_confirmed_flags(doc, old_values)
+
+
+def _mark_confirmed_flags(doc, old_values):
+    """草稿阶段落「人工确认」标记，供展示与反查区分默认带入值。
+
+    已提交订单不写（提交即视为确认，且字段不允许提交后变更）。
+    """
+    for row in doc.get("items") or []:
+        bom_no = (row.get("bom_no") or "").strip()
+        if not bom_no:
+            if row.get(CONFIRM_FIELD):
+                row.set(CONFIRM_FIELD, 0)
+            continue
+        default = default_bom(row.get("item_code"))
+        old = old_values.get(row.name) if row.name in old_values else None
+        changed_by_human = row.name in old_values and (old or "") != bom_no
+        explicit = bool(row.get(CONFIRM_FIELD)) or changed_by_human \
+            or (not default) or (bom_no != default)
+        row.set(CONFIRM_FIELD, 1 if explicit else 0)
 
 
 @frappe.whitelist(methods=["GET"])
@@ -149,7 +202,7 @@ def bom_references(bom):
     so_rows = frappe.get_all(
         "Sales Order Item",
         filters={"bom_no": bom, "parenttype": "Sales Order"},
-        fields=["parent", "item_code", "qty", "idx", "delivery_date"],
+        fields=["parent", "item_code", "qty", "idx", "delivery_date", CONFIRM_FIELD],
         order_by="parent desc, idx", limit=200,
     )
     orders, seen = [], set()
@@ -158,7 +211,6 @@ def bom_references(bom):
             continue
         if not frappe.has_permission("Sales Order", "read", doc=r["parent"]):
             continue
-        seen.add(r["parent"])
         so = frappe.db.get_value(
             "Sales Order", r["parent"],
             ["name", "customer", "customer_name", "status", "docstatus", "transaction_date",
@@ -166,6 +218,12 @@ def bom_references(bom):
         )
         if not so:
             continue
+        # 只算真正「显式引用」：默认 BOM 被系统自动带入的行不算引用
+        state, _confirmed = bom_confirm_state(
+            r["item_code"], bom, so["docstatus"], r.get(CONFIRM_FIELD))
+        if state != "explicit":
+            continue
+        seen.add(r["parent"])
         orders.append({
             "sales_order": so["name"],
             "url": _desk_url("Sales Order", so["name"]),
@@ -210,7 +268,7 @@ def bom_references(bom):
         "sales_orders": orders,
         "work_orders": work_orders,
         "counts": {"sales_orders": len(orders), "work_orders": len(work_orders)},
-        "explicit_only_note": _("只有订单行 bom_no 明确等于本 BOM 才计入；"
-                                "产品默认 BOM 不等于所有订单都引用它。"),
+        "explicit_only_note": _("只有订单行真正确认使用本 BOM 才计入；新建订单行时系统"
+                                "自动带入的产品默认 BOM 不算引用，草稿里尚未确认的默认值也不算。"),
         "scope_note": _("仅显示当前账号有权限查看的订单与工单，已按数据权限过滤。"),
     }

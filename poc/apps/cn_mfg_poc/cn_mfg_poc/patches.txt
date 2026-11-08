@@ -7,3 +7,4 @@ cn_mfg_poc.patches.v0_0_2.setup_navigation
 # 同步之后执行；pre_model_sync 阶段 tabDocField 还没有 is_generated 列，会失败。
 cn_mfg_poc.patches.v0_0_3.setup_production_template
 cn_mfg_poc.patches.v0_0_4.setup_bom_ux
+cn_mfg_poc.patches.v0_0_5.setup_bom_confirm_field

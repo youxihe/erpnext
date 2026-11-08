@@ -154,16 +154,20 @@ def order_summary(sales_order):
         "Sales Order Item",
         filters={"parent": sales_order, "parenttype": "Sales Order"},
         fields=["item_code", "item_name", "qty", "rate", "amount", "warehouse", "bom_no",
-                "delivered_qty", "billed_amt", "delivery_date"], limit=50,
+                "delivered_qty", "billed_amt", "delivery_date", "custom_bom_confirmed"], limit=50,
     )
-    from cn_mfg_poc.bom_link import bom_or_default, default_bom
+    from cn_mfg_poc.bom_link import bom_confirm_state, bom_or_default, default_bom
 
     for r in so_items:
-        # UX-96B：把「本单已确认 BOM」和「产品默认建议 BOM」分成两个字段，禁止互相冒充
+        # UX-96B：把「本单已确认 BOM」和「产品默认建议 BOM」分成两个字段，禁止互相冒充。
+        # ERPNext 会为新订单行自动带入产品默认 BOM，因此 bom_no 有值 ≠ 已确认。
         r["default_bom"] = default_bom(r["item_code"])
-        r["bom_confirmed"] = bool(r.get("bom_no"))
-        r["bom_state"] = ("explicit" if r.get("bom_no")
-                          else ("default_suggested" if r["default_bom"] else "none"))
+        state, confirmed_bom = bom_confirm_state(
+            r["item_code"], r.get("bom_no"), so["docstatus"], r.get("custom_bom_confirmed"))
+        r["bom_carried"] = r.get("bom_no") if state != "explicit" else None  # 系统带入值，仅供参考
+        r["bom_no"] = confirmed_bom          # 只暴露「本单已确认 BOM」
+        r["bom_confirmed"] = state == "explicit"
+        r["bom_state"] = state
         if not finance:
             r["rate"] = r["amount"] = r["billed_amt"] = None
 
@@ -288,8 +292,9 @@ def order_summary(sales_order):
     # UX-96B：显式选用 vs 默认建议，两个集合绝不合并成一个模糊的“BOM”
     explicit_boms = sorted({r["bom_no"] for r in so_items if r.get("bom_no")})
     suggested_boms = sorted({r["default_bom"] for r in so_items
-                             if not r.get("bom_no") and r.get("default_bom")})
-    unconfirmed_items = [r["item_code"] for r in so_items if not r.get("bom_no")]
+                             if r.get("bom_state") != "explicit" and r.get("default_bom")})
+    unconfirmed_items = [r["item_code"] for r in so_items if r.get("bom_state") != "explicit"]
+    carried_items = [r["item_code"] for r in so_items if r.get("bom_carried")]
     return {
         "user": frappe.session.user,
         "finance_visible": finance,
@@ -312,10 +317,12 @@ def order_summary(sales_order):
             "explicit_boms": [{"name": n, "url": _desk_url("BOM", n)} for n in explicit_boms],
             "suggested_boms": [{"name": n, "url": _desk_url("BOM", n)} for n in suggested_boms],
             "unconfirmed_items": unconfirmed_items,
+            "carried_items": carried_items,
             "all_confirmed": not unconfirmed_items,
-            "note": ("“本单 BOM”= 订单行显式选用的 bom_no，是采购/生产的确认依据；"
+            "note": ("“本单 BOM”= 订单行显式确认使用的 BOM，是采购/生产的确认依据；"
                      "“默认建议 BOM”= 该产品当前默认 BOM，仅用于预览物料需求，"
-                     "不代表本单已确认。"),
+                     "不代表本单已确认（ERPNext 新建订单行时会自动带入默认 BOM，"
+                     "带入值同样不算确认）。"),
         },
         "materials": {
             "components": components,

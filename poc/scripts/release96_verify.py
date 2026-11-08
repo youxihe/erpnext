@@ -199,6 +199,34 @@ def run_b():
     step("草稿行可查询可用 BOM", len(opts["options"]) >= 2 and opts["default_bom"] == "BOM-ASSY-X1-001",
          "options=%s default=%s" % ([o["bom"] for o in opts["options"]], opts["default_bom"]))
 
+    # 1b 系统自动带入的默认 BOM 不得冒充「本单已确认」
+    so_auto, _ = get_or_create_draft_so("UX96B-UAT-AUTO")
+    OUT["created"]["so_auto"] = so_auto
+    row_auto = frappe.get_doc("Sales Order", so_auto).items[0]
+    step("前置事实：新建草稿行被原生自动带入默认 BOM",
+         row_auto.bom_no == "BOM-ASSY-X1-001", "bom_no=%s" % row_auto.bom_no)
+    frappe.db.set_value("Sales Order Item", row_auto.name,
+                        {"bom_no": "BOM-ASSY-X1-001", "custom_bom_confirmed": 0})
+    frappe.db.commit()
+    s_auto = order_execution.order_summary(so_auto)
+    a0 = s_auto["items"][0]
+    step("自动带入的默认 BOM 不算已确认",
+         a0["bom_state"] == "default_suggested" and a0["bom_confirmed"] is False
+         and a0["bom_no"] is None and a0.get("bom_carried") == "BOM-ASSY-X1-001",
+         {k: a0.get(k) for k in ("bom_no", "bom_carried", "default_bom", "bom_state")})
+    step("概览单独标出「带入值」且仍列为未确认",
+         "ASSY-X1" in s_auto["bom_summary"]["carried_items"]
+         and "ASSY-X1" in s_auto["bom_summary"]["unconfirmed_items"],
+         {"carried": s_auto["bom_summary"]["carried_items"],
+          "unconfirmed": s_auto["bom_summary"]["unconfirmed_items"]})
+    frappe.db.set_value("Sales Order Item", row_auto.name, "custom_bom_confirmed", 1)
+    frappe.db.commit()
+    s_auto2 = order_execution.order_summary(so_auto)
+    step("人工确认后转为已确认",
+         s_auto2["items"][0]["bom_state"] == "explicit"
+         and s_auto2["items"][0]["bom_no"] == "BOM-ASSY-X1-001",
+         s_auto2["items"][0]["bom_state"])
+
     # 2 选错 BOM 必须被拒
     doc = frappe.get_doc("Sales Order", so1)
     doc.items[0].bom_no = "BOM-LM90-FG-001"
@@ -262,7 +290,17 @@ def run_b():
         docx.save(ignore_permissions=True)
         step("已提交订单禁止直接改 BOM", False, "保存成功了")
     except frappe.ValidationError as e:
-        step("已提交订单禁止直接改 BOM", True, str(e)[:120])
+        step("已提交订单禁止直接改 BOM", True, "%s: %s" % (type(e).__name__, str(e)[:120]))
+
+    # 7b 规则本身必须给出「受控变更」指引（而不是只靠原生 UpdateAfterSubmit 兜底）
+    docy = frappe.get_doc("Sales Order", so1)
+    docy.items[0].bom_no = "BOM-ASSY-X1-002"
+    try:
+        from cn_mfg_poc.bom_link import validate_sales_order_bom
+        validate_sales_order_bom(docy)
+        step("已提交改 BOM 命中受控变更规则", False, "校验未拦截")
+    except frappe.ValidationError as e:
+        step("已提交改 BOM 命中受控变更规则", "受控变更" in str(e), str(e)[:120])
 
     # 8 反向引用：只算显式
     refs = bom_references("BOM-ASSY-X1-001")

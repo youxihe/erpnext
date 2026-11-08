@@ -28,6 +28,22 @@ frappe.ui.form.on("Sales Order", {
 	},
 });
 
+// 手工在物料表改 BOM（含清空）也算人工决定：清空=取消确认，填入=确认
+frappe.ui.form.on("Sales Order Item", {
+	bom_no(frm) {
+		if (frm.doc.docstatus !== 0) return;
+		const grid = frm.fields_dict.items && frm.fields_dict.items.grid;
+		if (!grid) return;
+		(frm.doc.items || []).forEach((row) => {
+			const want = row.bom_no ? 1 : 0;
+			if ((row.custom_bom_confirmed || 0) !== want) {
+				frappe.model.set_value(row.doctype, row.name, "custom_bom_confirmed", want);
+			}
+		});
+		show_bom_intro(frm);
+	},
+});
+
 function toggle_bom_column(frm) {
 	const grid = frm.fields_dict.items && frm.fields_dict.items.grid;
 	if (!grid) return;
@@ -41,7 +57,8 @@ function show_bom_intro(frm) {
 	if (frm.doc.docstatus !== 0 || frm.doc.business_type !== "生产") return;
 	const items = frm.doc.items || [];
 	if (!items.length) return;
-	const pending = items.filter((r) => !r.bom_no);
+	// 只有人工确认过的行才算确认；ERPNext 新建行时自动带入的默认 BOM 不算
+	const pending = items.filter((r) => !r.custom_bom_confirmed);
 	if (pending.length) {
 		frm.set_intro(
 			__(
@@ -65,7 +82,11 @@ function choose_bom(frm) {
 	const labels = items.map(
 		(r, i) =>
 			`${i + 1} · ${r.item_code} × ${r.qty}` +
-			(r.bom_no ? ` · 当前 ${r.bom_no}` : " · 未确认")
+			(r.custom_bom_confirmed
+				? ` · 已确认 ${r.bom_no || ""}`
+				: r.bom_no
+				? ` · 未确认（默认带入 ${r.bom_no}）`
+				: " · 未确认")
 	);
 
 	const dialog = new frappe.ui.Dialog({
@@ -96,6 +117,8 @@ function choose_bom(frm) {
 			const row = items[idx];
 			if (!row) return;
 			frappe.model.set_value(row.doctype, row.name, "bom_no", values.bom);
+			// 人工确认标记：让服务端和概览页能区分「默认带入」与「人工确认」
+			frappe.model.set_value(row.doctype, row.name, "custom_bom_confirmed", 1);
 			dialog.hide();
 			frm.refresh_field("items");
 			// 立即刷新顶部提示，避免选完仍显示“尚未确认本单 BOM”

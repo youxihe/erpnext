@@ -20,8 +20,8 @@
 | BUILD-94 | 轻制造角色联测和 UAT | 销售/设计/采购/仓库/生产/财务分角色实操；证据、状态及剩余阻断 | PASS(LOCAL) | docs/product/evidence/BUILD-94.md + UAT_BUILD94.md + build94-execute.json（12/12）+ build94-verify.json（27/27）+ build94-stock-trace.json；SAL-ORD-2026-00008 全链 11 张原生单据，李工/刘工双人完成 9 任务时成品仓 0、SLE 92→92，Manufacture 后 92→96，发货后 97；真实企微真人 UAT 仍 REAL_WECOM_BLOCKED；线上 d.urlxl.cn 未同步本轮增量 |
 | PORTAL-FIX-01 | 统一导航内页缺「新建/保存」按钮 | 门户 CSS 整体隐藏 `.page-head`，连带藏掉主按钮 | DONE(本地+线上验证) | `docs/product/evidence/RELEASE-95.md` §10；commit `4deba804`；线上列表「添加销售订单」、表单「保存」均可见 |
 | RELEASE-95 | 轻制造代码 Review Fix + 线上测试发布 | 缺料公式、真人角色权限、迁移兼容与安全门禁后，将 BUILD-90~94 发布至 d.urlxl.cn | ONLINE_PASS(BUILD-90~94 已上线；真实企微仍 REAL_WECOM_BLOCKED) | docs/product/evidence/RELEASE-95.md + build 证据；线上样本 SAL-ORD-2026-00006 / PROJ-0001 / MFG-WO-2026-00003 / MAT-DN-2026-00005；本地 23/23 + 44/44 + 8/8，线上验收 32/32 |
-| UX-96A | 补齐生产进度创建/模板维护/负责人分派入口 | 管理员可从中文门户配置模板、从订单生成项目并分派任务 | TODO | docs/product/tasks/UX-96A.md |
-| UX-96B | BOM 与销售订单显式确认及双向引用 | 销售订单行选用 BOM、BOM 页查询实际引用订单、区分默认建议 | TODO | docs/product/tasks/UX-96B.md |
+| UX-96A | 补齐生产进度创建/模板维护/负责人分派入口 | 管理员可从中文门户配置模板、从订单生成项目并分派任务 | ONLINE_PASS | docs/product/evidence/UX-96A.md；线上 38/38 + 浏览器 29/29 + 本地 42/42；样本 SAL-ORD-2026-00005 / PROJ-0002 / TASK-2026-00019~00027，SLE 52→52 |
+| UX-96B | BOM 与销售订单显式确认及双向引用 | 销售订单行选用 BOM、BOM 页查询实际引用订单、区分默认建议 | ONLINE_PASS | docs/product/evidence/UX-96B.md；线上 38/38 + 浏览器 29/29 + 本地 42/42；样本 BOM-ASSY-X1-001/002、SAL-ORD-2026-00006（已确认）/00001（仅建议）/00008（选 002）；新增 custom_bom_confirmed 防默认 BOM 冒充确认 |
 
 > 2026-11-07 用户追加：BUILD-00~70 完成后确认 `/cn_portal` 统一导航布局可用，要求按客户原始需求配置「四种订单、BOM 拆分」。
 > BOM 拆分口径用户要求**先等确认**，登记为 BACKLOG `BOM-01` 暂不实施；本阶段先完成 BUILD-80 四类订单类型化。
@@ -152,6 +152,11 @@
 用户体验线上 /production_board 和 /order_execution 后反馈：管理员找不到九阶段模板管理、订单项目创建/分派入口；不清楚 Sales Order Item ↔ BOM 的显式绑定与双向引用。
 
 **当前优先 UX-96A → UX-96B，保留 RELEASE-95 ONLINE_PASS，不重复测试或发布历史 POC**。详细要求与 Gate 见 `docs/product/tasks/UX-96A.md`、`UX-96B.md`。两项都完成后发布到既有 d.urlxl.cn 测试站点并进行实名角色验证。
+
+> **2026-11-08 完成**：UX-96A / UX-96B 已发布 d.urlxl.cn 并完成真实角色验收（后端 38/38、浏览器 29/29、本地 42/42，库存零变动）。
+> 证据见 `docs/product/evidence/UX-96A.md`、`UX-96B.md`。验收中额外修掉两个真实缺陷：
+> ① 部署脚本 `clear-cache` 在 bench 根目录执行导致服务未重启；② 「已提交改 BOM 需受控变更」规则因字典键判断写错从未生效。
+> 并新增 `Sales Order Item.custom_bom_confirmed`，避免 ERPNext 自动带入的默认 BOM 被当成「本单已确认」。
 
 - 生产任务模板是 Project Template「整机生产九阶段」，具体阶段由 Template Task 引用；Project.sales_order ↔ Sales Order.project；Task.project/source_sales_order 关联。现有后端 `production.create_project` / `assign_task` 可复用，目前 /production_board?view=order **只读**，未提供创建/分派 UI。
 - BOM 选用字段为 `Sales Order Item.bom_no`（子表、行级）；当前 order_execution 在该字段为空时回退产品默认 BOM 进行物料展示，必须明确标注**默认建议不是本单已确认 BOM**。BOM 页面需要反向查询显式引用的 Sales Order Item、Work Order。
