@@ -40,7 +40,15 @@ ORDER_TYPES = [
 # BUILD-91：Project/Task 生产进度页。角色口径与 cn_mfg_poc.production 保持一致，
 # 由门户侧再做一次可见性过滤，避免无权用户看到点不开的菜单。
 PRODUCTION_STAFF_ROLES = {"Employee", "Manufacturing User", "Manufacturing Manager", "System Manager"}
-PRODUCTION_READ_ROLES = PRODUCTION_STAFF_ROLES | {"Sales User", "Sales Manager"}
+PRODUCTION_READ_ROLES = PRODUCTION_STAFF_ROLES | {
+    "Sales User", "Sales Manager", "Accounts User", "Accounts Manager",
+}
+# BUILD-92：订单执行概览的角色口径与 cn_mfg_poc.order_execution.READ_ROLES 一致
+EXECUTION_READ_ROLES = {
+    "Sales User", "Sales Manager", "Purchase User", "Purchase Manager",
+    "Stock User", "Stock Manager", "Manufacturing User", "Manufacturing Manager",
+    "Accounts User", "Accounts Manager", "System Manager",
+}
 
 
 def _slug(text):
@@ -183,6 +191,18 @@ def _inject_production_links(menu, roles):
     return menu
 
 
+def _inject_execution_links(menu, roles):
+    """BUILD-92：把「订单执行概览」挂到第一个可见的业务模块。"""
+    if not (roles & EXECUTION_READ_ROLES):
+        return menu
+    _add_group(menu, ["客户与销售", "设计与生产", "经营报表", "工作台"], "订单执行", [{
+        "label": "订单执行概览",
+        "url": "/order_execution",
+        "kind": "URL", "target": "order_execution",
+    }])
+    return menu
+
+
 def get_context(context):
     if frappe.session.user == "Guest":
         frappe.redirect("/login?redirect-to=%2Fcn_portal")
@@ -202,5 +222,6 @@ def get_context(context):
     menu = _build_menu(roles)
     menu = _inject_order_types(menu)
     menu = _inject_production_links(menu, roles)
+    menu = _inject_execution_links(menu, roles)
     context.menu_json = json.dumps(menu, ensure_ascii=False)
     context.page_title = "统一导航"

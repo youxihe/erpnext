@@ -1,0 +1,186 @@
+{
+ "vouchers": [
+  {
+   "voucher_type": "Purchase Receipt",
+   "voucher_no": "MAT-PRE-2026-00016",
+   "sle_count": 1,
+   "rows": [
+    {
+     "item_code": "RACK",
+     "warehouse": "原材料仓 - QC",
+     "actual_qty": 2.0,
+     "qty_after": 2.0,
+     "value_diff": 400.0,
+     "date": "2026-11-08"
+    }
+   ]
+  },
+  {
+   "voucher_type": "Stock Entry",
+   "voucher_no": "MAT-STE-2026-00010",
+   "sle_count": 6,
+   "rows": [
+    {
+     "item_code": "RACK",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": 2.0,
+     "qty_after": 4.0,
+     "value_diff": 400.0,
+     "date": "2026-11-08"
+    },
+    {
+     "item_code": "SENSOR",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": 1.0,
+     "qty_after": 2.0,
+     "value_diff": 300.0,
+     "date": "2026-11-08"
+    },
+    {
+     "item_code": "FASTENER",
+     "warehouse": "原材料仓 - QC",
+     "actual_qty": -4.0,
+     "qty_after": 46.0,
+     "value_diff": -20.0,
+     "date": "2026-11-08"
+    },
+    {
+     "item_code": "SENSOR",
+     "warehouse": "原材料仓 - QC",
+     "actual_qty": -1.0,
+     "qty_after": 39.0,
+     "value_diff": -300.0,
+     "date": "2026-11-08"
+    },
+    {
+     "item_code": "FASTENER",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": 4.0,
+     "qty_after": 8.0,
+     "value_diff": 20.0,
+     "date": "2026-11-08"
+    },
+    {
+     "item_code": "RACK",
+     "warehouse": "原材料仓 - QC",
+     "actual_qty": -2.0,
+     "qty_after": 0.0,
+     "value_diff": -400.0,
+     "date": "2026-11-08"
+    }
+   ]
+  },
+  {
+   "voucher_type": "Stock Entry",
+   "voucher_no": "MAT-STE-2026-00011",
+   "sle_count": 4,
+   "rows": [
+    {
+     "item_code": "RACK",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": -2.0,
+     "qty_after": 2.0,
+     "value_diff": -400.0,
+     "date": "2026-11-08"
+    },
+    {
+     "item_code": "FASTENER",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": -4.0,
+     "qty_after": 4.0,
+     "value_diff": -20.0,
+     "date": "2026-11-08"
+    },
+    {
+     "item_code": "ASSY-X1",
+     "warehouse": "产成品仓 - QC",
+     "actual_qty": 1.0,
+     "qty_after": 1.0,
+     "value_diff": 720.0,
+     "date": "2026-11-08"
+    },
+    {
+     "item_code": "SENSOR",
+     "warehouse": "生产在制仓 - QC",
+     "actual_qty": -1.0,
+     "qty_after": 1.0,
+     "value_diff": -300.0,
+     "date": "2026-11-08"
+    }
+   ]
+  },
+  {
+   "voucher_type": "Delivery Note",
+   "voucher_no": "MAT-DN-2026-00005",
+   "sle_count": 1,
+   "rows": [
+    {
+     "item_code": "ASSY-X1",
+     "warehouse": "产成品仓 - QC",
+     "actual_qty": -1.0,
+     "qty_after": 0.0,
+     "value_diff": -720.0,
+     "date": "2026-11-08"
+    }
+   ]
+  }
+ ],
+ "task_gate": {
+  "task": "TASK-2026-00028",
+  "task_modified": "2026-11-08 11:57:48.483393",
+  "last_sle_modified": "2026-11-08 11:56:19.443691",
+  "task_status": "Completed",
+  "production_status": "已完成"
+ },
+ "totals": {
+  "sle_total": 85,
+  "sle_for_build92_vouchers": 12,
+  "bins": [
+   {
+    "item_code": "ASSY-X1",
+    "warehouse": "产成品仓 - QC",
+    "actual_qty": 0.0,
+    "stock_value": 0.0
+   },
+   {
+    "item_code": "FASTENER",
+    "warehouse": "原材料仓 - QC",
+    "actual_qty": 46.0,
+    "stock_value": 230.0
+   },
+   {
+    "item_code": "FASTENER",
+    "warehouse": "生产在制仓 - QC",
+    "actual_qty": 4.0,
+    "stock_value": 20.0
+   },
+   {
+    "item_code": "RACK",
+    "warehouse": "原材料仓 - QC",
+    "actual_qty": 0.0,
+    "stock_value": 0.0
+   },
+   {
+    "item_code": "RACK",
+    "warehouse": "生产在制仓 - QC",
+    "actual_qty": 2.0,
+    "stock_value": 400.0
+   },
+   {
+    "item_code": "SENSOR",
+    "warehouse": "原材料仓 - QC",
+    "actual_qty": 39.0,
+    "stock_value": 11700.0
+   },
+   {
+    "item_code": "SENSOR",
+    "warehouse": "生产在制仓 - QC",
+    "actual_qty": 1.0,
+    "stock_value": 300.0
+   }
+  ],
+  "work_order_produced_qty": 1.0,
+  "sales_order_per_delivered": 100.0,
+  "sales_order_per_billed": 100.0
+ }
+}

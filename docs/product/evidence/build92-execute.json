@@ -1,0 +1,244 @@
+{
+ "steps": [
+  {
+   "name": "订单专属无工序 BOM（不改标准 BOM）",
+   "ok": true,
+   "detail": "{'bom': 'BOM-ASSY-X1-002', 'items': [('RACK', 2.0), ('SENSOR', 1.0), ('FASTENER', 4.0)]}"
+  },
+  {
+   "name": "生产类整机销售订单已提交且选用 BOM",
+   "ok": true,
+   "detail": "{'so': 'SAL-ORD-2026-00006', 'item': 'ASSY-X1', 'qty': 1.0, 'bom': 'BOM-ASSY-X1-002', 'delivery_date': '2026-11-22'}"
+  },
+  {
+   "name": "新订单按九阶段模板生成 Project/Task",
+   "ok": true,
+   "detail": "{'project': 'PROJ-0003', 'tasks': 9, 'replayed': True}"
+  },
+  {
+   "name": "按 BOM × 订单量算出真实缺料",
+   "ok": true,
+   "detail": "{'required': {'RACK': 2, 'SENSOR': 1, 'FASTENER': 4}, 'available': {'RACK': 0, 'SENSOR': 39.0, 'FASTENER': 46.0}, 'shortage': {'RACK': 2, 'SENSOR': 0, 'FASTENER': 0}}"
+  },
+  {
+   "name": "缺料触发原生 Material Request",
+   "ok": true,
+   "detail": "{'mr': 'MAT-MR-2026-00002', 'item': 'RACK', 'qty': 2}"
+  },
+  {
+   "name": "原生 Material Request → Purchase Order",
+   "ok": true,
+   "detail": "{'po': 'PUR-ORD-2026-00002', 'supplier': '昆山精工零部件有限公司'}"
+  },
+  {
+   "name": "原生 Purchase Receipt 采购入库，RACK 实增",
+   "ok": true,
+   "detail": "{'pr': 'MAT-PRE-2026-00016', 'RACK@原材料仓': '0 -> 0', 'sle_rows': 1, 'reused': True}"
+  },
+  {
+   "name": "无工序 BOM 工单提交，0 张 Job Card",
+   "ok": true,
+   "detail": "{'wo': 'MFG-WO-2026-00004', 'bom': 'BOM-ASSY-X1-002', 'jobs': 0, 'skip_transfer': 0}"
+  },
+  {
+   "name": "原生领料单：原材料 → 生产在制仓",
+   "ok": true,
+   "detail": "{'ste': 'MAT-STE-2026-00010', 'wip': {'FASTENER@生产在制仓 - QC': 4.0, 'RACK@生产在制仓 - QC': 2.0, 'SENSOR@生产在制仓 - QC': 1.0}}"
+  },
+  {
+   "name": "原生 Manufacture 完工入库，成品仓实增且 SLE 增长",
+   "ok": true,
+   "detail": "{'fg_before': 0, 'fg_after': 0, 'sle_before': 85, 'sle_after': 85, 'produced_qty': 1.0, 'sle_rows': 1, 'reused': True}"
+  },
+  {
+   "name": "整机一次发货 Delivery Note（由 Sales Order 生成）",
+   "ok": true,
+   "detail": "{'dn': 'MAT-DN-2026-00005', 'per_delivered': 100.0, 'docstatus': 1}"
+  },
+  {
+   "name": "原生 Sales Invoice 开票",
+   "ok": true,
+   "detail": "{'si': 'ACC-SINV-2026-00006', 'per_billed': 100.0}"
+  },
+  {
+   "name": "原生 Payment Entry 回款并冲销应收",
+   "ok": true,
+   "detail": "{'pe': 'ACC-PAY-2026-00006', 'outstanding': 0.0}"
+  },
+  {
+   "name": "任务标记完成后库存与 SLE 不变（Gate）",
+   "ok": true,
+   "detail": "{'sle_before': 85, 'sle_after': 85, 'bins_equal': True}"
+  },
+  {
+   "name": "四类订单仍在，服务单无出库/工单",
+   "ok": true,
+   "detail": "{'counts': {'生产': 3, '耗材': 1, '零部件': 1, '服务': 1}, 'service_dn': 0, 'service_wo': 0}"
+  }
+ ],
+ "ids": {
+  "bom": "BOM-ASSY-X1-002",
+  "sales_order": "SAL-ORD-2026-00006",
+  "project": "PROJ-0003",
+  "tasks": [
+   "TASK-2026-00028",
+   "TASK-2026-00029",
+   "TASK-2026-00030",
+   "TASK-2026-00031",
+   "TASK-2026-00032",
+   "TASK-2026-00033",
+   "TASK-2026-00034",
+   "TASK-2026-00035",
+   "TASK-2026-00036"
+  ],
+  "shortage": {
+   "RACK": 2,
+   "SENSOR": 0,
+   "FASTENER": 0
+  },
+  "material_request": "MAT-MR-2026-00002",
+  "purchase_order": "PUR-ORD-2026-00002",
+  "purchase_receipt": "MAT-PRE-2026-00016",
+  "work_order": "MFG-WO-2026-00004",
+  "job_cards": 0,
+  "material_transfer": "MAT-STE-2026-00010",
+  "manufacture": "MAT-STE-2026-00011",
+  "delivery_note": "MAT-DN-2026-00005",
+  "sales_invoice": "ACC-SINV-2026-00006",
+  "payment_entry": "ACC-PAY-2026-00006",
+  "sales_invoice_outstanding": 0.0,
+  "order_type_counts": {
+   "生产": 3,
+   "耗材": 1,
+   "零部件": 1,
+   "服务": 1
+  }
+ },
+ "stock": {
+  "start": {
+   "ASSY-X1@产成品仓 - QC": [
+    0.0,
+    0.0
+   ],
+   "RACK@原材料仓 - QC": [
+    0.0,
+    0.0
+   ],
+   "FASTENER@原材料仓 - QC": [
+    46.0,
+    230.0
+   ],
+   "SENSOR@原材料仓 - QC": [
+    39.0,
+    11700.0
+   ],
+   "RACK@生产在制仓 - QC": [
+    2.0,
+    400.0
+   ],
+   "SENSOR@生产在制仓 - QC": [
+    1.0,
+    300.0
+   ],
+   "FASTENER@生产在制仓 - QC": [
+    4.0,
+    20.0
+   ]
+  },
+  "sle_start": 85,
+  "rack_receipt": [
+   0,
+   0
+  ],
+  "receipt_sle": [
+   {
+    "item_code": "RACK",
+    "warehouse": "原材料仓 - QC",
+    "actual_qty": 2.0
+   }
+  ],
+  "after_transfer": {
+   "FASTENER@原材料仓 - QC": [
+    46.0,
+    230.0
+   ],
+   "FASTENER@生产在制仓 - QC": [
+    4.0,
+    20.0
+   ],
+   "RACK@原材料仓 - QC": [
+    0.0,
+    0.0
+   ],
+   "RACK@生产在制仓 - QC": [
+    2.0,
+    400.0
+   ],
+   "SENSOR@原材料仓 - QC": [
+    39.0,
+    11700.0
+   ],
+   "SENSOR@生产在制仓 - QC": [
+    1.0,
+    300.0
+   ]
+  },
+  "manufacture": {
+   "fg_before": 0,
+   "fg_after": 0,
+   "sle_before": 85,
+   "sle_after": 85,
+   "produced_qty": 1.0
+  },
+  "manufacture_sle": [
+   {
+    "item_code": "ASSY-X1",
+    "warehouse": "产成品仓 - QC",
+    "actual_qty": 1.0
+   }
+  ],
+  "task_gate": {
+   "sle_before": 85,
+   "sle_after": 85,
+   "bins_equal": true
+  },
+  "end": {
+   "ASSY-X1@产成品仓 - QC": [
+    0.0,
+    0.0
+   ],
+   "RACK@原材料仓 - QC": [
+    0.0,
+    0.0
+   ],
+   "FASTENER@原材料仓 - QC": [
+    46.0,
+    230.0
+   ],
+   "SENSOR@原材料仓 - QC": [
+    39.0,
+    11700.0
+   ],
+   "RACK@生产在制仓 - QC": [
+    2.0,
+    400.0
+   ],
+   "SENSOR@生产在制仓 - QC": [
+    1.0,
+    300.0
+   ],
+   "FASTENER@生产在制仓 - QC": [
+    4.0,
+    20.0
+   ]
+  },
+  "sle_end": 85
+ },
+ "errors": [],
+ "fallbacks": [],
+ "summary": {
+  "passed": 15,
+  "total": 15,
+  "errors": 0
+ }
+}

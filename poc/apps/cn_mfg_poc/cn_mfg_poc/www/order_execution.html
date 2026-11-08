@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }} · 启程智造 ERP</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f6f9;color:#1f2937;font:13px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{padding:18px 20px 44px;max-width:1400px}
+  h1{font-size:18px;margin:0 0 3px}
+  .sub{color:#8a94a6;font-size:12px;margin-bottom:14px}
+  .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  select{border:1px solid #dfe4ec;border-radius:5px;padding:6px 8px;font-size:12.5px;font-family:inherit;background:#fff;min-width:330px}
+  .btn{border:1px solid #dfe4ec;background:#fff;border-radius:5px;padding:6px 12px;font-size:12px;cursor:pointer;color:#45505f}
+  .btn:hover{border-color:#2b7cff;color:#2b7cff}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+  .kpi{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:12px 14px}
+  .kpi .k{font-size:11.5px;color:#8a94a6}
+  .kpi .v{font-size:22px;font-weight:700;margin-top:4px}
+  .kpi .v.ok{color:#1f9d68}.kpi .v.warn{color:#e07b39}.kpi .v.bad{color:#d64545}.kpi .v.blue{color:#2b7cff}
+  .card{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:14px 16px;margin-bottom:14px}
+  .card h2{font-size:14px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .card h2 .tip{font-size:11px;font-weight:400;color:#8a94a6;margin-left:auto}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:8px;border-bottom:1px solid #f0f2f6;vertical-align:middle}
+  th{color:#8a94a6;font-weight:500;background:#fafbfd;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  a{color:#2b7cff;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;white-space:nowrap}
+  .t-bad{background:#fdecec;color:#c23b3b}.t-ok{background:#e6f6ee;color:#1a7d52}
+  .t-mute{background:#eef2f7;color:#647084}.t-warn{background:#fff2e4;color:#b8681f}
+  .docgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+  .docbox{border:1px solid #eef1f6;border-radius:7px;padding:10px 12px;background:#fcfdff}
+  .docbox .h{font-size:12px;font-weight:600;color:#45505f;margin-bottom:6px}
+  .docbox .r{font-size:12px;line-height:2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .docbox .none{font-size:11.5px;color:#a3abba}
+  .msg{padding:9px 12px;border-radius:6px;font-size:12px;margin-bottom:12px;display:none}
+  .msg.err{display:block;background:#fdecec;color:#b43535}
+  .note{background:#fff;border:1px solid #e8ecf2;border-left:3px solid #2b7cff;border-radius:6px;padding:10px 14px;font-size:12px;color:#5b6675;line-height:1.9}
+  .empty{padding:24px;text-align:center;color:#8a94a6;font-size:12.5px}
+  .hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>订单执行概览</h1>
+  <div class="sub">当前身份：{{ user_fullname }}（{{ user }}） · 全部数据来自同一 ERPNext Site 的真实原生单据，点击单据号可跳原生表单</div>
+  <div class="bar">
+    <span>生产类订单：</span>
+    <select id="soSelect" onchange="load()"></select>
+    <button class="btn" onclick="load()">刷新</button>
+    <span id="financeTip" style="margin-left:auto;font-size:11.5px;color:#8a94a6"></span>
+  </div>
+  <div id="msg" class="msg"></div>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <h2>订单与产品 <span class="tip" id="orderTip"></span></h2>
+    <div id="orderTable"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="card">
+    <h2>物料覆盖（订单选用 BOM） <span class="tip" id="matTip"></span></h2>
+    <div id="matTable"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="card">
+    <h2>原生单据链 <span class="tip">按角色只读展示，单据本身由各岗位在原生 Desk 提交</span></h2>
+    <div class="docgrid" id="docs"></div>
+  </div>
+
+  <div class="card">
+    <h2>固定生产进度与实物流转 <span class="tip" id="progTip"></span></h2>
+    <div id="progress"></div>
+  </div>
+
+  <div class="card">
+    <h2>开票与回款 <span class="tip" id="finTip"></span></h2>
+    <div id="finance"></div>
+  </div>
+
+  <div class="note">
+    <b>Task 完成 ≠ 库存入库</b>：九阶段任务只反映过程；领料、完工入库、发货均以原生 Stock Entry / Delivery Note 为唯一库存凭据，本页只读聚合。<br>
+    预计缺料 = max(0, 需求量 − 原料仓现存 − 已采购入库 − 已领料未消耗)；采购申请/订单/入库/领料/消耗均为真实单据累计值。财务金额按 Accounts / System Manager 角色开放。
+  </div>
+</div>
+
+<script>
+var $ = function(s){ return document.querySelector(s); };
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmt(d){ return d ? String(d).slice(0,10) : "—"; }
+function num(v, digits){ if(v == null || v === "") return "—";
+  var n = Number(v); return isNaN(n) ? String(v) : n.toFixed(digits || 0).replace(/\.0+$/,""); }
+function api(method, params){
+  var url = "/api/method/" + method, qs = [];
+  for(var k in params){ qs.push(k + "=" + encodeURIComponent(params[k])); }
+  if(qs.length) url += "?" + qs.join("&");
+  return fetch(url, {headers:{"Accept":"application/json"}}).then(function(r){
+    return r.json().then(function(j){
+      if(!r.ok){ var m=""; try{ m = JSON.parse(JSON.parse(j._server_messages)[0]).message; }
+                 catch(e){ m = j.exception || ("HTTP "+r.status); } throw new Error(m); }
+      return j.message; }); });
+}
+function toast(text){ var el=$("#msg"); el.className="msg err"; el.textContent=text;
+  clearTimeout(el._t); el._t=setTimeout(function(){ el.className="msg"; },5000); }
+function kpis(items){
+  $("#kpis").innerHTML = items.map(function(x){
+    return '<div class="kpi"><div class="k">'+esc(x[0])+'</div><div class="v '+(x[2]||"")+'">'+esc(x[1])+'</div></div>';
+  }).join("");
+}
+function docList(label, rows, key){
+  var h = '<div class="docbox"><div class="h">'+esc(label)+' · '+rows.length+' 张</div>';
+  if(!rows.length) h += '<div class="none">暂无</div>';
+  rows.forEach(function(d){
+    h += '<div class="r"><a href="'+esc(d.url)+'" target="_blank">'+esc(d[key || "name"])+'</a>'
+      +  (d.status ? ' <span class="t-mute tag">'+esc(d.status)+'</span>' : '')
+      +  (d.purpose ? ' <span style="color:#8a94a6">'+esc(d.purpose)+'</span>' : '') + '</div>';
+  });
+  return h + '</div>';
+}
+function loadOrders(){
+  api("cn_mfg_poc.production.my_production_orders", {limit:100}).then(function(r){
+    $("#soSelect").innerHTML = r.orders.map(function(o){
+      return '<option value="'+esc(o.name)+'">'+esc(o.name)+' · '+esc(o.customer_name||"")
+        +' · 交期 '+fmt(o.delivery_date)+' · '+esc(o.status||"")+'</option>'; }).join("")
+      || '<option value="">（无可见的生产类订单）</option>';
+    if(r.orders.length) load(); else $("#orderTable").innerHTML='<div class="empty">无可见订单</div>';
+  }).catch(function(e){ toast(e.message); });
+}
+function load(){
+  var so = $("#soSelect").value; if(!so) return;
+  api("cn_mfg_poc.order_execution.order_summary", {sales_order:so}).then(function(r){
+    var o = r.order, p = r.progress, ph = r.physical;
+    $("#financeTip").textContent = r.finance_visible ? "财务字段：可见" : "财务字段：当前角色不可见";
+    kpis([
+      ["订单状态", o.status, "blue"],
+      ["承诺交期", fmt(o.delivery_date)],
+      ["完工入库", num(ph.produced_qty), "ok"],
+      ["已发货", num(ph.delivered_qty), "ok"],
+      ["任务完成", num(p.completed) + " / " + num(p.total)],
+      ["任务逾期", num(p.overdue), p.overdue ? "bad" : ""],
+      ["预计缺料", num(r.materials.total_shortage), r.materials.total_shortage ? "warn" : "ok"],
+      ["Job Card", num(ph.job_cards), "mute"]
+    ]);
+    $("#orderTip").textContent = "业务类型 " + esc(o.business_type) + " · 交付 " + num(o.per_delivered) + "% · 开票 " + num(o.per_billed) + "%";
+    var h = '<table><thead><tr><th>订单</th><th>客户</th><th>下单/交期</th><th>产品</th><th>数量</th><th>单价</th><th>订单选用 BOM</th><th>金额</th></tr></thead><tbody>';
+    r.items.forEach(function(it, i){
+      h += '<tr><td>'+(i?"":'<a href="'+esc(o.url)+'" target="_blank">'+esc(o.name)+'</a>')+'</td>'
+        +  '<td>'+(i?"":esc(o.customer_name||o.customer))+'</td>'
+        +  '<td>'+(i?"":fmt(o.transaction_date)+' → '+fmt(o.delivery_date))+'</td>'
+        +  '<td><b>'+esc(it.item_name||it.item_code)+'</b><br><span style="color:#8a94a6">'+esc(it.item_code)+'</span></td>'
+        +  '<td>'+num(it.qty)+'</td><td>'+(it.rate==null?"—":num(it.rate,2))+'</td>'
+        +  '<td>'+(it.bom_no?'<a href="'+esc("/desk/bom/"+encodeURIComponent(it.bom_no))+'" target="_blank">'+esc(it.bom_no)+'</a>':"—")+'</td>'
+        +  '<td>'+(it.amount==null?"—":num(it.amount,2))+'</td></tr>';
+    });
+    $("#orderTable").innerHTML = h + '</tbody></table>';
+
+    $("#matTip").textContent = r.boms.length ? ("BOM：" + r.boms.map(function(b){return b.name;}).join(" / ")) : "未选用 BOM";
+    var m = '<table><thead><tr><th>组件</th><th>来源仓</th><th>需求</th><th>现存</th><th>申请</th><th>已采购</th><th>已入库</th><th>已领料</th><th>已消耗</th><th>预计缺料</th></tr></thead><tbody>';
+    r.materials.components.forEach(function(c){
+      m += '<tr><td><b>'+esc(c.item_code)+'</b></td><td>'+esc(c.warehouse)+'</td>'
+        +  '<td>'+num(c.required_qty)+'</td><td>'+num(c.available_now)+'</td>'
+        +  '<td>'+num(c.requested_qty)+'</td><td>'+num(c.purchased_qty)+'</td>'
+        +  '<td>'+num(c.received_qty)+'</td><td>'+num(c.issued_qty)+'</td>'
+        +  '<td>'+num(c.consumed_qty)+'</td>'
+        +  '<td><span class="tag '+(c.shortage>0?"t-bad":"t-ok")+'">'+num(c.shortage)+'</span></td></tr>';
+    });
+    $("#matTable").innerHTML = r.materials.components.length ? m+'</tbody></table>' : '<div class="empty">该订单未选用 BOM 或无组件</div>';
+
+    var d = r.documents;
+    $("#docs").innerHTML =
+        docList("采购申请 Material Request", d.material_request)
+      + docList("采购订单 Purchase Order", d.purchase_order)
+      + docList("采购入库 Purchase Receipt", d.purchase_receipt)
+      + docList("生产工单 Work Order", d.work_order)
+      + docList("库存事务 Stock Entry", d.stock_entry)
+      + docList("发货 Delivery Note", d.delivery_note)
+      + docList("销售发票 Sales Invoice", d.sales_invoice)
+      + docList("回款 Payment Entry", d.payment_entry);
+
+    $("#progTip").textContent = p.project ? ("项目 " + p.project) : "尚未建立生产进度项目";
+    $("#progress").innerHTML = '<table><thead><tr><th>固定任务</th><th>状态</th><th>实物完工入库</th>'
+      + '<th>整机一次发货</th><th>Job Card</th></tr></thead><tbody><tr>'
+      + '<td>'+num(p.completed)+' / '+num(p.total)+' 完成 · '+num(p.overdue)+' 逾期 · '+num(p.due_soon)+' 临期</td>'
+      + '<td>'+(p.started?'<span class="tag t-ok">已启动</span>':'<span class="tag t-mute">未启动</span>')+'</td>'
+      + '<td>'+num(ph.produced_qty)+'</td>'
+      + '<td>'+(ph.once_delivery?'<span class="tag t-ok">是（1 张 DN）</span>':'<span class="tag t-warn">'+d.delivery_note.length+' 张</span>')+'</td>'
+      + '<td>'+num(ph.job_cards)+' 张（不强制）</td></tr></tbody></table>'
+      + (p.project ? '<div style="margin-top:8px"><a href="'+esc("/desk/project/"+encodeURIComponent(p.project))+'" target="_blank">打开生产进度项目 '+esc(p.project)+'</a>'
+          + '　·　<a href="/production_board?view=order" target="_blank">查看九阶段任务</a></div>' : '');
+
+    $("#finTip").textContent = r.finance_visible ? "Accounts / System Manager 可见" : "按权限隐藏金额";
+    if(!r.finance_visible){
+      $("#finance").innerHTML = '<div class="empty">当前角色不可见财务金额；开票与回款单据号仍可在上方「原生单据链」查看。</div>';
+    } else {
+      var f = r.finance || {};
+      $("#finance").innerHTML = '<table><thead><tr><th>订单金额</th><th>发票金额</th><th>已回款</th><th>未收余额</th><th>开票比例</th></tr></thead><tbody><tr>'
+        + '<td>'+num(o.grand_total,2)+' '+esc(o.currency||"")+'</td>'
+        + '<td>'+num(f.sales_invoice_total,2)+'</td><td>'+num(f.paid_amount,2)+'</td>'
+        + '<td>'+num(f.outstanding_amount,2)+'</td><td>'+num(o.per_billed)+'%</td></tr></tbody></table>';
+    }
+  }).catch(function(e){ toast(e.message); });
+}
+loadOrders();
+</script>
+</body>
+</html>

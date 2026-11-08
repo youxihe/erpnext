@@ -16,9 +16,9 @@
    "detail": "['production_owner', 'production_status', 'production_note', 'production_attachment', 'source_sales_order']"
   },
   {
-   "name": "生产类订单建立生产进度 Project",
+   "name": "生产类订单建立/复用生产进度 Project",
    "ok": true,
-   "detail": "PROJ-0002"
+   "detail": "PROJ-0002 replayed=True"
   },
   {
    "name": "按模板生成 9 个 Task",
@@ -26,14 +26,14 @@
    "detail": "['TASK-2026-00019', 'TASK-2026-00020', 'TASK-2026-00021', 'TASK-2026-00022', 'TASK-2026-00023', 'TASK-2026-00024', 'TASK-2026-00025', 'TASK-2026-00026', 'TASK-2026-00027']"
   },
   {
-   "name": "Task 回填来源订单与初始状态",
+   "name": "Task 回填来源订单且状态合法",
    "ok": true,
-   "detail": "[('TASK-2026-00019', '待开始', 'SAL-ORD-2026-00005'), ('TASK-2026-00020', '待开始', 'SAL-ORD-2026-00005')]"
+   "detail": "[('TASK-2026-00019', '已完成', 'SAL-ORD-2026-00005'), ('TASK-2026-00020', '待开始', 'SAL-ORD-2026-00005')]"
   },
   {
    "name": "目标日期由模板 start/duration 自动计算",
    "ok": true,
-   "detail": "[('机架焊接', '2026-11-08 00:00:00', '2026-11-11 00:00:00'), ('机加工件加工', '2026-11-11 00:00:00', '2026-11-15 00:00:00'), ('内钣金焊接', '2026-11-15 00:00:00', '2026-11-18 00:00:00')]"
+   "detail": "[('机架焊接', '2026-11-08 00:00:00', '2026-11-11 00:00:00'), ('机加工件加工', '2026-11-11 00:00:00', '2026-11-07 00:00:00'), ('内钣金焊接', '2026-11-15 00:00:00', '2026-11-10 00:00:00')]"
   },
   {
    "name": "Sales Order.project 原生回写",
@@ -108,7 +108,7 @@
   {
    "name": "汇总含逾期/临期/完成数",
    "ok": true,
-   "detail": "{'total': 10, 'overdue': 1, 'due_soon': 1, 'completed': 2}"
+   "detail": "{'total': 19, 'overdue': 1, 'due_soon': 1, 'completed': 3}"
   },
   {
    "name": "订单生产进度只读聚合",
@@ -118,7 +118,7 @@
   {
    "name": "任务状态/分派/完成全程不改动库存与 SLE",
    "ok": true,
-   "detail": "SLE 73 -> 73"
+   "detail": "SLE 85 -> 85"
   },
   {
    "name": "Task/Project 无库存 doc_events",

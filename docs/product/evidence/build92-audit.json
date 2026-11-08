@@ -1,0 +1,380 @@
+{
+ "errors": [
+  "BOM: (1054, \"Unknown column 'default' in 'SELECT'\")"
+ ],
+ "sales_order": {
+  "name": "SAL-ORD-2026-00005",
+  "customer": "苏州华新装备有限公司",
+  "status": "To Deliver and Bill",
+  "docstatus": 1,
+  "business_type": "生产",
+  "project": "PROJ-0002",
+  "transaction_date": "2026-10-29",
+  "delivery_date": "2026-11-12",
+  "grand_total": 1800.0,
+  "per_delivered": 0.0,
+  "per_billed": 0.0,
+  "items": [
+   {
+    "item_code": "SENSOR",
+    "item_name": "传感器",
+    "qty": 6.0,
+    "rate": 300.0,
+    "delivery_date": "2026-11-12",
+    "warehouse": "原材料仓 - QC",
+    "bom": null,
+    "delivered_qty": 0.0
+   }
+  ]
+ },
+ "items": {
+  "SENSOR": {
+   "item": {
+    "name": "SENSOR",
+    "item_name": "传感器",
+    "is_stock_item": 1,
+    "stock_uom": "件",
+    "has_batch_no": 0,
+    "is_purchase_item": 1,
+    "is_sales_item": 1
+   },
+   "active_boms": []
+  }
+ },
+ "linked": {
+  "material_request": [],
+  "material_request_items": [],
+  "purchase_order": [],
+  "purchase_order_items": [],
+  "purchase_receipt_items": [],
+  "work_order": [],
+  "delivery_note_items": [],
+  "sales_invoice": [],
+  "sales_invoice_items": [],
+  "payment_entries": [
+   {
+    "name": "ACC-PAY-2026-00001",
+    "docstatus": 2,
+    "payment_type": "Receive",
+    "paid_amount": 17600.0,
+    "party": "苏州华新装备有限公司"
+   },
+   {
+    "name": "ACC-PAY-2026-00002",
+    "docstatus": 1,
+    "payment_type": "Receive",
+    "paid_amount": 17600.0,
+    "party": "苏州华新装备有限公司"
+   },
+   {
+    "name": "ACC-PAY-2026-00003",
+    "docstatus": 1,
+    "payment_type": "Receive",
+    "paid_amount": 800.0,
+    "party": "苏州华新装备有限公司"
+   },
+   {
+    "name": "ACC-PAY-2026-00004",
+    "docstatus": 1,
+    "payment_type": "Receive",
+    "paid_amount": 750.0,
+    "party": "苏州华新装备有限公司"
+   },
+   {
+    "name": "ACC-PAY-2026-00005",
+    "docstatus": 1,
+    "payment_type": "Receive",
+    "paid_amount": 800.0,
+    "party": "苏州华新装备有限公司"
+   }
+  ],
+  "production_plan": [
+   {
+    "name": "MFG-PP-2026-00001",
+    "docstatus": 1,
+    "status": "Completed",
+    "posting_date": "2026-10-26"
+   }
+  ]
+ },
+ "warehouses": [
+  {
+   "name": "仓库 - QC",
+   "warehouse_name": "仓库",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "进行中 - QC",
+   "warehouse_name": "进行中",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "成品 - QC",
+   "warehouse_name": "成品",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "在途物料 - QC",
+   "warehouse_name": "在途物料",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "原材料仓 - QC",
+   "warehouse_name": "原材料仓",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "生产在制仓 - QC",
+   "warehouse_name": "生产在制仓",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "产成品仓 - QC",
+   "warehouse_name": "产成品仓",
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "贸易品仓 - QC",
+   "warehouse_name": "贸易品仓",
+   "company": "昆山启程智能设备有限公司"
+  }
+ ],
+ "bins": [
+  {
+   "item_code": "FILTER-KIT",
+   "warehouse": "贸易品仓 - QC",
+   "actual_qty": 40.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 50.0
+  },
+  {
+   "item_code": "FLANGE-ASSY",
+   "warehouse": "贸易品仓 - QC",
+   "actual_qty": 3.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 120.0
+  },
+  {
+   "item_code": "ASSY-X1",
+   "warehouse": "产成品仓 - QC",
+   "actual_qty": 0.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 720.0
+  },
+  {
+   "item_code": "RACK",
+   "warehouse": "原材料仓 - QC",
+   "actual_qty": 0.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 200.0
+  },
+  {
+   "item_code": "FASTENER",
+   "warehouse": "原材料仓 - QC",
+   "actual_qty": 50.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 5.0
+  },
+  {
+   "item_code": "SENSOR",
+   "warehouse": "原材料仓 - QC",
+   "actual_qty": 40.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 6.0,
+   "valuation_rate": 300.0
+  },
+  {
+   "item_code": "RACK",
+   "warehouse": "生产在制仓 - QC",
+   "actual_qty": 2.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 200.0
+  },
+  {
+   "item_code": "SENSOR",
+   "warehouse": "生产在制仓 - QC",
+   "actual_qty": 1.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 300.0
+  },
+  {
+   "item_code": "FASTENER",
+   "warehouse": "生产在制仓 - QC",
+   "actual_qty": 4.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 5.0
+  },
+  {
+   "item_code": "LM90-RM",
+   "warehouse": "原材料仓 - QC",
+   "actual_qty": 9.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 100.0
+  },
+  {
+   "item_code": "LM90-FG",
+   "warehouse": "产成品仓 - QC",
+   "actual_qty": 1.0,
+   "ordered_qty": 0.0,
+   "reserved_qty": 0.0,
+   "valuation_rate": 100.0
+  }
+ ],
+ "sle_count": 73,
+ "stock_entries_recent": [
+  {
+   "name": "MAT-STE-2026-00009",
+   "docstatus": 1,
+   "purpose": "Manufacture",
+   "work_order": "MFG-WO-2026-00003",
+   "posting_date": "2026-11-08"
+  },
+  {
+   "name": "MAT-STE-2026-00008",
+   "docstatus": 1,
+   "purpose": "Material Receipt",
+   "work_order": null,
+   "posting_date": "2026-11-08"
+  },
+  {
+   "name": "MAT-STE-2026-00007",
+   "docstatus": 1,
+   "purpose": "Material Transfer for Manufacture",
+   "work_order": "MFG-WO-2026-00002",
+   "posting_date": "2026-10-29"
+  },
+  {
+   "name": "MAT-STE-2026-00006",
+   "docstatus": 1,
+   "purpose": "Material Receipt",
+   "work_order": null,
+   "posting_date": "2026-10-29"
+  },
+  {
+   "name": "MAT-STE-2026-00005",
+   "docstatus": 1,
+   "purpose": "Material Receipt",
+   "work_order": null,
+   "posting_date": "2026-10-29"
+  },
+  {
+   "name": "MAT-STE-2026-00004",
+   "docstatus": 1,
+   "purpose": "Manufacture",
+   "work_order": "MFG-WO-2026-00001",
+   "posting_date": "2026-10-26"
+  },
+  {
+   "name": "MAT-STE-2026-00003",
+   "docstatus": 1,
+   "purpose": "Material Transfer for Manufacture",
+   "work_order": "MFG-WO-2026-00001",
+   "posting_date": "2026-10-26"
+  },
+  {
+   "name": "MAT-STE-2026-00002",
+   "docstatus": 2,
+   "purpose": "Manufacture",
+   "work_order": "MFG-WO-2026-00001",
+   "posting_date": "2026-10-26"
+  },
+  {
+   "name": "MAT-STE-2026-00001",
+   "docstatus": 2,
+   "purpose": "Material Transfer for Manufacture",
+   "work_order": "MFG-WO-2026-00001",
+   "posting_date": "2026-10-26"
+  }
+ ],
+ "orders_by_type": {
+  "生产": [
+   {
+    "name": "SAL-ORD-2026-00001",
+    "status": "Completed",
+    "docstatus": 1,
+    "per_delivered": 100.0,
+    "per_billed": 100.0
+   },
+   {
+    "name": "SAL-ORD-2026-00005",
+    "status": "To Deliver and Bill",
+    "docstatus": 1,
+    "per_delivered": 0.0,
+    "per_billed": 0.0
+   }
+  ],
+  "耗材": [
+   {
+    "name": "SAL-ORD-2026-00002",
+    "status": "Completed",
+    "docstatus": 1,
+    "per_delivered": 100.0,
+    "per_billed": 100.0
+   }
+  ],
+  "零部件": [
+   {
+    "name": "SAL-ORD-2026-00003",
+    "status": "Completed",
+    "docstatus": 1,
+    "per_delivered": 100.0,
+    "per_billed": 100.0
+   }
+  ],
+  "服务": [
+   {
+    "name": "SAL-ORD-2026-00004",
+    "status": "To Deliver",
+    "docstatus": 1,
+    "per_delivered": 0.0,
+    "per_billed": 100.0
+   }
+  ]
+ },
+ "users": {
+  "bot-gateway@erpnext-poc.localhost": [],
+  "zhaojingli@erpnext-poc.localhost": [
+   "Accounts User",
+   "Manufacturing User",
+   "Purchase User",
+   "Sales User",
+   "Stock User",
+   "System Manager"
+  ],
+  "zhoukaiji@erpnext-poc.localhost": [
+   "Accounts Manager",
+   "Accounts User"
+  ],
+  "ligong@erpnext-poc.localhost": [
+   "Employee",
+   "Manufacturing User"
+  ],
+  "zhanggong@erpnext-poc.localhost": [
+   "Employee",
+   "Stock Manager",
+   "Stock User"
+  ],
+  "chengong@erpnext-poc.localhost": [
+   "Purchase Manager",
+   "Purchase User"
+  ],
+  "liugong@erpnext-poc.localhost": [
+   "Employee",
+   "Manufacturing Manager",
+   "Manufacturing User"
+  ],
+  "wangming@erpnext-poc.localhost": [
+   "Sales Manager",
+   "Sales User"
+  ]
+ }
+}

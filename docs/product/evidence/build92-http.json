@@ -1,0 +1,228 @@
+{
+ "steps": [
+  {
+   "name": "HTTP /cn_portal 200 [Administrator]",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "订单执行概览入口可见 [Administrator]",
+   "ok": true,
+   "detail": "订单执行概览=True"
+  },
+  {
+   "name": "我的任务入口按角色 [Administrator]",
+   "ok": true,
+   "detail": "我的任务=True"
+  },
+  {
+   "name": "BUILD-91/80 入口未回退 [Administrator]",
+   "ok": true,
+   "detail": "订单生产进度=True 生产类订单=True"
+  },
+  {
+   "name": "HTTP /cn_portal 200 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "订单执行概览入口可见 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "订单执行概览=True"
+  },
+  {
+   "name": "我的任务入口按角色 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "我的任务=False"
+  },
+  {
+   "name": "BUILD-91/80 入口未回退 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "订单生产进度=True 生产类订单=True"
+  },
+  {
+   "name": "HTTP /cn_portal 200 [zhanggong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "订单执行概览入口可见 [zhanggong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "订单执行概览=True"
+  },
+  {
+   "name": "我的任务入口按角色 [zhanggong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "我的任务=True"
+  },
+  {
+   "name": "BUILD-91/80 入口未回退 [zhanggong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "订单生产进度=True 生产类订单=False"
+  },
+  {
+   "name": "HTTP /cn_portal 200 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "订单执行概览入口可见 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "订单执行概览=True"
+  },
+  {
+   "name": "我的任务入口按角色 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "我的任务=True"
+  },
+  {
+   "name": "BUILD-91/80 入口未回退 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "订单生产进度=True 生产类订单=False"
+  },
+  {
+   "name": "HTTP /cn_portal 200 [zhoukaiji@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "订单执行概览入口可见 [zhoukaiji@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "订单执行概览=True"
+  },
+  {
+   "name": "我的任务入口按角色 [zhoukaiji@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "我的任务=False"
+  },
+  {
+   "name": "BUILD-91/80 入口未回退 [zhoukaiji@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "订单生产进度=True 生产类订单=False"
+  },
+  {
+   "name": "HTTP /order_execution 200 [Administrator]",
+   "ok": true,
+   "detail": "status=200 len=11795"
+  },
+  {
+   "name": "HTTP /order_execution 200 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200 len=11801"
+  },
+  {
+   "name": "HTTP /order_execution 200 [zhanggong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200 len=11802"
+  },
+  {
+   "name": "HTTP /order_execution 200 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200 len=11800"
+  },
+  {
+   "name": "HTTP /order_execution 200 [zhoukaiji@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200 len=11803"
+  },
+  {
+   "name": "HTTP 概览金额按角色隔离 [Administrator]",
+   "ok": true,
+   "detail": "{'status': 200, 'finance_visible': True, 'expected': True}"
+  },
+  {
+   "name": "HTTP 概览金额按角色隔离 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "{'status': 200, 'finance_visible': False, 'expected': False}"
+  },
+  {
+   "name": "HTTP 概览金额按角色隔离 [zhanggong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "{'status': 200, 'finance_visible': False, 'expected': False}"
+  },
+  {
+   "name": "HTTP 概览金额按角色隔离 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "{'status': 200, 'finance_visible': False, 'expected': False}"
+  },
+  {
+   "name": "HTTP 概览金额按角色隔离 [zhoukaiji@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "{'status': 200, 'finance_visible': True, 'expected': True}"
+  },
+  {
+   "name": "未登录不能读订单执行概览",
+   "ok": true,
+   "detail": "status=403"
+  },
+  {
+   "name": "单据链每个原生单据都有可点击 Desk 链接",
+   "ok": true,
+   "detail": "9 个链接"
+  },
+  {
+   "name": "单据链包含 MAT-MR-2026-00002",
+   "ok": true,
+   "detail": "MAT-MR-2026-00002"
+  },
+  {
+   "name": "单据链包含 PUR-ORD-2026-00002",
+   "ok": true,
+   "detail": "PUR-ORD-2026-00002"
+  },
+  {
+   "name": "单据链包含 MAT-PRE-2026-00016",
+   "ok": true,
+   "detail": "MAT-PRE-2026-00016"
+  },
+  {
+   "name": "单据链包含 MFG-WO-2026-00004",
+   "ok": true,
+   "detail": "MFG-WO-2026-00004"
+  },
+  {
+   "name": "单据链包含 MAT-DN-2026-00005",
+   "ok": true,
+   "detail": "MAT-DN-2026-00005"
+  },
+  {
+   "name": "单据链包含 ACC-SINV-2026-00006",
+   "ok": true,
+   "detail": "ACC-SINV-2026-00006"
+  },
+  {
+   "name": "单据链包含 ACC-PAY-2026-00006",
+   "ok": true,
+   "detail": "ACC-PAY-2026-00006"
+  },
+  {
+   "name": "原生单据链接 HTTP 200 SAL-ORD-2026-00006",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "原生单据链接 HTTP 200 MAT-DN-2026-00005",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "原生单据链接 HTTP 200 MFG-WO-2026-00004",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "原生单据链接 HTTP 200 BOM-ASSY-X1-002",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "materials.shortage HTTP 可用",
+   "ok": true,
+   "detail": "{'count': 0}"
+  }
+ ],
+ "summary": {
+  "passed": 44,
+  "total": 44
+ }
+}

@@ -60,3 +60,12 @@
 | LM91-03 | `Task.production_attachment` 字段已建，H5/机器人的附件上传与文件权限尚未接通 | S1，BUILD-93 结合真实企微文件授权处理；缺授权期间保持 BLOCKED |
 | LM91-04 | 生产类订单 `SAL-ORD-2026-00001` 已完成交付，未建生产进度 Project；当前仅 `SAL-ORD-2026-00005` 有 PROJ-0002 | S2。BUILD-92 若需要历史订单概览，再决定是否补建，不自动批量造数 |
 | LM91-05 | `setup_template()` 会自愈并清理「无 project / is_template=0 / status=Open 且 start/duration 与九阶段一致」的孤儿 Task | S2。仅清理本脚本失败产物，绝不触碰项目下正式 Task；线上首次执行需先核对是否存在同名 Task |
+
+## BUILD-92 实测后新增观察
+| 编号 | 事项 | 决定 |
+| --- | --- | --- |
+| LM92-01 | 现有 `SAL-ORD-2026-00005` 是采购件 SENSOR、无 BOM 且无任何关联单据；BUILD-92 另建 `SAL-ORD-2026-00006`（ASSY-X1 整机）跑完整链路 | S2。历史订单不改动；若要让老订单也能显示概览，需先由客户确认是否补建 BOM/项目 |
+| LM92-02 | `BOM-ASSY-X1-001` 标准版带 2 道工序，本轮按 BOM-01 方向为订单建独立无工序版本 `BOM-ASSY-X1-002`，通过 `Sales Order Item.bom_no` 记录选用关系 | S2。复杂多层 BOM、替代料、自动合单采购仍归 `BOM-01`，等客户确认口径 |
+| LM92-03 | 分角色执行时原生单据用 `insert(ignore_permissions=True)` 提交（POC 角色画像未逐一配置每个原生 DocType 的 submit DocPerm），仅以 `frappe.set_user` 记录真实 owner | S1，正式上线前需按最小 DocPerm 收紧，并复测各岗位在原生 Desk 的提交权限 |
+| LM92-04 | `Production Plan` 在新订单链路中未使用；概览只展示实际存在的原生单据，不虚填 | S2。若客户要求按计划自动下单，再评估 Production Plan → Material Request 自动化 |
+| LM92-05 | 财务金额在 `order_summary()` 中对非 Accounts/System Manager 角色剔除（含单据行 `grand_total`），但原生 Desk 的表单权限仍由 ERPNext 自身控制 | S2。上线前需核对原生 Sales Invoice / Payment Entry 的角色权限是否与概览口径一致 |

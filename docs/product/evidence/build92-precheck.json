@@ -1,0 +1,376 @@
+{
+ "boms": [
+  {
+   "name": "BOM-LM90-FG-001",
+   "item": "LM90-FG",
+   "quantity": 1.0,
+   "is_active": 1,
+   "is_default": 1,
+   "docstatus": 1,
+   "with_operations": 0,
+   "company": "昆山启程智能设备有限公司"
+  },
+  {
+   "name": "BOM-ASSY-X1-001",
+   "item": "ASSY-X1",
+   "quantity": 1.0,
+   "is_active": 1,
+   "is_default": 1,
+   "docstatus": 1,
+   "with_operations": 1,
+   "company": "昆山启程智能设备有限公司"
+  }
+ ],
+ "bom_detail": {
+  "BOM-LM90-FG-001": {
+   "items": [
+    {
+     "item_code": "LM90-RM",
+     "qty": 1.0,
+     "uom": "Nos",
+     "source_warehouse": null
+    }
+   ],
+   "operations": 0,
+   "raw_material_cost": 100.0
+  },
+  "BOM-ASSY-X1-001": {
+   "items": [
+    {
+     "item_code": "RACK",
+     "qty": 2.0,
+     "uom": "件",
+     "source_warehouse": null
+    },
+    {
+     "item_code": "SENSOR",
+     "qty": 1.0,
+     "uom": "件",
+     "source_warehouse": null
+    },
+    {
+     "item_code": "FASTENER",
+     "qty": 4.0,
+     "uom": "件",
+     "source_warehouse": null
+    }
+   ],
+   "operations": 2,
+   "raw_material_cost": 720.0
+  }
+ },
+ "so_item_bom_fields": [
+  "warehouse_and_reference",
+  "warehouse",
+  "target_warehouse",
+  "bom_no",
+  "production_plan_qty"
+ ],
+ "so_item_fields_sample": [
+  "fg_item",
+  "fg_item_qty",
+  "item_code",
+  "customer_item_code",
+  "ensure_delivery_based_on_produced_serial_no",
+  "is_stock_item",
+  "reserve_stock",
+  "col_break1",
+  "delivery_date",
+  "item_name",
+  "section_break_5",
+  "description",
+  "item_group",
+  "brand",
+  "image_section",
+  "image",
+  "image_view",
+  "quantity_and_rate",
+  "qty",
+  "stock_uom",
+  "subcontracted_qty",
+  "col_break2",
+  "uom",
+  "conversion_factor",
+  "stock_qty",
+  "stock_reserved_qty",
+  "section_break_16",
+  "price_list_rate",
+  "base_price_list_rate",
+  "discount_and_margin",
+  "margin_type",
+  "margin_rate_or_amount",
+  "rate_with_margin",
+  "column_break_19",
+  "discount_percentage",
+  "discount_amount",
+  "distributed_discount_amount",
+  "mapped_additional_discount_amount",
+  "base_rate_with_margin",
+  "section_break_simple1",
+  "rate",
+  "amount",
+  "item_tax_template",
+  "col_break3",
+  "base_rate",
+  "base_amount",
+  "pricing_rules",
+  "stock_uom_rate",
+  "is_free_item",
+  "grant_commission",
+  "section_break_24",
+  "net_rate",
+  "net_amount",
+  "column_break_27",
+  "base_net_rate",
+  "base_net_amount",
+  "billed_amt",
+  "valuation_rate",
+  "gross_profit",
+  "drop_ship_section"
+ ],
+ "suppliers": [
+  {
+   "name": "昆山精工零部件有限公司",
+   "supplier_name": "昆山精工零部件有限公司",
+   "supplier_group": null
+  }
+ ],
+ "items_for_sale": [
+  {
+   "name": "LM90-RM",
+   "item_name": "BUILD90 验证原料",
+   "item_group": "Consumable",
+   "is_stock_item": 1,
+   "stock_uom": "Nos",
+   "standard_rate": 0.0
+  },
+  {
+   "name": "LM90-FG",
+   "item_name": "BUILD90 验证成品",
+   "item_group": "Consumable",
+   "is_stock_item": 1,
+   "stock_uom": "Nos",
+   "standard_rate": 0.0
+  },
+  {
+   "name": "INSTALL-SVC",
+   "item_name": "设备安装服务",
+   "item_group": "Services",
+   "is_stock_item": 0,
+   "stock_uom": "次",
+   "standard_rate": 0.0
+  },
+  {
+   "name": "FLANGE-ASSY",
+   "item_name": "替换法兰组件",
+   "item_group": "Products",
+   "is_stock_item": 1,
+   "stock_uom": "件",
+   "standard_rate": 0.0
+  },
+  {
+   "name": "FILTER-KIT",
+   "item_name": "过滤耗材包",
+   "item_group": "Consumable",
+   "is_stock_item": 1,
+   "stock_uom": "包",
+   "standard_rate": 0.0
+  },
+  {
+   "name": "FASTENER",
+   "item_name": "紧固件",
+   "item_group": "Raw Material",
+   "is_stock_item": 1,
+   "stock_uom": "件",
+   "standard_rate": 0.0
+  },
+  {
+   "name": "SENSOR",
+   "item_name": "传感器",
+   "item_group": "Raw Material",
+   "is_stock_item": 1,
+   "stock_uom": "件",
+   "standard_rate": 0.0
+  },
+  {
+   "name": "RACK",
+   "item_name": "机架",
+   "item_group": "Raw Material",
+   "is_stock_item": 1,
+   "stock_uom": "件",
+   "standard_rate": 0.0
+  },
+  {
+   "name": "ASSY-X1",
+   "item_name": "设备装配 X1",
+   "item_group": "Sub Assemblies",
+   "is_stock_item": 1,
+   "stock_uom": "台",
+   "standard_rate": 0.0
+  }
+ ],
+ "item_detail": {
+  "LM90-FG": {
+   "item_name": "BUILD90 验证成品",
+   "is_stock_item": 1,
+   "standard_rate": 0.0,
+   "valuation_rate": 100.0,
+   "item_defaults": []
+  },
+  "LM90-RM": {
+   "item_name": "BUILD90 验证原料",
+   "is_stock_item": 1,
+   "standard_rate": 0.0,
+   "valuation_rate": 100.0,
+   "item_defaults": []
+  },
+  "ASSY-X1": {
+   "item_name": "设备装配 X1",
+   "is_stock_item": 1,
+   "standard_rate": 0.0,
+   "valuation_rate": 5000.0,
+   "item_defaults": [
+    {
+     "company": "昆山启程智能设备有限公司",
+     "default_warehouse": "产成品仓 - QC",
+     "buying_cost_center": null
+    }
+   ]
+  },
+  "RACK": {
+   "item_name": "机架",
+   "is_stock_item": 1,
+   "standard_rate": 0.0,
+   "valuation_rate": 200.0,
+   "item_defaults": [
+    {
+     "company": "昆山启程智能设备有限公司",
+     "default_warehouse": "原材料仓 - QC",
+     "buying_cost_center": null
+    }
+   ]
+  },
+  "SENSOR": {
+   "item_name": "传感器",
+   "is_stock_item": 1,
+   "standard_rate": 0.0,
+   "valuation_rate": 300.0,
+   "item_defaults": [
+    {
+     "company": "昆山启程智能设备有限公司",
+     "default_warehouse": "原材料仓 - QC",
+     "buying_cost_center": null
+    }
+   ]
+  }
+ },
+ "company": [
+  {
+   "name": "昆山启程智能设备有限公司",
+   "default_currency": "CNY",
+   "default_warehouse": "仓库 - QC",
+   "stock_adjustment_account": "库存调整 - QC",
+   "default_expense_account": "销货成本 - QC"
+  }
+ ],
+ "work_order_status": [
+  {
+   "name": "MFG-WO-2026-00003",
+   "status": "Completed",
+   "docstatus": 1,
+   "production_item": "LM90-FG",
+   "qty": 1.0,
+   "produced_qty": 1.0,
+   "bom_no": "BOM-LM90-FG-001",
+   "skip_transfer": 1,
+   "sales_order": null
+  },
+  {
+   "name": "MFG-WO-2026-00002",
+   "status": "In Process",
+   "docstatus": 1,
+   "production_item": "ASSY-X1",
+   "qty": 1.0,
+   "produced_qty": 0.0,
+   "bom_no": "BOM-ASSY-X1-001",
+   "skip_transfer": 0,
+   "sales_order": null
+  },
+  {
+   "name": "MFG-WO-2026-00001",
+   "status": "Completed",
+   "docstatus": 1,
+   "production_item": "ASSY-X1",
+   "qty": 2.0,
+   "produced_qty": 2.0,
+   "bom_no": "BOM-ASSY-X1-001",
+   "skip_transfer": 0,
+   "sales_order": "SAL-ORD-2026-00001"
+  }
+ ],
+ "stock_entry_purposes": [
+  {
+   "name": "MAT-STE-2026-00009",
+   "purpose": "Manufacture",
+   "docstatus": 1,
+   "work_order": "MFG-WO-2026-00003"
+  },
+  {
+   "name": "MAT-STE-2026-00008",
+   "purpose": "Material Receipt",
+   "docstatus": 1,
+   "work_order": null
+  },
+  {
+   "name": "MAT-STE-2026-00007",
+   "purpose": "Material Transfer for Manufacture",
+   "docstatus": 1,
+   "work_order": "MFG-WO-2026-00002"
+  },
+  {
+   "name": "MAT-STE-2026-00006",
+   "purpose": "Material Receipt",
+   "docstatus": 1,
+   "work_order": null
+  },
+  {
+   "name": "MAT-STE-2026-00005",
+   "purpose": "Material Receipt",
+   "docstatus": 1,
+   "work_order": null
+  },
+  {
+   "name": "MAT-STE-2026-00004",
+   "purpose": "Manufacture",
+   "docstatus": 1,
+   "work_order": "MFG-WO-2026-00001"
+  },
+  {
+   "name": "MAT-STE-2026-00003",
+   "purpose": "Material Transfer for Manufacture",
+   "docstatus": 1,
+   "work_order": "MFG-WO-2026-00001"
+  },
+  {
+   "name": "MAT-STE-2026-00002",
+   "purpose": "Manufacture",
+   "docstatus": 2,
+   "work_order": "MFG-WO-2026-00001"
+  },
+  {
+   "name": "MAT-STE-2026-00001",
+   "purpose": "Material Transfer for Manufacture",
+   "docstatus": 2,
+   "work_order": "MFG-WO-2026-00001"
+  }
+ ],
+ "helpers": {
+  "sales_order.make_delivery_note": true,
+  "sales_order.make_sales_invoice": true,
+  "work_order.make_stock_entry": true,
+  "work_order.make_stock_return_entry": true,
+  "material_request.make_purchase_order": true,
+  "purchase_order.make_purchase_receipt": true,
+  "sales_invoice.make_payment_entry": false
+ }
+}

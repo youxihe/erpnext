@@ -59,11 +59,11 @@
 
 | 用例 | 预期 | 状态 |
 |---|---|---|
-| 订单 BOM | 生产订单明确选用哪个物料清单，非标版本不会误改其他订单 | TODO |
+| 订单 BOM | 生产订单明确选用哪个物料清单，非标版本不会误改其他订单 | PASS(LOCAL)（BUILD-92：SAL-ORD-2026-00006 行级 `bom_no=BOM-ASSY-X1-002` 无工序独立版本，标准 BOM-ASSY-X1-001 的 is_default 未改；证据 BUILD-92.md） |
 | 原生制造无强制工序报工 | 无 Job Card 操作依然能按工单合法领料/完工入库，或给出经实测的最小替代 | PASS(LOCAL)（BUILD-90：BOM-LM90-FG-001 / MFG-WO-2026-00003 / MAT-STE-2026-00009，Job Card 0 张，成品仓 0→1，SLE 71→73；证据 BUILD-90.md） |
 | 九项生产进度模板 | 生产 Project/Task 正确关联订单、负责人、目标日、状态、备注/附件 | PASS(LOCAL)（BUILD-91：`整机生产九阶段` 9 行 / PROJ-0002 / TASK-2026-00019~00027，`Sales Order.project` 原生回写；27/27 + HTTP 24/24；证据 BUILD-91.md） |
 | 临期/逾期 | 过期未完成任务预警；未来三日内临期（可配置） | PASS(LOCAL)（BUILD-91：逾期 / 临期 / 正常 / 已完成四态实测，`production_due_soon_days` 默认 3 可配置） |
-| 库存与任务解耦 | 任务全完成不会自动导致成品入库；采购、领料、制造完工和发货均有原生单号 | PASS(LOCAL)（BUILD-91 任务侧：SLE 73→73、`tabBin` 快照一致、Task/Project 无库存 doc_events）／采销发真实单据链待 BUILD-92 补验 |
-| 整机一次发货 | Delivery Note 来自 Sales Order，仓库和发货状态真实一致 | TODO |
-| 订单执行概览 | BOM、缺料、采购、领料、生产任务、入库、发货及应收可按权限追溯 | TODO |
+| 库存与任务解耦 | 任务全完成不会自动导致成品入库；采购、领料、制造完工和发货均有原生单号 | PASS(LOCAL)（BUILD-91 任务侧 SLE 73→73；BUILD-92 全链路 SLE 73→85 共 12 条且全部来自 PR/领料/完工/发货 4 张原生单据，任务完成后 Bin 一致、SLE 恒 85；Task/Project 无库存 doc_events） |
+| 整机一次发货 | Delivery Note 来自 Sales Order，仓库和发货状态真实一致 | PASS(LOCAL)（BUILD-92：`MAT-DN-2026-00005` 由 `make_delivery_note(SAL-ORD-2026-00006)` 生成，ASSY-X1 产成品仓 1→0，`per_delivered=100%`，1 张 DN） |
+| 订单执行概览 | BOM、缺料、采购、领料、生产任务、入库、发货及应收可按权限追溯 | PASS(LOCAL)（BUILD-92：`/order_execution` + `order_summary()`，9 个原生单据链接 HTTP 200，5 类角色金额隔离 26/26 + 44/44；财务仅 Accounts/System Manager 可见） |
 | PC/H5/Bot | 三端同一 Project Task、订单和库存；H5 更新任务 PC 可见，Bot 能查询 | TODO（REAL_WECOM 另验） |

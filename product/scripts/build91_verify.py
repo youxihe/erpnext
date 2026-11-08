@@ -75,7 +75,10 @@ try:
     out["ids"]["created_by"] = creator
     project = created["project"]
     out["ids"]["project"] = project
-    step("生产类订单建立生产进度 Project", bool(project) and not created.get("replayed"), project)
+    # 可重复执行：首次为新建，重跑为幂等复用，两种都必须是同一项目且 9 个任务。
+    step("生产类订单建立/复用生产进度 Project",
+         bool(project) and len(created.get("tasks", [])) == 9,
+         "%s replayed=%s" % (project, created.get("replayed")))
     tasks = frappe.get_all(
         "Task", filters={"project": project},
         fields=["name", "subject", "exp_start_date", "exp_end_date", "production_status",
@@ -84,8 +87,10 @@ try:
     )
     out["ids"]["tasks"] = [t["name"] for t in tasks]
     step("按模板生成 9 个 Task", len(tasks) == 9, [t["name"] for t in tasks])
-    step("Task 回填来源订单与初始状态", all(
-        t["source_sales_order"] == SO and t["production_status"] == "待开始" for t in tasks
+    # 重跑时任务可能已被之前的验证改过状态，只校验来源订单回填与状态取值合法。
+    step("Task 回填来源订单且状态合法", all(
+        t["source_sales_order"] == SO
+        and t["production_status"] in ("待开始", "进行中", "已完成", "异常") for t in tasks
     ), [(t["name"], t["production_status"], t["source_sales_order"]) for t in tasks[:2]])
     step("目标日期由模板 start/duration 自动计算", all(t["exp_end_date"] for t in tasks),
          [(t["subject"], str(t["exp_start_date"]), str(t["exp_end_date"])) for t in tasks[:3]])

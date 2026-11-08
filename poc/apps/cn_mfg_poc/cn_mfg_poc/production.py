@@ -49,7 +49,7 @@ CUSTOM_FIELDS = [
 
 MANAGER_ROLES = {"Manufacturing Manager", "System Manager"}
 STAFF_ROLES = {"Employee", "Manufacturing User", "Manufacturing Manager", "System Manager"}
-READ_ROLES = STAFF_ROLES | {"Sales User", "Sales Manager"}
+READ_ROLES = STAFF_ROLES | {"Sales User", "Sales Manager", "Accounts User", "Accounts Manager"}
 
 
 def _roles():

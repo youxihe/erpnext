@@ -1,0 +1,238 @@
+{
+ "steps": [
+  {
+   "name": "概览返回真实订单/BOM/金额",
+   "ok": true,
+   "detail": "{'so': 'SAL-ORD-2026-00006', 'bom': 'BOM-ASSY-X1-002', 'total': 5000.0}"
+  },
+  {
+   "name": "订单选用 BOM 与 SO 行一致",
+   "ok": true,
+   "detail": "BOM-ASSY-X1-002"
+  },
+  {
+   "name": "单据链可见 material_request",
+   "ok": true,
+   "detail": "['MAT-MR-2026-00002']"
+  },
+  {
+   "name": "单据链可见 purchase_order",
+   "ok": true,
+   "detail": "['PUR-ORD-2026-00002']"
+  },
+  {
+   "name": "单据链可见 purchase_receipt",
+   "ok": true,
+   "detail": "['MAT-PRE-2026-00016']"
+  },
+  {
+   "name": "单据链可见 work_order",
+   "ok": true,
+   "detail": "['MFG-WO-2026-00004']"
+  },
+  {
+   "name": "单据链可见 delivery_note",
+   "ok": true,
+   "detail": "['MAT-DN-2026-00005']"
+  },
+  {
+   "name": "单据链可见 sales_invoice",
+   "ok": true,
+   "detail": "['ACC-SINV-2026-00006']"
+  },
+  {
+   "name": "单据链可见 payment_entry",
+   "ok": true,
+   "detail": "['ACC-PAY-2026-00006']"
+  },
+  {
+   "name": "领料 + 完工入库两段式原生 Stock Entry",
+   "ok": true,
+   "detail": "['MAT-STE-2026-00011', 'MAT-STE-2026-00010']"
+  },
+  {
+   "name": "整机一次发货且完工/发货数量均为 1",
+   "ok": true,
+   "detail": "{'produced_qty': 1.0, 'delivered_qty': 1.0, 'once_delivery': True, 'job_cards': 0}"
+  },
+  {
+   "name": "缺料→采购→入库→领料→消耗全程可追溯",
+   "ok": true,
+   "detail": "{'item_code': 'RACK', 'required_qty': 2.0, 'warehouse': '原材料仓 - QC', 'bom': 'BOM-ASSY-X1-002', 'bom_url': '/desk/bom/BOM-ASSY-X1-002', 'available_now': 0, 'purchased_qty': 2.0, 'received_qty': 2.0, 'issued_qty': 2.0, 'consumed_qty': 2.0, 'issued_net': 0.0, 'shortage': 0.0, 'requested_qty': 2.0}"
+  },
+  {
+   "name": "全部组件预计缺料为 0（闭环后）",
+   "ok": true,
+   "detail": "{'total_shortage': 0.0, 'formula': 'max(0, required - available_now - received_qty - issued_net)'}"
+  },
+  {
+   "name": "生产进度来自同一 Project/Task",
+   "ok": true,
+   "detail": "{'project': 'PROJ-0003', 'project_url': '/desk/project/PROJ-0003', 'started': True, 'total': 9, 'completed': 1, 'overdue': 0, 'due_soon': 0}"
+  },
+  {
+   "name": "财务字段对管理员可见且已回款结清",
+   "ok": true,
+   "detail": "{'sales_invoice_total': 5000.0, 'outstanding_amount': 0.0, 'paid_amount': 5000.0}"
+  },
+  {
+   "name": "销售角色可读单据链但金额被隐藏",
+   "ok": true,
+   "detail": "{'finance_visible': False, 'documents': 5}"
+  },
+  {
+   "name": "仓库角色可读单据链但金额被隐藏",
+   "ok": true,
+   "detail": "{'finance_visible': False, 'documents': 5}"
+  },
+  {
+   "name": "采购角色可读单据链但金额被隐藏",
+   "ok": true,
+   "detail": "{'finance_visible': False, 'documents': 5}"
+  },
+  {
+   "name": "生产角色可读单据链但金额被隐藏",
+   "ok": true,
+   "detail": "{'finance_visible': False, 'documents': 5}"
+  },
+  {
+   "name": "财务角色可见金额",
+   "ok": true,
+   "detail": "{'sales_invoice_total': 5000.0, 'outstanding_amount': 0.0, 'paid_amount': 5000.0}"
+  },
+  {
+   "name": "Guest 不能读订单执行概览",
+   "ok": true,
+   "detail": "PermissionError: 当前角色无权查看订单执行概览"
+  },
+  {
+   "name": "materials.shortage 返回真实来源与公式",
+   "ok": true,
+   "detail": "{'count': 0, 'formula': 'max(0, required - available_now - received_qty - issued_net)'}"
+  },
+  {
+   "name": "四类订单仍在且服务单不出库/不生产",
+   "ok": true,
+   "detail": "{'counts': {'生产': 3, '耗材': 1, '零部件': 1, '服务': 1}, 'service_dn': 0, 'service_sle': 0, 'service_wo': 0}"
+  },
+  {
+   "name": "耗材订单直接出库且不触发生产",
+   "ok": true,
+   "detail": "{'dn_items': 1, 'work_orders': 0}"
+  },
+  {
+   "name": "零部件订单直接出库且不触发生产",
+   "ok": true,
+   "detail": "{'dn_items': 1, 'work_orders': 0}"
+  },
+  {
+   "name": "Task/Project 仍无库存 doc_events",
+   "ok": true,
+   "detail": "{'Task': None, 'Project': None}"
+  }
+ ],
+ "errors": [],
+ "ids": {
+  "bom": "BOM-ASSY-X1-002",
+  "material_request": "MAT-MR-2026-00002",
+  "purchase_order": "PUR-ORD-2026-00002",
+  "purchase_receipt": "MAT-PRE-2026-00016",
+  "work_order": "MFG-WO-2026-00004",
+  "material_transfer": "MAT-STE-2026-00010",
+  "manufacture": "MAT-STE-2026-00011",
+  "delivery_note": "MAT-DN-2026-00005",
+  "sales_invoice": "ACC-SINV-2026-00006",
+  "payment_entry": "ACC-PAY-2026-00006",
+  "project": "PROJ-0003"
+ },
+ "summary_sample": {
+  "order": {
+   "name": "SAL-ORD-2026-00006",
+   "url": "/desk/sales-order/SAL-ORD-2026-00006",
+   "customer": "苏州华新装备有限公司",
+   "customer_name": "苏州华新装备有限公司",
+   "company": "昆山启程智能设备有限公司",
+   "status": "Completed",
+   "docstatus": 1,
+   "business_type": "生产",
+   "transaction_date": "2026-11-08",
+   "delivery_date": "2026-11-22",
+   "grand_total": 5000.0,
+   "currency": "CNY",
+   "per_delivered": 100.0,
+   "per_billed": 100.0
+  },
+  "materials": [
+   {
+    "item_code": "RACK",
+    "required_qty": 2.0,
+    "warehouse": "原材料仓 - QC",
+    "bom": "BOM-ASSY-X1-002",
+    "bom_url": "/desk/bom/BOM-ASSY-X1-002",
+    "available_now": 0,
+    "purchased_qty": 2.0,
+    "received_qty": 2.0,
+    "issued_qty": 2.0,
+    "consumed_qty": 2.0,
+    "issued_net": 0.0,
+    "shortage": 0.0,
+    "requested_qty": 2.0
+   },
+   {
+    "item_code": "SENSOR",
+    "required_qty": 1.0,
+    "warehouse": "原材料仓 - QC",
+    "bom": "BOM-ASSY-X1-002",
+    "bom_url": "/desk/bom/BOM-ASSY-X1-002",
+    "available_now": 39.0,
+    "purchased_qty": 0,
+    "received_qty": 0,
+    "issued_qty": 1.0,
+    "consumed_qty": 1.0,
+    "issued_net": 0.0,
+    "shortage": 0.0,
+    "requested_qty": 0
+   },
+   {
+    "item_code": "FASTENER",
+    "required_qty": 4.0,
+    "warehouse": "原材料仓 - QC",
+    "bom": "BOM-ASSY-X1-002",
+    "bom_url": "/desk/bom/BOM-ASSY-X1-002",
+    "available_now": 46.0,
+    "purchased_qty": 0,
+    "received_qty": 0,
+    "issued_qty": 4.0,
+    "consumed_qty": 4.0,
+    "issued_net": 0.0,
+    "shortage": 0.0,
+    "requested_qty": 0
+   }
+  ],
+  "progress": {
+   "project": "PROJ-0003",
+   "project_url": "/desk/project/PROJ-0003",
+   "started": true,
+   "total": 9,
+   "completed": 1,
+   "overdue": 0,
+   "due_soon": 0
+  },
+  "physical": {
+   "produced_qty": 1.0,
+   "delivered_qty": 1.0,
+   "once_delivery": true,
+   "job_cards": 0
+  },
+  "finance": {
+   "sales_invoice_total": 5000.0,
+   "outstanding_amount": 0.0,
+   "paid_amount": 5000.0
+  }
+ },
+ "summary": {
+  "passed": 26,
+  "total": 26,
+  "errors": 0
+ }
+}
