@@ -43,3 +43,11 @@
 - 生产任务复杂工序/Job Card 强制报工、人工费用、生产百分比换算：**不在本阶段**；原生能力保留，不强制车间使用。
 - 交付逐组件发货、复杂包装、运输轨迹：**不在本阶段**，首期整机一次交货。
 - 统一导航此前已经落地并获用户认可，避免无意义的 UI 重构；后续只按真实使用痛点调整。
+
+## BUILD-90 实测后新增观察
+| 编号 | 事项 | 决定 |
+| --- | --- | --- |
+| LM90-01 | `Task.status` 原生选项 Open/Working/Pending Review/Overdue/Template/Completed/Cancelled，与决策「待开始/进行中/完成/异常」不一致 | S2，BUILD-91 做最小映射，不重造状态机 |
+| LM90-02 | `Project Template Task` 子表仅 2 字段，无 start/duration/task_weight/description | S2，九任务负责人与目标日期在生成 Task 时按规则计算 |
+| LM90-03 | 现有 `my_jobs` / `update_job_progress` 基于 Job Card，与新的 Project Task 任务视图形成两套「我的任务」 | S2，BUILD-93 做兼容迁移或收口，员工界面不强制 Job Card |
+| LM90-04 | BUILD-90 只验证 `skip_transfer=1` 的直达 Manufacture 路径 | S1，BUILD-92 结合真实工单再验 `Material Transfer for Manufacture` 两段式与防重复扣库 |

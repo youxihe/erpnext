@@ -1,0 +1,352 @@
+{
+ "progress_doctypes": {
+  "Project Template": {
+   "exists": true,
+   "count": 0,
+   "fields": [
+    "project_type",
+    "disabled",
+    "tasks"
+   ]
+  },
+  "Project Template Task": {
+   "exists": true,
+   "count": 0,
+   "fields": [
+    "task",
+    "subject"
+   ]
+  },
+  "Project": {
+   "exists": true,
+   "count": 0,
+   "fields": [
+    "naming_series",
+    "project_name",
+    "status",
+    "project_type",
+    "percent_complete_method",
+    "column_break_5",
+    "project_template",
+    "priority",
+    "department",
+    "is_active",
+    "percent_complete",
+    "section_break_18",
+    "expected_start_date",
+    "actual_start_date",
+    "actual_time",
+    "column_break_20",
+    "expected_end_date",
+    "actual_end_date",
+    "costing_tab",
+    "project_details",
+    "estimated_costing",
+    "total_costing_amount",
+    "total_purchase_cost",
+    "company",
+    "column_break_28",
+    "total_sales_amount",
+    "total_billable_amount",
+    "total_billed_amount",
+    "total_consumed_material_cost",
+    "cost_center",
+    "margin",
+    "gross_margin",
+    "column_break_37",
+    "per_gross_margin",
+    "monitor_progress_tab",
+    "collect_progress",
+    "holiday_list",
+    "frequency",
+    "from_time",
+    "to_time",
+    "first_email",
+    "second_email",
+    "daily_time_to_send",
+    "day_to_send",
+    "weekly_time_to_send",
+    "column_break_45",
+    "subject",
+    "message",
+    "more_info_tab",
+    "customer_details",
+    "customer",
+    "column_break_14",
+    "sales_order",
+    "users_section",
+    "users",
+    "copied_from",
+    "section_break0",
+    "notes",
+    "connections_tab"
+   ]
+  },
+  "Task": {
+   "exists": true,
+   "count": 0,
+   "fields": [
+    "subject",
+    "project",
+    "issue",
+    "type",
+    "color",
+    "is_group",
+    "column_break0",
+    "status",
+    "priority",
+    "task_weight",
+    "parent_task",
+    "completed_by",
+    "completed_on",
+    "section_break_dafi",
+    "is_template",
+    "column_break_vvfp",
+    "start",
+    "duration",
+    "sb_timeline",
+    "exp_start_date",
+    "expected_time",
+    "column_break_11",
+    "exp_end_date",
+    "progress",
+    "is_milestone",
+    "sb_details",
+    "description",
+    "dependencies_tab",
+    "sb_depends_on",
+    "depends_on",
+    "depends_on_tasks",
+    "sb_actual",
+    "act_start_date",
+    "actual_time",
+    "column_break_15",
+    "act_end_date",
+    "sb_costing",
+    "total_costing_amount",
+    "column_break_20",
+    "total_billing_amount",
+    "more_info_tab",
+    "sb_more_info",
+    "company",
+    "review_date",
+    "closing_date",
+    "column_break_22",
+    "department",
+    "lft",
+    "rgt",
+    "old_parent",
+    "template_task"
+   ]
+  }
+ },
+ "task_status_options": "Open\nWorking\nPending Review\nOverdue\nTemplate\nCompleted\nCancelled",
+ "project_fields_of_interest": {
+  "project_template": true,
+  "sales_order": true,
+  "customer": true,
+  "expected_start_date": true,
+  "expected_end_date": true,
+  "status": true,
+  "is_active": true,
+  "percent_complete": true
+ },
+ "task_fields_of_interest": {
+  "project": true,
+  "subject": true,
+  "status": true,
+  "exp_start_date": true,
+  "exp_end_date": true,
+  "completed_on": true,
+  "completed_by": true,
+  "description": true,
+  "_assign": false,
+  "priority": true,
+  "task_weight": true,
+  "parent_task": true
+ },
+ "project_template_tasks": {
+  "subject": true,
+  "start": false,
+  "duration": false,
+  "task_weight": false,
+  "description": false
+ },
+ "existing_templates": [],
+ "bom": {
+  "fields_of_interest": {
+   "item": true,
+   "quantity": true,
+   "with_operations": true,
+   "operations": true,
+   "items": true,
+   "is_active": true,
+   "is_default": true,
+   "project": true
+  },
+  "with_operations_options": null,
+  "records": [
+   {
+    "name": "BOM-ASSY-X1-001",
+    "item": "ASSY-X1",
+    "quantity": 1.0,
+    "with_operations": 1,
+    "is_active": 1,
+    "docstatus": 1,
+    "operation_rows": 2
+   }
+  ]
+ },
+ "work_order": {
+  "fields_of_interest": {
+   "production_item": true,
+   "bom_no": true,
+   "qty": true,
+   "produced_qty": true,
+   "wip_warehouse": true,
+   "fg_warehouse": true,
+   "source_warehouse": true,
+   "skip_transfer": true,
+   "use_multi_level_bom": true,
+   "operations": true,
+   "required_items": true,
+   "sales_order": true,
+   "status": true,
+   "project": true
+  },
+  "records": [
+   {
+    "name": "MFG-WO-2026-00001",
+    "production_item": "ASSY-X1",
+    "bom_no": "BOM-ASSY-X1-001",
+    "qty": 2.0,
+    "produced_qty": 2.0,
+    "status": "Completed",
+    "docstatus": 1,
+    "skip_transfer": 0,
+    "operation_rows": 2,
+    "job_cards": 2
+   },
+   {
+    "name": "MFG-WO-2026-00002",
+    "production_item": "ASSY-X1",
+    "bom_no": "BOM-ASSY-X1-001",
+    "qty": 1.0,
+    "produced_qty": 0.0,
+    "status": "In Process",
+    "docstatus": 1,
+    "skip_transfer": 0,
+    "operation_rows": 2,
+    "job_cards": 2
+   }
+  ]
+ },
+ "stock_entry": {
+  "purpose_options": "Material Issue\nMaterial Receipt\nMaterial Transfer\nMaterial Transfer for Manufacture\nMaterial Consumption for Manufacture\nManufacture\nRepack\nSend to Subcontractor\nDisassemble\nReceive from Customer\nReturn Raw Material to Customer\nSubcontracting Delivery\nSubcontracting Return",
+  "fields_of_interest": {
+   "purpose": true,
+   "work_order": true,
+   "bom_no": true,
+   "fg_completed_qty": true,
+   "from_warehouse": true,
+   "to_warehouse": true,
+   "items": true
+  },
+  "manufacture_records": [
+   {
+    "name": "MAT-STE-2026-00001",
+    "purpose": "Material Transfer for Manufacture",
+    "work_order": "MFG-WO-2026-00001",
+    "fg_completed_qty": 2.0,
+    "docstatus": 2
+   },
+   {
+    "name": "MAT-STE-2026-00002",
+    "purpose": "Manufacture",
+    "work_order": "MFG-WO-2026-00001",
+    "fg_completed_qty": 2.0,
+    "docstatus": 2
+   },
+   {
+    "name": "MAT-STE-2026-00003",
+    "purpose": "Material Transfer for Manufacture",
+    "work_order": "MFG-WO-2026-00001",
+    "fg_completed_qty": 2.0,
+    "docstatus": 1
+   },
+   {
+    "name": "MAT-STE-2026-00004",
+    "purpose": "Manufacture",
+    "work_order": "MFG-WO-2026-00001",
+    "fg_completed_qty": 2.0,
+    "docstatus": 1
+   },
+   {
+    "name": "MAT-STE-2026-00007",
+    "purpose": "Material Transfer for Manufacture",
+    "work_order": "MFG-WO-2026-00002",
+    "fg_completed_qty": 1.0,
+    "docstatus": 1
+   }
+  ]
+ },
+ "stock_entry_purposes": {
+  "Manufacture": true,
+  "Material Transfer for Manufacture": true,
+  "Material Issue": true
+ },
+ "task_stock_decoupling": {
+  "task_doc_events": null,
+  "project_doc_events": null,
+  "any_task_hook": false,
+  "note": "Task/Project 不得挂任何会写 Stock Ledger Entry 的 doc_event"
+ },
+ "installed_apps": [
+  "frappe",
+  "erpnext",
+  "cn_mfg_poc"
+ ],
+ "own_hooks_doc_events": {
+  "Stock Entry": {
+   "on_submit": [
+    "erpnext.stock.doctype.material_request.material_request.update_completed_and_requested_qty"
+   ],
+   "on_cancel": [
+    "erpnext.stock.doctype.material_request.material_request.update_completed_and_requested_qty"
+   ]
+  },
+  "Sales Order": {
+   "validate": [
+    "cn_mfg_poc.order_rules.validate_sales_order"
+   ]
+  }
+ },
+ "api_surface": [
+  "cancel_purchase_draft",
+  "confirm_purchase_draft",
+  "my_jobs",
+  "my_orders",
+  "order_detail",
+  "prepare_purchase_draft",
+  "report_customer",
+  "search_customers",
+  "stock_balances",
+  "update_job_progress"
+ ],
+ "required_build93_contracts": {
+  "orders_summary": false,
+  "production_tasks_mine": false,
+  "production_tasks_update": false,
+  "materials_shortage": false
+ },
+ "existing_job_card_apis": [
+  "my_jobs",
+  "update_job_progress"
+ ],
+ "business_type_distribution": {
+  "生产": 2,
+  "耗材": 1,
+  "零部件": 1,
+  "服务": 1
+ }
+}

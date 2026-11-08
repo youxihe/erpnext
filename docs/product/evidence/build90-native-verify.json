@@ -1,0 +1,100 @@
+{
+ "steps": [
+  {
+   "step": "独立测试物料就绪",
+   "ok": true,
+   "detail": "LM90-FG / LM90-RM"
+  },
+  {
+   "step": "无工序单层 BOM 已提交",
+   "ok": true,
+   "detail": "BOM-LM90-FG-001 with_operations=0 operations=0 docstatus=1"
+  },
+  {
+   "step": "原料真实入库",
+   "ok": true,
+   "detail": "单号=MAT-STE-2026-00008 前后={'LM90-FG@产成品仓 - QC': [0.0, 0.0], 'LM90-RM@原材料仓 - QC': [10.0, 1000.0]} -> {'LM90-FG@产成品仓 - QC': [0.0, 0.0], 'LM90-RM@原材料仓 - QC': [10.0, 1000.0]}"
+  },
+  {
+   "step": "无工序工单已提交且无 Job Card",
+   "ok": true,
+   "detail": "MFG-WO-2026-00003 docstatus=1 operations=0 job_cards=0 skip_transfer=1"
+  },
+  {
+   "step": "无 Job Card 也能原生 Manufacture 完工入库",
+   "ok": true,
+   "detail": "单号=MAT-STE-2026-00009 SLE 71->73 成品仓 [0.0, 0.0] -> [1.0, 100.0] produced_qty=1.0"
+  },
+  {
+   "step": "Task/Project 无库存相关 doc_events",
+   "ok": true,
+   "detail": "{'Task': None, 'Project': None}"
+  },
+  {
+   "step": "任务状态改为完成不改动库存/SLE",
+   "ok": true,
+   "detail": "Task=TASK-2026-00001 Completed Bin一致=True SLE 73->73"
+  }
+ ],
+ "errors": [],
+ "manufacture": {
+  "work_order": "MFG-WO-2026-00003",
+  "bom": "BOM-LM90-FG-001",
+  "stock_entry": "MAT-STE-2026-00009",
+  "bins_before": {
+   "LM90-FG@产成品仓 - QC": [
+    0.0,
+    0.0
+   ],
+   "LM90-RM@原材料仓 - QC": [
+    10.0,
+    1000.0
+   ]
+  },
+  "bins_after": {
+   "LM90-FG@产成品仓 - QC": [
+    1.0,
+    100.0
+   ],
+   "LM90-RM@原材料仓 - QC": [
+    9.0,
+    900.0
+   ]
+  },
+  "sle_before": 71,
+  "sle_after": 73,
+  "produced_qty": 1.0
+ },
+ "task_gate": {
+  "project": "PROJ-0001",
+  "task": "TASK-2026-00001",
+  "status": "Completed",
+  "bins_before": {
+   "LM90-FG@产成品仓 - QC": [
+    1.0,
+    100.0
+   ],
+   "LM90-RM@原材料仓 - QC": [
+    9.0,
+    900.0
+   ]
+  },
+  "bins_after": {
+   "LM90-FG@产成品仓 - QC": [
+    1.0,
+    100.0
+   ],
+   "LM90-RM@原材料仓 - QC": [
+    9.0,
+    900.0
+   ]
+  },
+  "sle_before": 73,
+  "sle_after": 73
+ },
+ "summary": {
+  "passed": 7,
+  "total": 7,
+  "errors": 0
+ }
+}
