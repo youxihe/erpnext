@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }} · 启程智造 ERP</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f6f9;color:#1f2937;font:13px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{padding:18px 20px 40px;max-width:1180px}
+  .top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  h1{font-size:19px;margin:0 0 3px}
+  .sub{color:#8a94a6;font-size:12px}
+  .top .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .card{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:14px 16px;margin-bottom:14px}
+  .card h2{font-size:13.5px;margin:0 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card h2 .tip{font-size:11px;font-weight:400;color:#8a94a6}
+  .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 18px}
+  .f .k{font-size:11.5px;color:#8a94a6}
+  .f .v{font-size:13px;margin-top:1px;word-break:break-all}
+  .f .v b{font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:8px;border-bottom:1px solid #f0f2f6;vertical-align:middle}
+  th{color:#8a94a6;font-weight:500;background:#fafbfd;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  .btn{border:1px solid #dfe4ec;background:#fff;border-radius:5px;padding:6px 12px;font-size:12px;cursor:pointer;color:#45505f;text-decoration:none;display:inline-block;white-space:nowrap}
+  .btn:hover{border-color:#2b7cff;color:#2b7cff}
+  .btn.pri{background:#2b7cff;border-color:#2b7cff;color:#fff}
+  .btn.pri:hover{background:#1f68e0;color:#fff}
+  .btn.big{padding:9px 16px;font-size:13px;font-weight:600}
+  .btn.mini{padding:2px 8px;font-size:11.5px}
+  .msg{padding:9px 12px;border-radius:6px;font-size:12px;margin-bottom:12px;display:none}
+  .msg.err{display:block;background:#fdecec;color:#b43535}
+  .msg.ok{display:block;background:#e6f6ee;color:#166b46}
+  .note{background:#fff;border:1px solid #e8ecf2;border-left:3px solid #2b7cff;border-radius:6px;padding:10px 14px;font-size:12px;color:#5b6675;line-height:1.9}
+  .empty{padding:22px;text-align:center;color:#8a94a6;font-size:12.5px}
+  .muted{color:#8a94a6}
+  .tag{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;line-height:1.7;background:#f1f3f7;color:#7d8798}
+  .tag.ok{background:#e6f6ee;color:#166b46}
+  .tag.open{background:#eef4ff;color:#2b6cd4}
+  .tag.warn{background:#fff3e2;color:#9a6212}
+  .who{background:#fbfcfe;border:1px dashed #dfe4ec;border-radius:6px;padding:10px 12px;font-size:12px;color:#5b6675;line-height:1.9}
+  @media (max-width:820px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:560px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1 id="title">加载中…</h1>
+      <div class="sub">客户详情 · 当前身份：{{ user_fullname }}</div>
+    </div>
+    <div class="right">
+      <a class="btn" href="/customer_center?tab=customer">返回客户中心</a>
+      <a class="btn" id="deskLink" href="#" target="_blank">在 Desk 打开</a>
+      <a class="btn" id="leadLink" href="#" style="display:none">查看来源报备</a>
+      <a class="btn pri big" id="newOrder" href="#" target="_blank">新建销售订单</a>
+    </div>
+  </div>
+
+  <div id="msg" class="msg"></div>
+
+  <div class="card">
+    <h2>客户与归属 <span class="tip">首次报备人来自报备单，不随客户负责人调整而改变</span></h2>
+    <div class="grid">
+      <div class="f"><div class="k">客户全称</div><div class="v" id="fName">—</div></div>
+      <div class="f"><div class="k">客户类型 / 客户组</div><div class="v" id="fType">—</div></div>
+      <div class="f"><div class="k">客户编号</div><div class="v" id="fCode">—</div></div>
+      <div class="f"><div class="k">首次报备人</div><div class="v" id="fReporter">—</div></div>
+      <div class="f"><div class="k">首次报备时间</div><div class="v" id="fReportedOn">—</div></div>
+      <div class="f"><div class="k">当前客户负责人</div><div class="v" id="fManager">—</div></div>
+      <div class="f"><div class="k">来源报备</div><div class="v" id="fLead">—</div></div>
+      <div class="f"><div class="k">联系人 / 电话</div><div class="v" id="fContact">—</div></div>
+      <div class="f"><div class="k">地址</div><div class="v" id="fAddr">—</div></div>
+    </div>
+    <div class="who" id="whoNote" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card">
+    <h2>关联销售订单 <span class="tip" id="orderTip"></span></h2>
+    <div id="orders"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="card">
+    <h2>联系人 <span class="tip">来自原生 Contact（客户主联系人优先）</span></h2>
+    <div id="contacts"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="note">
+    <b>下单说明：</b>点「新建销售订单」会在 Desk 打开一张<b>未保存的草稿</b>，客户已预填；请自行选择订单类型、产品与数量后保存/提交。
+    销售订单提交后才会进入生产与交付流程，本页不会替你自动提交任何单据。
+    客户与订单的可见范围沿用 ERPNext 原生 DocPerm（销售角色目前可在 Desk 列表看到全部客户订单）。
+  </div>
+</div>
+
+<script>
+var CSRF = "{{ csrf_token }}";
+var CUSTOMER = "{{ customer }}";
+var CAN_CREATE_ORDER = {{ 'true' if can_create_order else 'false' }};
+
+var $ = function(s){ return document.querySelector(s); };
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmt(dt){ if(!dt) return "—"; return String(dt).replace("T"," ").slice(0,16); }
+function money(n, c){ if(n === null || n === undefined) return "—";
+  return (c === "CNY" ? "¥" : (c ? c + " " : "¥")) + Number(n).toLocaleString("zh-CN", {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+var LEAD_STATUS_SHORT = { "Converted": "已转客户", "Open": "待跟进" };
+var SO_STATUS = { "Draft": "草稿", "On Hold": "暂挂", "To Deliver and Bill": "待交付待开票",
+  "To Bill": "待开票", "To Deliver": "待交付", "Completed": "已完成", "Closed": "已关闭",
+  "Cancelled": "已取消" };
+
+function loadDetail(){
+  fetch("/api/method/cn_mfg_poc.crm.customer_detail?name=" + encodeURIComponent(CUSTOMER),
+    { headers: { "Accept": "application/json" }, credentials: "same-origin" })
+    .then(function(r){ return r.json(); })
+    .then(function(j){ if(!j.message){ showErr(j); return; } render(j.message); })
+    .catch(function(){ showErr({}); });
+}
+
+function showErr(j){
+  var m = "加载失败";
+  if(j && j._server_messages){ try { m = JSON.parse(JSON.parse(j._server_messages)[0]).message || m; } catch(e){} }
+  $("#msg").className = "msg err"; $("#msg").textContent = m;
+  $("#orders").innerHTML = '<div class="empty">' + esc(m) + '</div>';
+}
+
+function render(d){
+  document.title = d.customer_name + " · 客户详情";
+  $("#title").textContent = d.customer_name;
+  $("#fName").innerHTML = "<b>" + esc(d.customer_name) + "</b>" + (d.disabled ? ' <span class="tag warn">已停用</span>' : "");
+  $("#fType").textContent = (d.customer_type === "Company" ? "公司" : "个人")
+    + (d.customer_group ? " / " + d.customer_group : "") + (d.territory ? " · " + d.territory : "");
+  $("#fCode").textContent = d.name;
+  $("#fReporter").innerHTML = d.first_reporter_name
+    ? "<b>" + esc(d.first_reporter_name) + "</b>"
+    : '<span class="muted">未记录（历史客户无法证实）</span>';
+  $("#fReportedOn").textContent = d.first_reported_on ? fmt(d.first_reported_on) : "—";
+  $("#fManager").innerHTML = d.account_manager_name
+    ? esc(d.account_manager_name)
+    : '<span class="muted">未指定（可由管理人员设置）</span>';
+  if(d.lead){
+    var ls = LEAD_STATUS_SHORT[d.lead.status] || d.lead.status;
+    $("#fLead").innerHTML = '<a href="' + esc(d.lead.url) + '">' + esc(d.lead.name) + '</a>'
+      + ' <span class="tag ' + (d.lead.status === "Converted" ? "ok" : "open") + '">'
+      + esc(ls) + '</span>';
+    $("#leadLink").style.display = "";
+    $("#leadLink").href = d.lead.url;
+  } else {
+    $("#fLead").innerHTML = '<span class="muted">直接建档（无报备单）</span>';
+  }
+  var contactTxt = (d.contacts && d.contacts.length)
+    ? d.contacts[0].full_name + (d.contacts[0].mobile_no ? " · " + d.contacts[0].mobile_no : "")
+    : (d.mobile_no ? d.mobile_no : "—");
+  $("#fContact").textContent = contactTxt;
+  $("#fAddr").textContent = d.primary_address || "—";
+
+  var notes = [];
+  if(d.first_reporter_name) notes.push("本客户由 <b>" + esc(d.first_reporter_name) + "</b> 于 " + fmt(d.first_reported_on) + " 首次报备");
+  if(d.lead) notes.push("来源报备单 <b>" + esc(d.lead.name) + "</b>（报备人 " + esc(d.lead.reporter_name || "—") + "）");
+  if(d.account_manager_name && d.first_reporter_name && d.account_manager_name !== d.first_reporter_name)
+    notes.push("当前负责人 <b>" + esc(d.account_manager_name) + "</b> 与首次报备人不同，属正常调动，报备归属不变");
+  if(!d.first_reporter_name) notes.push("该客户建于字段上线前且无报备单，系统没有猜人；如需补充请联系管理员");
+  $("#whoNote").innerHTML = notes.length ? notes.join("<br>") : "暂无归属信息";
+
+  $("#deskLink").href = d.desk_url;
+  if(d.can_create_order && CAN_CREATE_ORDER){
+    $("#newOrder").href = d.sales_order_new_url;
+    $("#orderTip").textContent = "点右上角「新建销售订单」会新建草稿，客户已预填";
+  } else {
+    $("#newOrder").style.display = "none";
+    $("#orderTip").textContent = "当前角色无销售订单创建权限";
+  }
+
+  var rows = d.orders || [];
+  if(!rows.length){
+    $("#orders").innerHTML = '<div class="empty">该客户还没有销售订单。点右上角「新建销售订单」开始。</div>';
+  } else {
+    var html = '<table><thead><tr><th>订单号</th><th>日期</th><th>类型</th><th>状态</th>'
+             + '<th style="text-align:right">金额</th><th>交付</th><th>开票</th><th>关联</th></tr></thead><tbody>';
+    rows.forEach(function(o){
+      var st = o.docstatus === 0 ? "草稿" : (SO_STATUS[o.status] || o.status);
+      var tag = o.docstatus === 0 ? "warn" : (o.status === "Completed" ? "ok" : "open");
+      html += '<tr><td><b>' + esc(o.name) + '</b></td>'
+            + '<td>' + fmt(o.transaction_date) + '</td>'
+            + '<td>' + esc(o.business_type || "—") + '</td>'
+            + '<td><span class="tag ' + tag + '">' + esc(st) + '</span></td>'
+            + '<td style="text-align:right">' + money(o.grand_total, o.currency) + '</td>'
+            + '<td>' + (o.per_delivered || 0) + '%</td>'
+            + '<td>' + (o.per_billed || 0) + '%</td>'
+            + '<td><a class="btn mini" href="' + esc(o.execution_url) + '">执行概览</a> '
+            + '<a class="btn mini" href="' + esc(o.desk_url) + '" target="_blank">Desk</a></td></tr>';
+    });
+    html += '</tbody></table>';
+    $("#orders").innerHTML = html;
+  }
+
+  var cs = d.contacts || [];
+  if(!cs.length){
+    $("#contacts").innerHTML = '<div class="empty">该客户还没有联系人（可在 Desk 客户表单里添加）。</div>';
+  } else {
+    var h = '<table><thead><tr><th>姓名</th><th>手机</th><th>邮箱</th><th>主联系人</th></tr></thead><tbody>';
+    cs.forEach(function(c){
+      h += '<tr><td>' + esc(c.full_name) + '</td><td>' + esc(c.mobile_no || c.phone || "—") + '</td>'
+         + '<td>' + esc(c.email_id || "—") + '</td>'
+         + '<td>' + (c.is_primary ? '<span class="tag ok">是</span>' : '<span class="muted">—</span>') + '</td></tr>';
+    });
+    $("#contacts").innerHTML = h + '</tbody></table>';
+  }
+}
+
+loadDetail();
+</script>
+</body>
+</html>

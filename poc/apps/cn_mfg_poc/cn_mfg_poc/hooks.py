@@ -175,13 +175,19 @@ doc_events = {
             "cn_mfg_poc.order_rules.validate_sales_order",
             "cn_mfg_poc.bom_link.validate_sales_order_bom",
         ],
-    }
+    },
+    # CRM-100：不管从 Desk、门户还是接口建客户，都写入首次报备人/时间（不从 owner 推断）
+    "Customer": {
+        "before_insert": "cn_mfg_poc.crm.set_first_reporter",
+    },
 }
 
 # UX-96B：销售订单「选择本单 BOM」与 BOM「引用关系」入口
 doctype_js = {
     "Sales Order": "public/js/sales_order_bom.js",
     "BOM": "public/js/bom_references.js",
+    "Lead": "public/js/lead_crm.js",
+    "Customer": "public/js/customer_crm.js",
 }
 
 # Scheduled Tasks

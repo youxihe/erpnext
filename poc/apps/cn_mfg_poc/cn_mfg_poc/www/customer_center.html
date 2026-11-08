@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }} · 启程智造 ERP</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f6f9;color:#1f2937;font:13px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{padding:18px 20px 40px;max-width:1240px}
+  .top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  h1{font-size:18px;margin:0 0 3px}
+  .sub{color:#8a94a6;font-size:12px}
+  .top .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+  .kpi{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:11px 14px}
+  .kpi .n{font-size:20px;font-weight:600;line-height:1.2}
+  .kpi .l{font-size:11.5px;color:#8a94a6}
+  .card{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:14px 16px;margin-bottom:14px}
+  .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .tabs{display:flex;gap:6px;margin-bottom:12px}
+  .tab{border:1px solid #dfe4ec;background:#fff;border-radius:6px;padding:6px 14px;font-size:12.5px;cursor:pointer;color:#45505f}
+  .tab.on{background:#2b7cff;border-color:#2b7cff;color:#fff;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:8px;border-bottom:1px solid #f0f2f6;vertical-align:middle}
+  th{color:#8a94a6;font-weight:500;background:#fafbfd;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  input,textarea,select{border:1px solid #dfe4ec;border-radius:5px;padding:6px 8px;font-size:12.5px;font-family:inherit;background:#fff;width:100%}
+  .btn{border:1px solid #dfe4ec;background:#fff;border-radius:5px;padding:5px 11px;font-size:12px;cursor:pointer;color:#45505f;text-decoration:none;display:inline-block;white-space:nowrap}
+  .btn:hover{border-color:#2b7cff;color:#2b7cff}
+  .btn.pri{background:#2b7cff;border-color:#2b7cff;color:#fff}
+  .btn.pri:hover{background:#1f68e0;color:#fff}
+  .btn.mini{padding:2px 8px;font-size:11.5px}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .tag{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;line-height:1.7}
+  .tag.open{background:#eef4ff;color:#2b6cd4}
+  .tag.ok{background:#e6f6ee;color:#166b46}
+  .tag.warn{background:#fff3e2;color:#9a6212}
+  .tag.gray{background:#f1f3f7;color:#7d8798}
+  .msg{padding:9px 12px;border-radius:6px;font-size:12px;margin-bottom:12px;display:none}
+  .msg.err{display:block;background:#fdecec;color:#b43535}
+  .msg.ok{display:block;background:#e6f6ee;color:#166b46}
+  .msg.info{display:block;background:#eef4ff;color:#2b6cd4}
+  .note{background:#fff;border:1px solid #e8ecf2;border-left:3px solid #2b7cff;border-radius:6px;padding:10px 14px;font-size:12px;color:#5b6675;line-height:1.9}
+  .empty{padding:26px;text-align:center;color:#8a94a6;font-size:12.5px}
+  .muted{color:#8a94a6}
+  .mask{position:fixed;inset:0;background:rgba(20,28,40,.42);display:none;align-items:flex-start;justify-content:center;padding:60px 16px;z-index:50}
+  .mask.on{display:flex}
+  .dlg{background:#fff;border-radius:10px;width:440px;max-width:100%;padding:18px 20px;box-shadow:0 12px 40px rgba(20,30,50,.22)}
+  .dlg h3{margin:0 0 4px;font-size:15px}
+  .dlg .hint{color:#8a94a6;font-size:11.5px;margin-bottom:12px}
+  .fld{margin-bottom:10px}
+  .fld label{display:block;font-size:11.5px;color:#6b7688;margin-bottom:4px}
+  .dlg .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+  @media (max-width:760px){ .kpis{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>客户中心</h1>
+      <div class="sub">客户报备 → 正式客户 → 销售订单，一条直线走完 · 当前身份：{{ user_fullname }}</div>
+    </div>
+    <div class="right">
+      <a class="btn" href="/cn_portal">返回门户</a>
+      <a class="btn" href="/desk/lead" target="_blank">Desk 报备</a>
+      <a class="btn" href="/desk/customer" target="_blank">Desk 客户</a>
+    </div>
+  </div>
+
+  <div id="msg" class="msg"></div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="n" id="kpiOpen">—</div><div class="l">待转化报备（客户报备未转正式客户）</div></div>
+    <div class="kpi"><div class="n" id="kpiConverted">—</div><div class="l">已转客户的报备</div></div>
+    <div class="kpi"><div class="n" id="kpiCustomers">—</div><div class="l">正式客户总数</div></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab" id="tabLead" data-tab="lead">客户报备</button>
+      <button class="tab" id="tabCustomer" data-tab="customer">正式客户</button>
+    </div>
+    <div class="bar">
+      <input id="q" placeholder="按客户名称搜索…" style="max-width:260px">
+      <button class="btn" id="btnSearch">搜索</button>
+      <span style="margin-left:auto"></span>
+      <button class="btn pri" id="btnReport" {% if not can_create_lead %}disabled title="当前角色无报备权限"{% endif %}>报备新客户</button>
+      <button class="btn" id="btnNewCustomer" {% if not can_create_customer %}disabled title="当前角色无建客户权限"{% endif %}>新建正式客户</button>
+    </div>
+    <div id="tableLead"></div>
+    <div id="tableCustomer" style="display:none"></div>
+  </div>
+
+  <div class="note">
+    <b>流程说明：</b>「客户报备」只是销售线索，不等于正式客户，也不能直接开销售订单。
+    点<b>转为正式客户</b>后，客户的<b>首次报备人 / 首次报备时间</b>取自报备单，<b>当前客户负责人</b>默认沿用报备人（可由管理人员调整），
+    首次报备人不会因为负责人调岗而改变。已成为正式客户后即可从客户详情<b>新建销售订单</b>。<br>
+    已有同名正式客户时，系统不会重复建客户、也不会改写原报备人和负责人，只提示你直接使用现有客户。
+    {% if not can_create_lead %}<br><b>当前角色只能查看，不能报备或建客户。</b>{% endif %}
+  </div>
+</div>
+
+<div class="mask" id="mask">
+  <div class="dlg">
+    <h3 id="dlgTitle">报备新客户</h3>
+    <div class="hint" id="dlgHint"></div>
+    <div class="fld"><label>客户名称（公司全称）</label><input id="fName" placeholder="例如：昆山某某精密机械有限公司"></div>
+    <div class="fld"><label>联系人</label><input id="fContact" placeholder="可留空"></div>
+    <div class="fld"><label>手机号</label><input id="fMobile" placeholder="可留空"></div>
+    <div class="fld"><label>备注</label><input id="fNote" placeholder="可留空"></div>
+    <div class="foot">
+      <button class="btn" id="btnCancel">取消</button>
+      <button class="btn pri" id="btnSubmit">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var CSRF = "{{ csrf_token }}";
+var CAN_CREATE_LEAD = {{ 'true' if can_create_lead else 'false' }};
+var CAN_CREATE_CUSTOMER = {{ 'true' if can_create_customer else 'false' }};
+var CAN_CREATE_ORDER = {{ 'true' if can_create_order else 'false' }};
+var CAN_READ_LEAD = {{ 'true' if can_read_lead else 'false' }};
+var CAN_READ_CUSTOMER = {{ 'true' if can_read_customer else 'false' }};
+var TAB = "{{ default_tab }}";
+var MODE = "lead";
+
+var $ = function(s){ return document.querySelector(s); };
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmt(dt){ if(!dt) return "—"; return String(dt).replace("T"," ").slice(0,16); }
+function msg(text, kind){
+  var el = $("#msg");
+  el.className = "msg " + (kind || "info");
+  el.textContent = text;
+  if(kind === "ok"){ setTimeout(function(){ el.className = "msg"; }, 5000); }
+}
+function apiGet(method, params){
+  var qs = [];
+  if(params){ for(var k in params){ if(params[k] !== undefined && params[k] !== null && params[k] !== "")
+    qs.push(k + "=" + encodeURIComponent(params[k])); } }
+  return fetch("/api/method/" + method + (qs.length ? "?" + qs.join("&") : ""),
+    { headers: { "Accept": "application/json" }, credentials: "same-origin" })
+    .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, status: r.status, body: j }; }); });
+}
+function apiPost(method, args){
+  return fetch("/api/method/" + method, {
+    method: "POST", credentials: "same-origin",
+    headers: { "Content-Type": "application/json", "Accept": "application/json",
+               "X-Frappe-CSRF-Token": CSRF },
+    body: JSON.stringify(args || {})
+  }).then(function(r){ return r.json().then(function(j){ return { ok: r.ok, status: r.status, body: j }; }); });
+}
+function errText(res){
+  var b = res.body || {};
+  if(b._server_messages){ try {
+    var arr = JSON.parse(b._server_messages); if(arr && arr.length){
+      var m = JSON.parse(arr[0]); if(m && m.message) return m.message; } } catch(e){} }
+  if(b.exception) return String(b.exception).split("\n").pop();
+  if(b.message) return String(b.message);
+  return "请求失败（HTTP " + res.status + "）";
+}
+var LEAD_STATUS = { "Open": "待跟进", "Replied": "已回复", "Interested": "有意向",
+  "Opportunity": "已建商机", "Quotation": "已报价", "Converted": "已转客户",
+  "Lost Quotation": "已丢单", "Do Not Contact": "不再联系" };
+
+function loadList(){
+  if(MODE === "lead" && !CAN_READ_LEAD){ $("#tableLead").innerHTML = '<div class="empty">当前角色无权查看客户报备</div>'; return; }
+  if(MODE === "customer" && !CAN_READ_CUSTOMER){ $("#tableCustomer").innerHTML = '<div class="empty">当前角色无权查看客户</div>'; return; }
+  var q = $("#q").value.trim();
+  if(MODE === "lead"){
+    $("#tableLead").innerHTML = '<div class="empty">加载中…</div>';
+    apiGet("cn_mfg_poc.crm.lead_list", { q: q }).then(function(res){
+      if(!res.ok){ $("#tableLead").innerHTML = '<div class="empty">' + esc(errText(res)) + '</div>'; return; }
+      renderLeads(res.body.message);
+    });
+  } else {
+    $("#tableCustomer").innerHTML = '<div class="empty">加载中…</div>';
+    apiGet("cn_mfg_poc.crm.customer_list", { q: q }).then(function(res){
+      if(!res.ok){ $("#tableCustomer").innerHTML = '<div class="empty">' + esc(errText(res)) + '</div>'; return; }
+      renderCustomers(res.body.message);
+    });
+  }
+}
+
+function renderLeads(d){
+  if(!d) { return; }
+  $("#kpiOpen").textContent = d.open_count;
+  $("#kpiConverted").textContent = d.converted_count;
+  var rows = d.leads || [];
+  if(!rows.length){ $("#tableLead").innerHTML = '<div class="empty">还没有客户报备。点右上角「报备新客户」开始。</div>'; return; }
+  var html = '<table><thead><tr><th>客户名称</th><th>首次报备人</th><th>报备时间</th><th>状态</th>'
+           + '<th>关联正式客户</th><th style="width:230px">操作</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    var st = LEAD_STATUS[r.status] || r.status || "—";
+    var tag = r.status === "Converted" ? "ok" : (r.status === "Open" ? "open" : "gray");
+    var cust = r.customer
+      ? '<a href="/customer_detail?name=' + encodeURIComponent(r.customer) + '">' + esc(r.customer) + '</a>'
+      : (r.duplicate_customer
+          ? '<span class="tag warn">已有同名客户</span> <a href="/customer_detail?name='
+            + encodeURIComponent(r.duplicate_customer) + '">' + esc(r.duplicate_customer) + '</a>'
+          : '<span class="muted">未转客户</span>');
+    var ops = '<a class="btn mini" href="/lead_detail?name=' + encodeURIComponent(r.name) + '">报备详情</a> ';
+    if(r.can_convert){
+      ops += '<button class="btn mini pri" data-convert="' + esc(r.name) + '">转为正式客户</button>';
+    } else if(r.customer){
+      ops += '<a class="btn mini" href="/customer_detail?name=' + encodeURIComponent(r.customer) + '">查看客户</a>';
+    } else if(r.duplicate_customer){
+      ops += '<a class="btn mini" href="/customer_detail?name=' + encodeURIComponent(r.duplicate_customer) + '">查看已有客户</a>';
+    }
+    html += '<tr><td><b>' + esc(r.company_name || r.name) + '</b><div class="muted" style="font-size:11px">'
+          + esc(r.name) + '</div></td>'
+          + '<td>' + esc(r.reporter_name || "—") + '</td>'
+          + '<td>' + fmt(r.creation) + '</td>'
+          + '<td><span class="tag ' + tag + '">' + esc(st) + '</span></td>'
+          + '<td>' + cust + '</td><td>' + ops + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  $("#tableLead").innerHTML = html;
+}
+
+function renderCustomers(d){
+  if(!d) { return; }
+  $("#kpiCustomers").textContent = d.total;
+  var rows = d.customers || [];
+  if(!rows.length){ $("#tableCustomer").innerHTML = '<div class="empty">还没有正式客户。可从「客户报备」转化，或点「新建正式客户」。</div>'; return; }
+  var html = '<table><thead><tr><th>客户</th><th>首次报备人</th><th>首次报备时间</th>'
+           + '<th>当前客户负责人</th><th>来源报备</th><th>订单数</th><th style="width:200px">操作</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    var lead = r.lead_name
+      ? '<a href="/lead_detail?name=' + encodeURIComponent(r.lead_name) + '">' + esc(r.lead_name) + '</a>'
+      : '<span class="muted">直接建档</span>';
+    var ops = '<a class="btn mini" href="/customer_detail?name=' + encodeURIComponent(r.name) + '">客户详情</a> ';
+    if(CAN_CREATE_ORDER){
+      ops += '<a class="btn mini pri" target="_blank" href="/desk/sales-order/new?customer='
+           + encodeURIComponent(r.name) + '">新建销售订单</a>';
+    }
+    html += '<tr><td><b>' + esc(r.customer_name) + '</b></td>'
+          + '<td>' + (r.reporter_name || '<span class="muted">未记录</span>') + '</td>'
+          + '<td>' + (r.custom_first_reported_on ? fmt(r.custom_first_reported_on) : '<span class="muted">—</span>') + '</td>'
+          + '<td>' + (r.manager_name || '<span class="muted">未指定</span>') + '</td>'
+          + '<td>' + lead + '</td><td>' + (r.so_count || 0) + '</td><td>' + ops + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  $("#tableCustomer").innerHTML = html;
+}
+
+function switchTab(tab){
+  MODE = tab;
+  $("#tabLead").classList.toggle("on", tab === "lead");
+  $("#tabCustomer").classList.toggle("on", tab === "customer");
+  $("#tableLead").style.display = tab === "lead" ? "" : "none";
+  $("#tableCustomer").style.display = tab === "customer" ? "" : "none";
+  history.replaceState(null, "", "/customer_center?tab=" + tab);
+  loadList();
+}
+
+function convert(lead){
+  apiPost("cn_mfg_poc.crm.convert_lead", { lead: lead }).then(function(res){
+    if(!res.ok){ msg(errText(res), "err"); return; }
+    var d = res.body.message || {};
+    if(d.created){
+      msg("已转为正式客户 " + d.customer + "（首次报备人：" + (d.first_reporter || "—") + "）", "ok");
+      setTimeout(function(){ location.href = "/customer_detail?name=" + encodeURIComponent(d.customer); }, 900);
+      return;
+    }
+    if(d.existing_customer){
+      msg(d.message || "已存在同名客户", "info");
+      setTimeout(function(){ location.href = "/customer_detail?name=" + encodeURIComponent(d.existing_customer); }, 1200);
+      return;
+    }
+    msg(d.message || "已处理", "info");
+    loadList();
+  });
+}
+
+function openDialog(mode){
+  MODE_DLG = mode;
+  $("#dlgTitle").textContent = mode === "lead" ? "报备新客户" : "新建正式客户";
+  $("#dlgHint").textContent = mode === "lead"
+    ? "报备只登记线索，报备人固定为当前登录账号；之后可在列表里「转为正式客户」。"
+    : "已确认客户主体时可直接建档，首次报备人=当前登录账号；若已有同名报备，系统会提示先转化。";
+  $("#fName").value = ""; $("#fContact").value = ""; $("#fMobile").value = ""; $("#fNote").value = "";
+  $("#mask").classList.add("on");
+  $("#fName").focus();
+}
+var MODE_DLG = "lead";
+
+function submitDialog(){
+  var name = $("#fName").value.trim();
+  if(!name){ msg("请填写客户名称", "err"); return; }
+  var args = { customer_name: name, contact_name: $("#fContact").value.trim(),
+               mobile_no: $("#fMobile").value.trim(), note: $("#fNote").value.trim() };
+  var method = MODE_DLG === "lead" ? "cn_mfg_poc.api.report_customer" : "cn_mfg_poc.crm.create_customer";
+  $("#btnSubmit").disabled = true;
+  apiPost(method, args).then(function(res){
+    $("#btnSubmit").disabled = false;
+    if(!res.ok){ msg(errText(res), "err"); return; }
+    var d = res.body.message || {};
+    $("#mask").classList.remove("on");
+    if(d.existing === "customer" || d.replayed){
+      msg((d.message || "该客户已存在") + "，正在打开客户详情…", "info");
+      var cust = d.customer || d.existing_customer;
+      setTimeout(function(){ location.href = "/customer_detail?name=" + encodeURIComponent(cust); }, 1000);
+      return;
+    }
+    if(d.existing === "lead"){
+      msg(d.message || "已有未关闭报备", "info");
+      switchTab("lead");
+      return;
+    }
+    if(d.lead && MODE_DLG === "lead"){
+      msg("报备成功：" + d.lead + "。可在列表中直接「转为正式客户」。", "ok");
+      switchTab("lead");
+      loadList();
+      return;
+    }
+    if(d.customer){
+      msg("已创建正式客户 " + d.customer, "ok");
+      setTimeout(function(){ location.href = "/customer_detail?name=" + encodeURIComponent(d.customer); }, 900);
+      return;
+    }
+    loadList();
+  });
+}
+
+document.addEventListener("click", function(e){
+  var t = e.target;
+  if(t.dataset && t.dataset.convert){ convert(t.dataset.convert); return; }
+  if(t.id === "tabLead") { switchTab("lead"); return; }
+  if(t.id === "tabCustomer") { switchTab("customer"); return; }
+  if(t.id === "btnSearch") { loadList(); return; }
+  if(t.id === "btnReport") { if(CAN_CREATE_LEAD) openDialog("lead"); return; }
+  if(t.id === "btnNewCustomer") { if(CAN_CREATE_CUSTOMER) openDialog("customer"); return; }
+  if(t.id === "btnCancel") { $("#mask").classList.remove("on"); return; }
+  if(t.id === "btnSubmit") { submitDialog(); return; }
+  if(t.id === "mask") { $("#mask").classList.remove("on"); return; }
+});
+$("#q").addEventListener("keydown", function(e){ if(e.key === "Enter") loadList(); });
+
+switchTab(TAB);
+apiGet("cn_mfg_poc.crm.customer_center", {}).then(function(res){
+  var m = (res.ok && res.body.message) || null;
+  if(!m) return;
+  if(m.open_leads !== undefined) $("#kpiOpen").textContent = m.open_leads;
+  if(m.converted_leads !== undefined) $("#kpiConverted").textContent = m.converted_leads;
+  if(m.total_customers !== undefined) $("#kpiCustomers").textContent = m.total_customers;
+});
+</script>
+</body>
+</html>

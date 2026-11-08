@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }} · 启程智造 ERP</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f6f9;color:#1f2937;font:13px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{padding:18px 20px 40px;max-width:1000px}
+  .top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  h1{font-size:19px;margin:0 0 3px}
+  .sub{color:#8a94a6;font-size:12px}
+  .top .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .card{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:14px 16px;margin-bottom:14px}
+  .card h2{font-size:13.5px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .card h2 .tip{font-size:11px;font-weight:400;color:#8a94a6}
+  .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 18px}
+  .f .k{font-size:11.5px;color:#8a94a6}
+  .f .v{font-size:13px;margin-top:1px;word-break:break-all}
+  .btn{border:1px solid #dfe4ec;background:#fff;border-radius:5px;padding:6px 12px;font-size:12px;cursor:pointer;color:#45505f;text-decoration:none;display:inline-block;white-space:nowrap}
+  .btn:hover{border-color:#2b7cff;color:#2b7cff}
+  .btn.pri{background:#2b7cff;border-color:#2b7cff;color:#fff}
+  .btn.pri:hover{background:#1f68e0;color:#fff}
+  .btn.big{padding:9px 16px;font-size:13px;font-weight:600}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .msg{padding:9px 12px;border-radius:6px;font-size:12px;margin-bottom:12px;display:none}
+  .msg.err{display:block;background:#fdecec;color:#b43535}
+  .msg.ok{display:block;background:#e6f6ee;color:#166b46}
+  .msg.info{display:block;background:#eef4ff;color:#2b6cd4}
+  .note{background:#fff;border:1px solid #e8ecf2;border-left:3px solid #2b7cff;border-radius:6px;padding:10px 14px;font-size:12px;color:#5b6675;line-height:1.9}
+  .muted{color:#8a94a6}
+  .tag{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;line-height:1.7;background:#f1f3f7;color:#7d8798}
+  .tag.ok{background:#e6f6ee;color:#166b46}
+  .tag.open{background:#eef4ff;color:#2b6cd4}
+  .tag.warn{background:#fff3e2;color:#9a6212}
+  .flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:#5b6675;margin-top:6px}
+  .flow .step{padding:3px 10px;border-radius:12px;background:#f1f3f7;color:#7d8798}
+  .flow .step.on{background:#eef4ff;color:#2b6cd4;font-weight:600}
+  .flow .step.done{background:#e6f6ee;color:#166b46}
+  @media (max-width:760px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1 id="title">加载中…</h1>
+      <div class="sub">客户报备详情 · 当前身份：{{ user_fullname }}</div>
+    </div>
+    <div class="right">
+      <a class="btn" href="/customer_center?tab=lead">返回客户报备</a>
+      <a class="btn" id="deskLink" href="#" target="_blank">在 Desk 打开</a>
+      <a class="btn" id="customerBtn" href="#" style="display:none">打开客户</a>
+      <button class="btn pri big" id="convertBtn" disabled>转为正式客户</button>
+    </div>
+  </div>
+
+  <div id="msg" class="msg"></div>
+
+  <div class="card">
+    <h2>报备信息 <span class="tip">报备人固定为首次提交人，不会因后续操作改变</span></h2>
+    <div class="flow" id="flow"></div>
+    <div class="grid" style="margin-top:14px">
+      <div class="f"><div class="k">客户名称</div><div class="v" id="fCompany">—</div></div>
+      <div class="f"><div class="k">联系人</div><div class="v" id="fContact">—</div></div>
+      <div class="f"><div class="k">手机 / 邮箱</div><div class="v" id="fMobile">—</div></div>
+      <div class="f"><div class="k">首次报备人</div><div class="v" id="fReporter">—</div></div>
+      <div class="f"><div class="k">报备时间</div><div class="v" id="fCreated">—</div></div>
+      <div class="f"><div class="k">报备状态</div><div class="v" id="fStatus">—</div></div>
+      <div class="f"><div class="k">关联正式客户</div><div class="v" id="fCustomer">—</div></div>
+      <div class="f"><div class="k">报备单号</div><div class="v" id="fName">—</div></div>
+      <div class="f"><div class="k">同名正式客户</div><div class="v" id="fDup">—</div></div>
+    </div>
+  </div>
+
+  <div class="note" id="hint">
+    报备只是线索。<b>转为正式客户</b>会创建一张原生 Customer：首次报备人取本报备单的报备人，首次报备时间取报备时间，
+    客户负责人默认沿用报备人；转换完成后可立即从客户详情新建销售订单。重复点击不会重复建客户。
+  </div>
+</div>
+
+<script>
+var CSRF = "{{ csrf_token }}";
+var LEAD = "{{ lead }}";
+var $ = function(s){ return document.querySelector(s); };
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmt(dt){ if(!dt) return "—"; return String(dt).replace("T"," ").slice(0,16); }
+function msg(t, k){ $("#msg").className = "msg " + (k || "info"); $("#msg").textContent = t; }
+var STATUS = { "Open": "待跟进", "Replied": "已回复", "Interested": "有意向",
+  "Opportunity": "已建商机", "Quotation": "已报价", "Converted": "已转客户",
+  "Lost Quotation": "已丢单", "Do Not Contact": "不再联系" };
+
+fetch("/api/method/cn_mfg_poc.crm.lead_detail?name=" + encodeURIComponent(LEAD),
+  { headers: { "Accept": "application/json" }, credentials: "same-origin" })
+  .then(function(r){ return r.json(); })
+  .then(function(j){ if(!j.message){ showErr(j); return; } render(j.message); })
+  .catch(function(){ showErr({}); });
+
+function showErr(j){
+  var m = "加载失败";
+  if(j && j._server_messages){ try { m = JSON.parse(JSON.parse(j._server_messages)[0]).message || m; } catch(e){} }
+  msg(m, "err");
+}
+
+function render(d){
+  document.title = (d.company_name || d.name) + " · 客户报备";
+  $("#title").textContent = d.company_name || d.name;
+  $("#fCompany").textContent = d.company_name || "—";
+  $("#fContact").textContent = d.contact_name || "—";
+  $("#fMobile").textContent = [d.mobile_no, d.email_id].filter(Boolean).join(" / ") || "—";
+  $("#fReporter").innerHTML = d.reporter_name ? "<b>" + esc(d.reporter_name) + "</b>" : '<span class="muted">未记录</span>';
+  $("#fCreated").textContent = fmt(d.creation);
+  $("#fStatus").innerHTML = '<span class="tag ' + (d.status === "Converted" ? "ok" : "open") + '">'
+    + esc(STATUS[d.status] || d.status) + '</span>';
+  $("#fName").textContent = d.name;
+  if(d.customer){
+    $("#fCustomer").innerHTML = '<a href="/customer_detail?name=' + encodeURIComponent(d.customer) + '">'
+      + esc(d.customer_name || d.customer) + '</a>';
+    $("#customerBtn").style.display = "";
+    $("#customerBtn").href = "/customer_detail?name=" + encodeURIComponent(d.customer);
+  } else {
+    $("#fCustomer").innerHTML = '<span class="muted">未转客户</span>';
+  }
+  if(d.duplicate_customer){
+    $("#fDup").innerHTML = '<a href="/customer_detail?name=' + encodeURIComponent(d.duplicate_customer) + '">'
+      + esc(d.duplicate_customer) + '</a>'
+      + (d.duplicate_customer_manager ? '（负责人 ' + esc(d.duplicate_customer_manager) + '）' : '');
+  } else {
+    $("#fDup").innerHTML = '<span class="muted">无</span>';
+  }
+  $("#deskLink").href = d.desk_url;
+
+  var steps = ['<span class="step done">已报备</span>'];
+  if(d.customer) steps.push('<span class="step on">转为正式客户</span>', '<span class="step">新建销售订单</span>');
+  else steps.push('<span class="step on">待转为正式客户</span>', '<span class="step">新建销售订单</span>');
+  $("#flow").innerHTML = steps.join('<span class="muted">→</span>');
+
+  var btn = $("#convertBtn");
+  if(d.can_convert){
+    btn.disabled = false;
+    btn.onclick = function(){ doConvert(btn); };
+  } else if(d.customer){
+    btn.textContent = "已转客户";
+    btn.disabled = true;
+    btn.className = "btn big";
+    msg("该报备已转为正式客户，可直接打开客户或新建销售订单。", "info");
+  } else if(d.duplicate_customer){
+    btn.textContent = "已有同名客户";
+    btn.disabled = true;
+    btn.className = "btn big";
+    msg("系统里已有同名正式客户，为避免重复主数据，本次不转客户；请直接使用现有客户并核对归属。", "info");
+  } else {
+    btn.textContent = "无权转客户";
+    btn.disabled = true;
+  }
+}
+
+function doConvert(btn){
+  btn.disabled = true;
+  msg("正在转为正式客户…", "info");
+  fetch("/api/method/cn_mfg_poc.crm.convert_lead", {
+    method: "POST", credentials: "same-origin",
+    headers: { "Content-Type": "application/json", "Accept": "application/json",
+               "X-Frappe-CSRF-Token": CSRF },
+    body: JSON.stringify({ lead: LEAD })
+  }).then(function(r){ return r.json().then(function(j){ return { ok: r.ok, body: j }; }); })
+    .then(function(res){
+      var b = res.body || {};
+      if(!res.ok){
+        btn.disabled = false;
+        var m = "转换失败";
+        if(b._server_messages){ try { m = JSON.parse(JSON.parse(b._server_messages)[0]).message || m; } catch(e){} }
+        msg(m, "err");
+        return;
+      }
+      var d = b.message || {};
+      if(d.created){
+        msg("已转为正式客户 " + d.customer + "（首次报备人：" + (d.first_reporter || "—") + "）", "ok");
+        location.href = "/customer_detail?name=" + encodeURIComponent(d.customer);
+        return;
+      }
+      if(d.existing_customer){
+        msg(d.message || "已存在同名客户", "info");
+        location.href = "/customer_detail?name=" + encodeURIComponent(d.existing_customer);
+        return;
+      }
+      msg(d.message || "已处理", "info");
+      if(d.customer) location.href = "/customer_detail?name=" + encodeURIComponent(d.customer);
+    });
+}
+</script>
+</body>
+</html>

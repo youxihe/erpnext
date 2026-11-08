@@ -10,3 +10,5 @@ cn_mfg_poc.patches.v0_0_4.setup_bom_ux
 cn_mfg_poc.patches.v0_0_5.setup_bom_confirm_field
 # UAT-97R：7 个中文业务岗位档案 + 测试账号显示名（幂等）
 cn_mfg_poc.patches.v0_0_6.setup_role_profiles
+# CRM-100：Customer 首次报备人/时间字段 + 可证实历史回填（幂等）
+cn_mfg_poc.patches.v0_0_7.setup_crm_fields

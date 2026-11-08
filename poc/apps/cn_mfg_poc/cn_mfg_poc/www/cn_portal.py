@@ -238,6 +238,29 @@ def _inject_role_profile_link(menu, roles):
     return menu
 
 
+# CRM-100：把「客户报备」「客户」两个入口指向客户中心的可操作页面，
+# 保留原有两个入口与中文名称，避免用户点进 Desk 后找不到“转正式客户/开销售订单”。
+CRM_LINKS = {
+    "Lead": ("客户报备", "/customer_center?tab=lead"),
+    "Customer": ("客户", "/customer_center?tab=customer"),
+}
+
+
+def _rewrite_crm_links(menu):
+    for mod in menu:
+        for grp in mod["groups"]:
+            for item in grp["items"]:
+                if item.get("kind") != "DocType":
+                    continue
+                mapped = CRM_LINKS.get(item.get("target"))
+                if not mapped:
+                    continue
+                item["label"], item["url"] = mapped
+                item["kind"] = "URL"
+                item["desk_url"] = "/desk/" + item["target"].lower().replace(" ", "-")
+    return menu
+
+
 def get_context(context):
     if frappe.session.user == "Guest":
         frappe.redirect("/login?redirect-to=%2Fcn_portal")
@@ -268,5 +291,6 @@ def get_context(context):
     menu = _inject_execution_links(menu, roles)
     menu = _inject_purchase_links(menu, roles)
     menu = _inject_role_profile_link(menu, roles)
+    menu = _rewrite_crm_links(menu)
     context.menu_json = json.dumps(menu, ensure_ascii=False)
     context.page_title = "统一导航"

@@ -68,3 +68,13 @@ BUILD-90~94 已有本地 PASS 证据，**当前新任务为 RELEASE-95**：
 
 ## 2026-11-09 客户报备业务主线（CRM-100）
 客户报备不是销售订单，也不是客户唯一归属凭证。ERPNext 当前客户报备使用原生 Lead，已有 make_customer 转 Customer 原生能力但中文门户缺连贯入口。需补：Lead“转正式客户”→ Customer 保留首次报备人/日期、原始 Lead、当前客户负责人 → 从 Customer“创建销售订单”，不强制 Opportunity/Quotation。已确定的客户允许直接建 Customer 并记录首次报备人；禁止重复客户和未经授权的归属抢占。业务只需轻量 CRM；保留现有 H5/Bot 报备 API 和 UAT-97R A/B 权限边界。具体执行详见 docs/product/tasks/CRM-100.md。
+
+## 2026-11-09 CRM-100 已完成（ONLINE_PASS）
+实现：`cn_mfg_poc/crm.py`（list/detail/convert_lead/create_customer/sales_order_new_url）、`www/customer_center|customer_detail|lead_detail`、`public/js/lead_crm.js|customer_crm.js`（Desk 按钮）、补丁 `v0_0_7/setup_crm_fields.py`（两个 Custom Field + 可证实回填）、`hooks.py` 的 `Customer.before_insert`。
+约定：
+- **不要**改用 `owner` / `modified_by` 当首次报备人；`custom_first_reporter` 只在 `set_first_reporter` 里写（Lead.lead_owner 优先，否则当前用户），只读、不可被销售互抢。
+- 客户转正式必须走 `crm.convert_lead`（复用原生 `make_customer` + 原生 `update_lead_status`），不要自己拼 Customer 字段；同名客户时只返回已有客户，禁止合并或改归属。
+- 新客户、转化接口不使用 `ignore_permissions`；Sales User 原生已有 `Customer.create`，缺权限时走授权角色，不要加 Manager。
+- 门户「客户与销售 → 客户报备/客户」已改为指向 `/customer_center`（`cn_portal._rewrite_crm_links`），Desk 仍可用。
+已知限制：DATA_SCOPE_GAP 未变（Desk 客户/订单仍无行级隔离）；海尔等历史客户 `lead_name` 缺失，报备人留空不猜；企微真人仍 REAL_WECOM_BLOCKED。
+证据：docs/product/evidence/CRM-100.md。
