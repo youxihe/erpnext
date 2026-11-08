@@ -58,3 +58,9 @@ BUILD-90~94 已有本地 PASS 证据，**当前新任务为 RELEASE-95**：
 
 ## 2026-11-09 当前优先任务：UAT-97R 线上测试身份整理
 用户目前在 d.urlxl.cn 做人工测试，优先处理中文业务角色档案与显式测试身份，详见 docs/product/tasks/UAT-97R.md。保留 ERPNext 原生英文 Role 技术标识，不对原生 Role 批量 rename/delete；用中文 Role Profile 与用户 full_name/界面身份标签满足清晰操作和岗位隔离。清理的是多余用户**角色授权**、业务可见项和安全可删除的自定义测试 Role，不得损坏 DocPerm/工作台/H5/Bot/已提交单据归属。执行前备份，用现有测试站点正常发布流程并复测。
+
+## 2026-11-09 UAT-97R 已完成（ONLINE_PASS）
+七个中文岗位档案与 A/B 对照账号已上线 d.urlxl.cn，实现见 `cn_mfg_poc/role_setup.py` + 补丁 `v0_0_6/setup_role_profiles.py`，页面 `/role_profiles`（仅系统管理员）。
+约定：**不要**给原生英文 Role 改名/删除（工作台可见性、DocPerm、H5/Bot 判定都按英文标识）；岗位调整只改 `role_setup.PROFILES` 再重跑 `sync_identities()`，它幂等。
+已知限制：销售订单在 Desk 列表无行级隔离（DATA_SCOPE_GAP，需用户确认后才能加 User Permission/if_owner）；采购业务保留 Purchase Manager 是因为订单级追溯用 SENIOR_ROLES 判定；企微真人联调仍 REAL_WECOM_BLOCKED。
+证据：docs/product/evidence/UAT-97R.md。测试账号密码只在执行机 `poc/deploy/uat97r_credentials.online.json`，禁止写入 Git 或聊天。

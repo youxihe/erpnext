@@ -150,7 +150,7 @@ def run_a():
     r = production.assign_task(task0, "ligong@erpnext-poc.localhost",
                                exp_end_date=add_days(nowdate(), 4), note="UX-96A 分派验证")
     step("管理端可分派负责人并显示中文姓名",
-         r["production_owner"].startswith("ligong") and r["owner_name"] == "李工",
+         r["production_owner"].startswith("ligong") and "李工" in (r["owner_name"] or ""),
          "owner=%s name=%s due=%s" % (r["production_owner"], r["owner_name"], r["exp_end_date"]))
     step("分派后预警字段可用", r["due_state"] in ("正常", "临期", "逾期", "已完成", "未排期"), r["due_state"])
 

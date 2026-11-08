@@ -95,8 +95,9 @@
     <div class="side-title"><span id="side-title">工作台</span><span class="badge" id="side-badge">0 项</span></div>
     <div class="crumb">首页 / <span id="crumb-mod">工作台</span></div>
     <div class="nav" id="nav"></div>
-    <div class="side-foot" title="{{ roles_title }}">
+    <div class="side-foot" title="原生角色：{{ roles_title }}">
       当前身份：{{ user_fullname }}<br>
+      岗位：{{ profile_text }}<br>
       角色：{{ roles_text }}
     </div>
   </aside>
@@ -128,6 +129,7 @@
 
 <script>
 const MENU = JSON.parse(document.getElementById('menu-data').textContent);
+const CAN_SEE_ALL_SALES = {{ 'true' if can_see_all_sales else 'false' }};
 const $ = (s) => document.querySelector(s);
 let current = 0, currentUrl = '', hideChrome = true;
 
@@ -281,10 +283,20 @@ async function renderKpis(){
   box.innerHTML = defs.map(([l])=>`<div class="kpi"><div class="k-label">${l}</div><div class="k-val blue">—</div></div>`).join('');
   for(let i=0;i<defs.length;i++){
     try{
-      const r = await fetch('/api/method/frappe.client.get_count?doctype='+encodeURIComponent(defs[i][1]),
-                            {headers:{'Accept':'application/json'}});
-      const j = await r.json();
-      const v = j.message ?? j.data;
+      let v = null;
+      if(defs[i][1]==='Sales Order' && !CAN_SEE_ALL_SALES){
+        // 非管理角色：与「我的订单」同一口径，只数本人创建的订单
+        const r0 = await fetch('/api/method/cn_mfg_poc.api.my_orders',
+                               {headers:{'Accept':'application/json'}});
+        const j0 = await r0.json();
+        v = ((j0.message||{}).orders||[]).length;
+        box.children[i].title = '当前岗位只统计本人创建的销售订单';
+      }else{
+        const r = await fetch('/api/method/frappe.client.get_count?doctype='+encodeURIComponent(defs[i][1]),
+                              {headers:{'Accept':'application/json'}});
+        const j = await r.json();
+        v = j.message ?? j.data;
+      }
       box.children[i].querySelector('.k-val').textContent = (typeof v==='number') ? v : '—';
     }catch(e){}
   }

@@ -226,6 +226,18 @@ def _inject_purchase_links(menu, roles):
     return menu
 
 
+def _inject_role_profile_link(menu, roles):
+    """UAT-97R：系统管理员从门户进入「业务岗位管理」（只展示 7 个中文岗位）。"""
+    if "System Manager" not in roles:
+        return menu
+    _add_group(menu, ["系统设置", "工作台"], "岗位与账号", [{
+        "label": "业务岗位管理",
+        "url": "/role_profiles",
+        "kind": "URL", "target": "role_profiles",
+    }])
+    return menu
+
+
 def get_context(context):
     if frappe.session.user == "Guest":
         frappe.redirect("/login?redirect-to=%2Fcn_portal")
@@ -242,10 +254,19 @@ def get_context(context):
     context.roles_text = " / ".join(visible_roles[:2]) + (
         " 等 %d 项" % len(visible_roles) if len(visible_roles) > 2 else ""
     )
+    # UAT-97R：中文岗位档案优先展示，英文原生角色退到 title 里做技术核对
+    profiles = frappe.get_all("User Role Profile",
+                              filters={"parent": frappe.session.user, "parenttype": "User"},
+                              pluck="role_profile", order_by="idx asc")
+    context.profile_text = " / ".join(profiles) or "（未配置岗位档案）"
+    # 门户首页 KPI 口径：非管理角色只看本人创建的销售订单，与 my_orders 一致，
+    # 避免首页数字和「我的订单」列表对不上（Desk 列表仍按原生 DocPerm）。
+    context.can_see_all_sales = bool(roles & {"Sales Manager", "System Manager"})
     menu = _build_menu(roles)
     menu = _inject_order_types(menu)
     menu = _inject_production_links(menu, roles)
     menu = _inject_execution_links(menu, roles)
     menu = _inject_purchase_links(menu, roles)
+    menu = _inject_role_profile_link(menu, roles)
     context.menu_json = json.dumps(menu, ensure_ascii=False)
     context.page_title = "统一导航"

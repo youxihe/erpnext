@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }} · 启程智造 ERP</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f6f9;color:#1f2937;font:13px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{padding:18px 20px 40px;max-width:1180px}
+  h1{font-size:18px;margin:0 0 3px}
+  .sub{color:#8a94a6;font-size:12px;margin-bottom:16px}
+  .card{background:#fff;border:1px solid #e8ecf2;border-radius:8px;padding:14px 16px;margin-bottom:14px}
+  .card h2{font-size:14px;margin:0 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card h2 .tip{font-size:11px;font-weight:400;color:#8a94a6}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:8px;border-bottom:1px solid #f0f2f6;vertical-align:middle}
+  th{color:#8a94a6;font-weight:500;background:#fafbfd;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  .pill{display:inline-block;border-radius:10px;padding:1px 8px;font-size:11px;margin:1px 3px 1px 0;background:#eef2f8;color:#4a5666;white-space:nowrap}
+  .pill.pri{background:#e7f0ff;color:#1f68e0}
+  .pill.grey{background:#f2f4f7;color:#7c8698}
+  .tag{display:inline-block;border-radius:10px;padding:1px 8px;font-size:11px;white-space:nowrap}
+  .tag.ok{background:#e6f6ee;color:#166b46}
+  .tag.off{background:#fdecec;color:#b43535}
+  .note{background:#fff;border:1px solid #e8ecf2;border-left:3px solid #2b7cff;border-radius:6px;padding:10px 14px;font-size:12px;color:#5b6675;line-height:1.9}
+  .warn{background:#fff8e6;border:1px solid #ffe1a8;color:#8a5a12;border-radius:6px;padding:10px 14px;font-size:12px;line-height:1.9;margin-bottom:14px}
+  code{background:#f4f6f9;border-radius:3px;padding:1px 4px;font-size:11.5px;color:#44506b}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;color:#5b6675}
+  .muted{color:#8a94a6;font-size:11.5px}
+  a{color:#2b7cff;text-decoration:none}
+  a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>业务岗位管理</h1>
+  <div class="sub">当前身份：{{ user_fullname }}（{{ user }}） · 只展示 7 个中文业务岗位档案，供测试时识别岗位与切换账号</div>
+
+  <div class="warn">
+    <b>这不是角色删除。</b>ERPNext / Frappe 的原生技术角色仍然完整保留（本站共 {{ native_roles }} 个 Role、{{ profile_total }} 个 Role Profile），
+    因为 Workspace 可见性、DocPerm 与 H5/机器人权限判定都按英文角色标识工作。本页只把「岗位 → 原生角色」的绑定集中展示，
+    业务同事只需要认中文岗位名，底层仍由原生角色承载具体权限。
+  </div>
+
+  <div class="card">
+    <h2>七个业务岗位档案 <span class="tip">Role Profile（原生 DocType）</span></h2>
+    <table>
+      <thead>
+        <tr><th style="width:96px">岗位</th><th style="width:230px">原生角色（英文标识，不改名）</th><th>权限范围</th><th style="width:270px">说明 / 限制</th></tr>
+      </thead>
+      <tbody>
+        {% for p in profiles %}
+        <tr>
+          <td><b>{{ p.profile }}</b></td>
+          <td>{% for r in p.roles %}<span class="pill">{{ r }}</span>{% endfor %}</td>
+          <td>{{ p.scope }}</td>
+          <td class="muted">{{ p.note }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>测试账号 <span class="tip">显示名 = 岗位-A/B-姓名；账号 ID 一律保留原邮箱</span></h2>
+    <table>
+      <thead>
+        <tr><th style="width:150px">显示名</th><th style="width:250px">登录账号（不可改）</th><th style="width:96px">岗位档案</th><th>当前原生角色</th><th style="width:80px">状态</th></tr>
+      </thead>
+      <tbody>
+        {% for a in accounts %}
+        <tr>
+          <td>
+            <b>{{ a.full_name }}</b>
+            {% if a.contrast %}<span class="tag ok" style="margin-left:4px">对照</span>{% endif %}
+          </td>
+          <td class="mono">{{ a.user }}</td>
+          <td>{{ a.profile }}</td>
+          <td>{% for r in a.roles %}<span class="pill grey">{{ r }}</span>{% endfor %}</td>
+          <td>{% if a.exists and a.enabled %}<span class="tag ok">启用</span>{% else %}<span class="tag off">缺失</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:12px">
+      <b>A/B 是测试身份，不是新角色。</b>销售-A 与销售-B 挂同一个「销售业务」档案，菜单一致；车间的 A/B 同理。
+      两者是否能看到对方数据，取决于单据 owner / 负责人字段与数据范围规则，而不是角色名。
+      密码只在本机安全交付，不写进 Git、不在页面展示；切换账号前请先退出登录，或使用独立的浏览器 Profile / 无痕窗口。
+    </div>
+  </div>
+
+  <div class="note">
+    <b>管理员口径：</b>「经营管理」账号当前包含 <code>System Manager</code>，菜单等于全量后台，属于管理员身份而非普通业务岗位，
+    A/B 隔离与越权负例都不使用该账号。<br>
+    <b>技术角色入口：</b>需要查看或临时调整原生角色时，仍可从
+    <a href="/desk/role" target="_blank">原生角色列表</a> 与
+    <a href="/desk/role-profile" target="_blank">原生角色档案</a> 进入。
+  </div>
+</div>
+</body>
+</html>
