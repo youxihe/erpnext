@@ -1,0 +1,160 @@
+{
+ "steps": [
+  {
+   "name": "九阶段模板共 9 项",
+   "ok": true,
+   "detail": "['机架焊接', '机加工件加工', '内钣金焊接', '电控板组装', '管道焊接', '机构件组装', '电气组装', '外蒙板组装', '调整老化']"
+  },
+  {
+   "name": "阶段名称与决策一致",
+   "ok": true,
+   "detail": "['机架焊接', '机加工件加工', '内钣金焊接', '电控板组装', '管道焊接', '机构件组装', '电气组装', '外蒙板组装', '调整老化']"
+  },
+  {
+   "name": "五个最小自定义字段就位",
+   "ok": true,
+   "detail": "['production_owner', 'production_status', 'production_note', 'production_attachment', 'source_sales_order']"
+  },
+  {
+   "name": "生产类订单建立生产进度 Project",
+   "ok": true,
+   "detail": "PROJ-0002"
+  },
+  {
+   "name": "按模板生成 9 个 Task",
+   "ok": true,
+   "detail": "['TASK-2026-00019', 'TASK-2026-00020', 'TASK-2026-00021', 'TASK-2026-00022', 'TASK-2026-00023', 'TASK-2026-00024', 'TASK-2026-00025', 'TASK-2026-00026', 'TASK-2026-00027']"
+  },
+  {
+   "name": "Task 回填来源订单与初始状态",
+   "ok": true,
+   "detail": "[('TASK-2026-00019', '待开始', 'SAL-ORD-2026-00005'), ('TASK-2026-00020', '待开始', 'SAL-ORD-2026-00005')]"
+  },
+  {
+   "name": "目标日期由模板 start/duration 自动计算",
+   "ok": true,
+   "detail": "[('机架焊接', '2026-11-08 00:00:00', '2026-11-11 00:00:00'), ('机加工件加工', '2026-11-11 00:00:00', '2026-11-15 00:00:00'), ('内钣金焊接', '2026-11-15 00:00:00', '2026-11-18 00:00:00')]"
+  },
+  {
+   "name": "Sales Order.project 原生回写",
+   "ok": true,
+   "detail": "PROJ-0002"
+  },
+  {
+   "name": "重复创建幂等（不重复生成）",
+   "ok": true,
+   "detail": "replayed=True project=PROJ-0002 tasks 9->9"
+  },
+  {
+   "name": "生产经理可分派负责人",
+   "ok": true,
+   "detail": "{'member_task': 'TASK-2026-00019', 'manager_task': 'TASK-2026-00020'}"
+  },
+  {
+   "name": "销售角色不能创建生产进度项目",
+   "ok": true,
+   "detail": "PermissionError: 仅生产负责人/系统管理员可创建生产进度项目"
+  },
+  {
+   "name": "销售角色不能查看生产任务",
+   "ok": true,
+   "detail": "PermissionError: 当前角色无权查看生产任务"
+  },
+  {
+   "name": "不能代他人更新任务",
+   "ok": true,
+   "detail": "PermissionError: 该任务负责人不是您（liugong@erpnext-poc.localhost），不能代他人更新"
+  },
+  {
+   "name": "我的任务只见本人负责",
+   "ok": true,
+   "detail": "['TASK-2026-00019']"
+  },
+  {
+   "name": "本人更新状态/备注成功",
+   "ok": true,
+   "detail": "{'task': 'TASK-2026-00019', 'status': '进行中', 'note': '机架已上工装'}"
+  },
+  {
+   "name": "原生 Task.status 同步映射",
+   "ok": true,
+   "detail": "Working"
+  },
+  {
+   "name": "本人完成任务并记录完成时间",
+   "ok": true,
+   "detail": "{'completed_on': '2026-11-08', 'native_status': 'Completed'}"
+  },
+  {
+   "name": "逾期判定（目标日期已过且未完成）",
+   "ok": true,
+   "detail": "{'TASK-2026-00020': '逾期', 'TASK-2026-00021': '临期', 'TASK-2026-00022': '正常'}"
+  },
+  {
+   "name": "临期判定（3 日内，可配置）",
+   "ok": true,
+   "detail": "due_soon_days=3"
+  },
+  {
+   "name": "正常判定（3 日外）",
+   "ok": true,
+   "detail": "正常"
+  },
+  {
+   "name": "已完成任务不再计入逾期",
+   "ok": true,
+   "detail": "已完成"
+  },
+  {
+   "name": "汇总含逾期/临期/完成数",
+   "ok": true,
+   "detail": "{'total': 10, 'overdue': 1, 'due_soon': 1, 'completed': 2}"
+  },
+  {
+   "name": "订单生产进度只读聚合",
+   "ok": true,
+   "detail": "{'total': 9, 'completed': 1, 'overdue': 1, 'due_soon': 1}"
+  },
+  {
+   "name": "任务状态/分派/完成全程不改动库存与 SLE",
+   "ok": true,
+   "detail": "SLE 73 -> 73"
+  },
+  {
+   "name": "Task/Project 无库存 doc_events",
+   "ok": true,
+   "detail": "hooks.Task/Project = None"
+  },
+  {
+   "name": "非生产订单被拒 SAL-ORD-2026-00002(耗材)",
+   "ok": true,
+   "detail": "只有生产类订单才生成生产进度项目"
+  },
+  {
+   "name": "非生产订单被拒 SAL-ORD-2026-00004(服务)",
+   "ok": true,
+   "detail": "只有生产类订单才生成生产进度项目"
+  }
+ ],
+ "errors": [],
+ "ids": {
+  "created_by": "liugong@erpnext-poc.localhost",
+  "project": "PROJ-0002",
+  "tasks": [
+   "TASK-2026-00019",
+   "TASK-2026-00020",
+   "TASK-2026-00021",
+   "TASK-2026-00022",
+   "TASK-2026-00023",
+   "TASK-2026-00024",
+   "TASK-2026-00025",
+   "TASK-2026-00026",
+   "TASK-2026-00027"
+  ]
+ },
+ "summary": {
+  "passed": 27,
+  "total": 27,
+  "errors": 0
+ }
+}

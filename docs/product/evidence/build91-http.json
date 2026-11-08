@@ -1,0 +1,131 @@
+{
+ "steps": [
+  {
+   "name": "HTTP /cn_portal 200 且菜单可解析 [Administrator]",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "生产进度菜单按角色可见 [Administrator]",
+   "ok": true,
+   "detail": "我的任务=True(期望True) 订单生产进度=True(期望True)"
+  },
+  {
+   "name": "四类订单入口未回退 [Administrator]",
+   "ok": true,
+   "detail": "客户与销售可见=True 四类订单=True"
+  },
+  {
+   "name": "HTTP /cn_portal 200 且菜单可解析 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "生产进度菜单按角色可见 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "我的任务=True(期望True) 订单生产进度=True(期望True)"
+  },
+  {
+   "name": "四类订单入口未回退 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "客户与销售可见=False 四类订单=False"
+  },
+  {
+   "name": "HTTP /cn_portal 200 且菜单可解析 [ligong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "生产进度菜单按角色可见 [ligong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "我的任务=True(期望True) 订单生产进度=True(期望True)"
+  },
+  {
+   "name": "四类订单入口未回退 [ligong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "客户与销售可见=False 四类订单=False"
+  },
+  {
+   "name": "HTTP /cn_portal 200 且菜单可解析 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "生产进度菜单按角色可见 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "我的任务=False(期望False) 订单生产进度=True(期望True)"
+  },
+  {
+   "name": "四类订单入口未回退 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "客户与销售可见=True 四类订单=True"
+  },
+  {
+   "name": "HTTP /production_board 200 [Administrator]",
+   "ok": true,
+   "detail": "status=200 len=10861"
+  },
+  {
+   "name": "HTTP /production_board 200 [liugong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200 len=10866"
+  },
+  {
+   "name": "HTTP /production_board 200 [ligong@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200 len=10865"
+  },
+  {
+   "name": "HTTP /production_board 200 [wangming@erpnext-poc.localhost]",
+   "ok": true,
+   "detail": "status=200 len=10867"
+  },
+  {
+   "name": "李工 HTTP 只见本人任务",
+   "ok": true,
+   "detail": "1 项"
+  },
+  {
+   "name": "销售角色可见生产订单下拉",
+   "ok": true,
+   "detail": "2 张"
+  },
+  {
+   "name": "销售角色可读订单生产进度（只读）",
+   "ok": true,
+   "detail": "{'project': 'PROJ-0002', 'total': 9}"
+  },
+  {
+   "name": "销售角色不能更新生产任务（HTTP 拒绝）",
+   "ok": true,
+   "detail": "status=403"
+  },
+  {
+   "name": "销售角色不能创建生产进度项目（HTTP 拒绝）",
+   "ok": true,
+   "detail": "status=403"
+  },
+  {
+   "name": "未登录不能读生产任务",
+   "ok": true,
+   "detail": "status=403"
+  },
+  {
+   "name": "HTTP 重复创建返回原项目且任务数不变",
+   "ok": true,
+   "detail": "{'project': 'PROJ-0002', 'tasks': 9}"
+  },
+  {
+   "name": "HTTP 全程库存 SLE 不变",
+   "ok": true,
+   "detail": "73 -> 73"
+  }
+ ],
+ "ids": {
+  "project": "PROJ-0002"
+ },
+ "summary": {
+  "passed": 24,
+  "total": 24
+ }
+}

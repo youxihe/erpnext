@@ -51,3 +51,12 @@
 | LM90-02 | `Project Template Task` 子表仅 2 字段，无 start/duration/task_weight/description | S2，九任务负责人与目标日期在生成 Task 时按规则计算 |
 | LM90-03 | 现有 `my_jobs` / `update_job_progress` 基于 Job Card，与新的 Project Task 任务视图形成两套「我的任务」 | S2，BUILD-93 做兼容迁移或收口，员工界面不强制 Job Card |
 | LM90-04 | BUILD-90 只验证 `skip_transfer=1` 的直达 Manufacture 路径 | S1，BUILD-92 结合真实工单再验 `Material Transfer for Manufacture` 两段式与防重复扣库 |
+
+## BUILD-91 实测后新增观察
+| 编号 | 事项 | 决定 |
+| --- | --- | --- |
+| LM91-01 | ERPNext v16 `Project.after_insert() → copy_from_template()` 内部用 `.insert()` 建 Task，而原生 Task DocPerm 只授权 `Projects User / HR Manager` 建单；生产经理走纯原生模板复制会抛 `PermissionError` 并留下 0 任务的 Project | S2。本期由 `create_project()` 读模板行、复用原生日期算法、用 `ignore_permissions=True` 生成原生 Task（角色已在服务端前置校验）；以后若要在原生 Desk 直接用模板复制，需评估给 `Manufacturing Manager` 补最小 `Custom DocPerm`，注意 `setup_custom_perms` 会整体切换权限表 |
+| LM91-02 | 生产人员（Manufacturing User）在原生 Desk 没有 Task 读写权限，只能通过 `/production_board` 受控 API 更新本人任务 | S2。符合「员工界面不重造 ERP」的方向；若客户要求原生 Desk 也能编辑，再评估最小 DocPerm 和 owner 级约束 |
+| LM91-03 | `Task.production_attachment` 字段已建，H5/机器人的附件上传与文件权限尚未接通 | S1，BUILD-93 结合真实企微文件授权处理；缺授权期间保持 BLOCKED |
+| LM91-04 | 生产类订单 `SAL-ORD-2026-00001` 已完成交付，未建生产进度 Project；当前仅 `SAL-ORD-2026-00005` 有 PROJ-0002 | S2。BUILD-92 若需要历史订单概览，再决定是否补建，不自动批量造数 |
+| LM91-05 | `setup_template()` 会自愈并清理「无 project / is_template=0 / status=Open 且 start/duration 与九阶段一致」的孤儿 Task | S2。仅清理本脚本失败产物，绝不触碰项目下正式 Task；线上首次执行需先核对是否存在同名 Task |

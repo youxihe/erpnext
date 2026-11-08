@@ -61,9 +61,9 @@
 |---|---|---|
 | 订单 BOM | 生产订单明确选用哪个物料清单，非标版本不会误改其他订单 | TODO |
 | 原生制造无强制工序报工 | 无 Job Card 操作依然能按工单合法领料/完工入库，或给出经实测的最小替代 | PASS(LOCAL)（BUILD-90：BOM-LM90-FG-001 / MFG-WO-2026-00003 / MAT-STE-2026-00009，Job Card 0 张，成品仓 0→1，SLE 71→73；证据 BUILD-90.md） |
-| 九项生产进度模板 | 生产 Project/Task 正确关联订单、负责人、目标日、状态、备注/附件 | TODO |
-| 临期/逾期 | 过期未完成任务预警；未来三日内临期（可配置） | TODO |
-| 库存与任务解耦 | 任务全完成不会自动导致成品入库；采购、领料、制造完工和发货均有原生单号 | TODO |
+| 九项生产进度模板 | 生产 Project/Task 正确关联订单、负责人、目标日、状态、备注/附件 | PASS(LOCAL)（BUILD-91：`整机生产九阶段` 9 行 / PROJ-0002 / TASK-2026-00019~00027，`Sales Order.project` 原生回写；27/27 + HTTP 24/24；证据 BUILD-91.md） |
+| 临期/逾期 | 过期未完成任务预警；未来三日内临期（可配置） | PASS(LOCAL)（BUILD-91：逾期 / 临期 / 正常 / 已完成四态实测，`production_due_soon_days` 默认 3 可配置） |
+| 库存与任务解耦 | 任务全完成不会自动导致成品入库；采购、领料、制造完工和发货均有原生单号 | PASS(LOCAL)（BUILD-91 任务侧：SLE 73→73、`tabBin` 快照一致、Task/Project 无库存 doc_events）／采销发真实单据链待 BUILD-92 补验 |
 | 整机一次发货 | Delivery Note 来自 Sales Order，仓库和发货状态真实一致 | TODO |
 | 订单执行概览 | BOM、缺料、采购、领料、生产任务、入库、发货及应收可按权限追溯 | TODO |
 | PC/H5/Bot | 三端同一 Project Task、订单和库存；H5 更新任务 PC 可见，Bot 能查询 | TODO（REAL_WECOM 另验） |

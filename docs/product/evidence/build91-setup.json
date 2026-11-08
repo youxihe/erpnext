@@ -1,0 +1,31 @@
+{
+ "custom_fields": [],
+ "template_tasks": [],
+ "project_template": "整机生产九阶段",
+ "repaired_template_tasks": [],
+ "removed_orphan_tasks": [],
+ "verify": {
+  "template_name": "整机生产九阶段",
+  "template_rows": 9,
+  "template_subjects": [
+   "机架焊接",
+   "机加工件加工",
+   "内钣金焊接",
+   "电控板组装",
+   "管道焊接",
+   "机构件组装",
+   "电气组装",
+   "外蒙板组装",
+   "调整老化"
+  ],
+  "template_task_records": 9,
+  "custom_fields": [
+   "production_owner",
+   "production_status",
+   "production_note",
+   "production_attachment",
+   "source_sales_order"
+  ],
+  "due_soon_days": 3
+ }
+}

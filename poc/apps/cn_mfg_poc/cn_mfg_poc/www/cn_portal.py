@@ -37,6 +37,11 @@ ORDER_TYPES = [
     ("服务类订单", "服务"),
 ]
 
+# BUILD-91：Project/Task 生产进度页。角色口径与 cn_mfg_poc.production 保持一致，
+# 由门户侧再做一次可见性过滤，避免无权用户看到点不开的菜单。
+PRODUCTION_STAFF_ROLES = {"Employee", "Manufacturing User", "Manufacturing Manager", "System Manager"}
+PRODUCTION_READ_ROLES = PRODUCTION_STAFF_ROLES | {"Sales User", "Sales Manager"}
+
 
 def _slug(text):
     text = (text or "").strip().lower()
@@ -139,6 +144,45 @@ def _inject_order_types(menu):
     return menu
 
 
+def _add_group(menu, candidates, group_label, items):
+    """把一组入口挂到第一个当前用户可见的模块上；已有同名分组则不重复。"""
+    for wanted in candidates:
+        for mod in menu:
+            if mod["label"] != wanted:
+                continue
+            if any(g["label"] == group_label for g in mod["groups"]):
+                return True
+            mod["groups"].insert(0, {"label": group_label, "items": items})
+            mod["count"] = sum(len(g["items"]) for g in mod["groups"])
+            return True
+    return False
+
+
+def _inject_production_links(menu, roles):
+    """注入「我的任务」「订单生产进度」PC 入口。
+
+    生产角色优先挂「设计与生产」；纯销售角色通常看不到该工作台，按顺序回退到
+    「客户与销售」「工作台」，保证只读的订单生产进度仍然可点。
+    """
+    items = []
+    if roles & PRODUCTION_STAFF_ROLES:
+        items.append({
+            "label": "我的任务",
+            "url": "/production_board?view=mine",
+            "kind": "URL", "target": "production_board",
+        })
+    if roles & PRODUCTION_READ_ROLES:
+        items.append({
+            "label": "订单生产进度",
+            "url": "/production_board?view=order",
+            "kind": "URL", "target": "production_board",
+        })
+    if not items:
+        return menu
+    _add_group(menu, ["设计与生产", "客户与销售", "工作台"], "固定生产进度", items)
+    return menu
+
+
 def get_context(context):
     if frappe.session.user == "Guest":
         frappe.redirect("/login?redirect-to=%2Fcn_portal")
@@ -155,5 +199,8 @@ def get_context(context):
     context.roles_text = " / ".join(visible_roles[:2]) + (
         " 等 %d 项" % len(visible_roles) if len(visible_roles) > 2 else ""
     )
-    context.menu_json = json.dumps(_inject_order_types(_build_menu(roles)), ensure_ascii=False)
+    menu = _build_menu(roles)
+    menu = _inject_order_types(menu)
+    menu = _inject_production_links(menu, roles)
+    context.menu_json = json.dumps(menu, ensure_ascii=False)
     context.page_title = "统一导航"
