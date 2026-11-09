@@ -76,6 +76,16 @@
   .mod .m-links{margin-top:10px;font-size:11.5px;color:#6b7688;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .note{margin-top:22px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:12px 15px;font-size:12px;color:#5b6675;line-height:1.9}
   .hide{display:none!important}
+  /* 内页权限兜底：菜单已按真实权限过滤，但报表/页面仍可能因框架内部依赖
+     （如报表 SQL 引用了无权限的单据）在运行时 403。这里把原生报错页替换成友好提示，
+     彻底消除「进入原生页面提示未授权」的刺眼体验。 */
+  .perm-block{position:absolute;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:30}
+  .perm-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:30px 34px;max-width:440px;text-align:center;box-shadow:0 6px 24px rgba(31,41,55,.08)}
+  .perm-card .perm-ico{font-size:34px;line-height:1}
+  .perm-card .perm-title{font-size:17px;font-weight:700;margin:12px 0 8px;color:var(--text)}
+  .perm-card .perm-desc{font-size:13px;color:#6b7688;line-height:1.8}
+  .perm-card button{margin-top:18px;border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:6px;padding:8px 16px;font-size:13px}
+  .perm-card button:hover{background:#eef4ff}
   @media(max-width:900px){.brand{width:150px}.side{width:170px}.tools a.lbl{display:none}}
 </style>
 </head>
@@ -86,7 +96,7 @@
   <div class="brand"><span class="mark">启</span><span>启程智造 ERP</span></div>
   <div class="primary" id="primary"></div>
   <div class="tools">
-    <a class="lbl" href="/desk/home" target="_blank">原生 Desk</a>
+    <a class="lbl" href="/desk" target="_blank" title="进入原生后台（/desk/home 对非管理员会因 Workspace 域名过滤而报无权访问）">原生 Desk</a>
     <a class="lbl" href="/wecom_h5" target="_blank">企微 H5</a>
     <button id="btn-full" title="全屏">⛶</button>
     <button id="btn-logout" class="logout" title="退出登录（当前账号：{{ user }}）">退出</button>
@@ -127,6 +137,14 @@
         </div>
       </div>
       <iframe id="frame" class="hide" title="业务页面"></iframe>
+      <div id="perm-block" class="perm-block hide">
+        <div class="perm-card">
+          <div class="perm-ico">🔒</div>
+          <div class="perm-title">当前账号暂无权限查看此内容</div>
+          <div class="perm-desc">该页面 / 报表所在的角色未被授权访问（可能因报表引用了无权限的单据）。如需开通，请联系系统管理员调整岗位权限。</div>
+          <button id="perm-back">← 返回首页</button>
+        </div>
+      </div>
     </div>
   </main>
 </div>
@@ -247,7 +265,30 @@ function stripChrome(){
     setTimeout(()=>{ if(d.getElementById('cn-portal-strip')) return; stripChrome(); }, 1200);
   }catch(e){}
 }
-$('#frame').addEventListener('load', ()=>{ stripChrome(); setTimeout(stripChrome, 400); setTimeout(stripChrome, 1600); });
+$('#frame').addEventListener('load', ()=>{ stripChrome(); setTimeout(stripChrome, 400); setTimeout(stripChrome, 1600); setTimeout(guardIframe, 300); setTimeout(guardIframe, 1200); setTimeout(guardIframe, 3200); });
+
+/* ---------- 内页权限兜底 ----------
+   菜单已按真实权限过滤，但仍有少量「报表引用了无权限单据」之类的运行时 403
+   无法在渲染前预判（例如采购角色点「应付账龄」，报表 SQL 引用了无权限的 Journal Entry）。
+   这里在 iframe 加载后识别 Frappe 的报错页 / 报错卡片 / 错误 Toast，用友好提示覆盖，
+   避免用户直接看到刺眼的「未授权访问页面」。SPA 的报错多以 Toast 形式出现且稍晚渲染，
+   所以分 300/1200/3200ms 三次轮询。 */
+function guardIframe(){
+  const f = $('#frame');
+  let doc = null;
+  try { doc = f.contentDocument; } catch(e){ return; }
+  if(!doc || !doc.body) return;
+  const txt = (doc.body.innerText || '').replace(/\s+/g, ' ');
+  const ttl = (doc.title || '');
+  const HITS = ['PermissionError', '未授权用户', '权限不足', 'Not Permitted',
+                "doesn't have access to Report", '你没有权限', 'Access denied', '403'];
+  const matched = HITS.some(k => txt.includes(k) || ttl.includes(k));
+  const errCard = doc.querySelector('.page-card .title, .error-page, #page-403, .toast-error, .msgprint, .page-card');
+  const cardTxt = errCard ? (errCard.innerText || '') : '';
+  const isErr = matched || /Permission|未授权|权限不足|Not Permitted/i.test(cardTxt);
+  $('#perm-block').classList.toggle('hide', !isErr);
+}
+$('#perm-back').onclick = ()=>{ $('#perm-block').classList.add('hide'); showHome_(); };
 $('#btn-back').onclick = showHome_;
 $('#btn-newwin').onclick = ()=>{ if(currentUrl) window.open(currentUrl,'_blank'); else window.open('/desk/home','_blank'); };
 $('#btn-chrome').onclick = ()=>{

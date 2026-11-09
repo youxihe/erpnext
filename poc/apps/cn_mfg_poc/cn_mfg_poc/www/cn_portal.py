@@ -261,6 +261,80 @@ def _rewrite_crm_links(menu):
     return menu
 
 
+# ---------------------------------------------------------------------------
+# 菜单与真实权限对齐（PORTAL-PERM-101）
+#
+# 背景：门户菜单是按 Workspace / Workspace Link 推导的，而 Workspace 的可见性只看
+# Workspace.roles（粗粒度），DocType / Report 是否真能打开取决于 DocPerm 与
+# Report.roles + ref_doctype 的读权限（细粒度）。两者不是同一套数据，必然出现
+# 「菜单能看、点进去 403」。这里在渲染前按当前会话用户的真实权限逐条过滤。
+#
+# 实测反例（设计生产账号）：42 条菜单里 16 条会被 Desk 拒绝——销售订单/采购订单/
+# 交货单/供应商/客户组/供应商组/销售分析/采购分析/库存余额/账龄/总账等。
+# ---------------------------------------------------------------------------
+
+
+def _report_permitted(name):
+    """与 frappe.desk.query_report.get_report_doc 的口径完全一致：
+
+        (1) Report.is_permitted() —— 报表自身 Has Role 子表限定的角色；
+        (2) has_permission(ref_doctype, "report") —— 注意是 **report** 级而非 read 级。
+
+    之前用 ref_doctype 的 read 级判断，会放行一批「能读单据、但没有报表级权限」的
+    账号；而 Frappe 在 get_report_doc 里用的是 report 级，二者不一致会导致菜单放行、
+    点进去却 403。这里改成与框架同口径。"""
+    if not name or not frappe.db.exists("Report", name):
+        return False
+    report = frappe.get_doc("Report", name)
+    if not report.is_permitted():
+        return False
+    if report.ref_doctype and not frappe.has_permission(report.ref_doctype, "report"):
+        return False
+    return True
+
+
+def _page_permitted(name):
+    """Page 的 DocPerm 只有管理员，真正的可见性由 Page.roles 子表决定。"""
+    page_roles = frappe.get_all(
+        "Has Role", filters={"parent": name, "parenttype": "Page"}, pluck="role")
+    return (not page_roles) or bool(set(page_roles) & set(frappe.get_roles()))
+
+
+def _item_permitted(item):
+    kind, target = item.get("kind"), item.get("target")
+    if kind == "DocType":
+        return bool(target) and bool(frappe.has_permission(target, "read"))
+    if kind == "Report":
+        return _report_permitted(target)
+    if kind == "Page":
+        return bool(target) and _page_permitted(target)
+    if kind == "URL":
+        # 被 _rewrite_crm_links 改写成客户中心的「客户报备 / 客户」，按底层 DocType 判断；
+        # 其余自定义页面（order_execution / production_board / ...）各自在页面内校验。
+        if target in ("Lead", "Customer"):
+            return bool(frappe.has_permission(target, "read"))
+        return True
+    return True
+
+
+def _filter_menu_by_permission(menu):
+    """去掉当前用户点进去必然被拒的条目，空分组 / 空模块一并收起。"""
+    hidden = []
+    for mod in menu:
+        kept_groups = []
+        for grp in mod["groups"]:
+            kept = [it for it in grp["items"] if _item_permitted(it)]
+            kept_ids = {id(x) for x in kept}
+            hidden += [it["label"] for it in grp["items"] if id(it) not in kept_ids]
+            if kept:
+                grp["items"] = kept
+                kept_groups.append(grp)
+        mod["groups"] = kept_groups
+        mod["count"] = sum(len(g["items"]) for g in kept_groups)
+    return [m for m in menu if m["groups"]], hidden
+
+
+
 def get_context(context):
     if frappe.session.user == "Guest":
         frappe.redirect("/login?redirect-to=%2Fcn_portal")
@@ -292,5 +366,7 @@ def get_context(context):
     menu = _inject_purchase_links(menu, roles)
     menu = _inject_role_profile_link(menu, roles)
     menu = _rewrite_crm_links(menu)
+    menu, hidden_items = _filter_menu_by_permission(menu)
+    context.menu_hidden_count = len(hidden_items)
     context.menu_json = json.dumps(menu, ensure_ascii=False)
     context.page_title = "统一导航"
