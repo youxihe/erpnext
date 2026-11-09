@@ -88,3 +88,12 @@ BUILD-90~94 已有本地 PASS 证据，**当前新任务为 RELEASE-95**：
   一旦页面下发过 token，缺令牌或令牌错误都是 400 `CSRFTokenError`。写测试时反例必须先 GET 一次页面，否则会误判「没有 CSRF 保护」。
 - 其它中文页（customer_center / customer_detail / lead_detail）没有单独退出按钮，靠「返回门户」链路；如需统一，另开任务。
 证据：docs/product/evidence/PORTAL-LOGOUT.md。
+
+## 2026-11-09 PORTAL-PERM-101 门户菜单按真实权限过滤（ONLINE_PASS）
+- 根因：门户菜单按 Workspace/Workspace Link 推导，只对 Workspace.roles 做粗粒度过滤；DocType/Report/Page 能否打开取决于各自 DocPerm 与 Report.ref_doctype 权限（细粒度），二者不同源 → 「能看菜单、点进去 403」。
+- 修复：渲染前 `_filter_menu_by_permission` 逐条 `_item_permitted` 过滤；报表 `_report_permitted` 与 `frappe.desk.query_report.get_report_doc` 同口径（`Report.is_permitted()` + `has_permission(ref_doctype, "report")`，注意是 **report** 级不是 read 级）；Page 用 Page.roles + DocPerm；URL 中 Lead/Customer 按底层 DocType 判断。
+- 「原生 Desk」入口由写死 `/desk/home` 改为 `/desk`，避免非管理员直进 workspace 首页触发 403。
+- 内页 403 友好兜底：`guardIframe()` 识别 Frappe 报错页/卡片/Toast，用「当前账号暂无权限查看此内容」覆盖层替换刺眼报错（覆盖报表 SQL 引用无权限单据等渲染前无法预判的运行时 403）。
+- 验证：liugong（设计生产）菜单由 42 项（16 不可达）降至 24 项（0 不可达）；线上回归 uat97r_http_check 100/100、0 失败；纯模板/视图改动，无 schema / 无数据变更。
+- 已知边角：采购角色点「应付账龄」（标准报表 Accounts Payable）因 SQL 引用 Journal Entry 仍会运行时 403，已由内页兜底覆盖；彻底隐藏需在 Workspace 移除该报表对采购角色的可见性或授予 Journal Entry 读权限（登记 BACKLOG）。
+证据：docs/product/evidence/PORTAL-PERM-101.md。
