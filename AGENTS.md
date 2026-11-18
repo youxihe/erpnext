@@ -97,3 +97,11 @@ BUILD-90~94 已有本地 PASS 证据，**当前新任务为 RELEASE-95**：
 - 验证：liugong（设计生产）菜单由 42 项（16 不可达）降至 24 项（0 不可达）；线上回归 uat97r_http_check 100/100、0 失败；纯模板/视图改动，无 schema / 无数据变更。
 - 已知边角：采购角色点「应付账龄」（标准报表 Accounts Payable）因 SQL 引用 Journal Entry 仍会运行时 403，已由内页兜底覆盖；彻底隐藏需在 Workspace 移除该报表对采购角色的可见性或授予 Journal Entry 读权限（登记 BACKLOG）。
 证据：docs/product/evidence/PORTAL-PERM-101.md。
+
+## 2026-11-18 PAGE-PERM-102 原生 Desk 首页 403（ONLINE_PASS）
+- 用户重新登录后访问 `/desk/home` 报「角色权限管理中未授权用户…访问页面」。与 PORTAL-PERM-101（门户菜单过滤）是**两条不同路径**：登录响应 `home_page:"desk"` → 默认跳原生 Desk → SPA 调 `frappe.desk.desk_page.getpage(name=home)` → `get_doc("Page")` 按 DocType 级 `Page.read` 校验。
+- 根因：`tabDocPerm parent=Page` 只给 System Manager / Administrator read；业务账号（liugong/wangming）`Page.read=False`，只有带 System Manager 的 zhaojingli 正常。
+- 修复：给 **Desk User** 角色补 `Page.read`。标准 DocType 不能在非 Developer Mode 直接改 `tabDocPerm`——必须用 `frappe.permissions.add_permission("Page","Desk User",0)` 写 **Custom DocPerm**（落库 `angm7a27g6`, read=1, write=0）；业务账号经 Role Profile 都带 Desk User，一次覆盖全部。
+- 验证：修复前 getpage(home) 403 +「未授权」；修复后 9 账号登录后全部无 403；清缓存 + 重启四服务后 Custom DocPerm 行仍在、Page.read=True（证明非缓存副作用）；UAT-97R 回归 100/100。修 getpage 后返回 404 DoesNotExistError 是正常的（v16 无字面 home 的 Page 文档），不代表权限失败。
+- 判断「哪一项修复是否生效」时，先核对线上文件 md5/关键标记，再抓用户实际走的 URL，别把两条路径的修复混为一谈。
+证据：docs/product/evidence/PAGE-PERM-102.md。
