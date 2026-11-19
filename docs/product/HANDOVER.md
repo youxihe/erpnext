@@ -303,3 +303,22 @@ Excel 模板：`docs/product/samples/采购入库模板.xlsx`，列名：物料�
 - 证据：`evidence/BUILD-00..94.md`、`RELEASE-95.md`、`UX-96A/B.md`、`FLOW-97A/B.md`、`UAT-97R.md`、`CRM-100.md`、`PORTAL-LOGOUT.md`、`PORTAL-PERM-101.md`、`PAGE-PERM-102.md`
 - 人工验收：`UAT_MANUAL_V1.md`、`tasks/UAT-98.md`
 - 完整凭据版：**私有仓库 `youxihe/ai-erpnext` → `HANDOVER-FULL.md`**
+
+---
+
+## 10. 私有交接仓库（给接手智能体）
+
+私有仓库 `youxihe/ai-erpnext`（需授权访问）包含两个分支：
+
+| 分支 | 内容 | 说明 |
+|---|---|---|
+| `main` | `HANDOVER-FULL.md` | 完整交接文档，含服务器 SSH / MySQL / Administrator / 9 业务账号**明文密码** |
+| `deliverable-snapshot` | 255 个文件 / 4.7M | 本项目全部自有代码与文档快照：自定义 app `cn_mfg_poc`、产品脚本 `product/`、全部产品文档 `docs/product/`、本快照还额外含 `HANDOVER-FULL.md` |
+
+获取方式（分支快照，不依赖 ERPNext 上游历史）：
+```
+git clone -b deliverable-snapshot git@github.com:youxihe/ai-erpnext.git
+```
+完整 ERPNext 上游代码请从 public fork `youxihe/erpnext` 另行 clone，再把快照中的 `poc/apps/cn_mfg_poc/` 覆盖进去即可。
+
+> 说明：本地 `erpnext` 是 shallow clone，完整提交历史 FAIL 推送（缺浅边界父对象），故采用文件树快照分支交付。快照无历史提交，证据文档中引用的 commit SHA（`d4e19107` 等）需在 public fork `youxihe/erpnext` 中核对。
