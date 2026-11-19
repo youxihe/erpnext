@@ -35,7 +35,8 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/cn_mfg_poc/css/cn_mfg_poc.css"
-# app_include_js = "/assets/cn_mfg_poc/js/cn_mfg_poc.js"
+# 兼容 v16:旧路由 /desk/home、/app/home 整页重定向到 /desk,避免 getpage('home') 404
+app_include_js = "/assets/cn_mfg_poc/js/desk_home_compat.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/cn_mfg_poc/css/cn_mfg_poc.css"

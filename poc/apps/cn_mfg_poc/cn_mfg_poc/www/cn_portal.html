@@ -290,7 +290,7 @@ function guardIframe(){
 }
 $('#perm-back').onclick = ()=>{ $('#perm-block').classList.add('hide'); showHome_(); };
 $('#btn-back').onclick = showHome_;
-$('#btn-newwin').onclick = ()=>{ if(currentUrl) window.open(currentUrl,'_blank'); else window.open('/desk/home','_blank'); };
+$('#btn-newwin').onclick = ()=>{ if(currentUrl) window.open(currentUrl,'_blank'); else window.open('/desk','_blank'); };
 $('#btn-chrome').onclick = ()=>{
   hideChrome = !hideChrome;
   $('#btn-chrome').textContent = hideChrome ? '隐藏原生导航' : '显示原生导航';
