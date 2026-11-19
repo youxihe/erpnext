@@ -105,3 +105,15 @@ BUILD-90~94 已有本地 PASS 证据，**当前新任务为 RELEASE-95**：
 - 验证：修复前 getpage(home) 403 +「未授权」；修复后 9 账号登录后全部无 403；清缓存 + 重启四服务后 Custom DocPerm 行仍在、Page.read=True（证明非缓存副作用）；UAT-97R 回归 100/100。修 getpage 后返回 404 DoesNotExistError 是正常的（v16 无字面 home 的 Page 文档），不代表权限失败。
 - 判断「哪一项修复是否生效」时，先核对线上文件 md5/关键标记，再抓用户实际走的 URL，别把两条路径的修复混为一谈。
 证据：docs/product/evidence/PAGE-PERM-102.md。
+
+## 2026-11-18 DESK-HOME 遗留路由兼容（ONLINE_PASS，commit d4e19107）
+- 用户给出 404 curl：`POST /api/method/frappe.desk.desk_page.getpage` with `name=home`。v16 已无字面名为 `home` 的 Page 文档，遗留 `/desk/home`（及 `/app/home`）路由对非管理员触发 404/「未找到页面」。
+- 曾尝试服务端 `getpage` override 返回 desktop doc / dynamic page，均导致前端渲染失败（「抱歉，无法找你要的信息」或 `TypeError: ... reading 'home'` 白屏），**已回退**，不要重试这条路线。
+- 最终方案：前端 `app_include_js = "/assets/cn_mfg_poc/js/desk_home_compat.js"`，在 SPA 解析路由前对 `/desk/home`、`/app/home` 执行 `location.replace("/desk")`，用 `sessionStorage` 防环；`cn_portal.html` 新窗口兜底链接也改为 `/desk`。
+- 另批量设置 9 个业务账号 `User.default_workspace`（各自中文工作台），浏览器实测登录落地正确、访问 `/desk/home` 平滑跳 `/desk`，无 403/404 报错。
+
+## 2026-11-19 全量交接（给下一个智能体）
+- 用户要求把代码、线上部署方式、账号密码和原始需求全部交接给另一个智能体。
+- **公开仓库 `youxihe/erpnext` 只能放脱敏版** `docs/product/HANDOVER.md`；含服务器 SSH、MySQL、Administrator 与 9 个业务账号明文密码的完整版在私有仓库 `youxihe/ai-erpnext` 的 `HANDOVER-FULL.md`（推送前以本机 `D:/ERP/poc/deploy/HANDOVER-FULL.md` 为准）。
+- GitHub 硬限制：public fork 不能转成 private。若要私有化，只能新建独立私有仓库（非 fork）并推送，不要把明文凭据推到任何 public 仓库。
+- 当前最新提交 `d4e19107`；DESK-HOME、PORTAL-PERM-101、PAGE-PERM-102 均已部署线上且浏览器实测通过。接手第一组动作见 `docs/product/HANDOVER.md` 第 8 节红线。
