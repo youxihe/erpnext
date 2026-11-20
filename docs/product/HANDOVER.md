@@ -308,20 +308,20 @@ Excel 模板：`docs/product/samples/采购入库模板.xlsx`，列名：物料�
 
 ## 10. 私有交接仓库（给接手智能体）
 
-私有仓库 `youxihe/ai-erpnext`（需授权访问）包含五个分支：
+私有仓库 `youxihe/ai-erpnext`（需授权访问）。**`main` 就是主工作分支**，包含全部代码和交接文档，直接 clone 即可：
 
-| 分支 | SHA | 内容 |
-|---|---|---|
-| `product/erpnext-wecom-ai-v1-20261029` | `da311f66` | **主产品分支**：3331 commits 完整历史、5821 文件 |
-| `poc/erpnext-cn-manufacturing-20261026` | `87ea0143` | POC 分支 |
-| `backup/local-before-sync-20261108` | `3486a0b3` | 同步前备份分支 |
-| `main` | `0318f4a` | `HANDOVER-FULL.md`（含 SSH / MySQL / Administrator / 9 业务账号**明文密码**）+ `SHA-REMAP.md` + `_sha_mapping.json` |
-| `deliverable-snapshot` | `6b2f80a` | 自有代码/文档文件树快照（255 文件，无历史） |
+```
+git clone git@github.com:youxihe/ai-erpnext.git     # 默认拿到 main：5825 文件 + 3333 commits
+```
 
-推荐取代码方式：
-```
-git clone -b product/erpnext-wecom-ai-v1-20261029 git@github.com:youxihe/ai-erpnext.git
-```
+| 分支 | 内容 |
+|---|---|
+| `main` | **主工作分支**：完整代码（5825 文件）+ `HANDOVER-FULL.md`（含 SSH / MySQL / Administrator / 9 业务账号**明文密码**）+ `SHA-REMAP.md` + `_sha_mapping.json`，与 `product/...` 同一提交 |
+| `product/erpnext-wecom-ai-v1-20261029` | 主产品分支，与 `main` 同步，日常开发推这里 |
+| `poc/erpnext-cn-manufacturing-20261026` | POC 分支 |
+| `backup/local-before-sync-20261108` | 同步前备份分支 |
+| `deliverable-snapshot` | 早期文件树快照（255 文件、无历史），**已废弃** |
+| `attic/main-docs-20261120` | 旧 main（纯文档分支）历史存档 |
 
 > **commit SHA 与公开仓库不同**：本地 `erpnext` 是 shallow clone，git 禁止 shallow push
 > （`shallow update not allowed` / `did not receive expected object`）。三个代码分支经重建：
