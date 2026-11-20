@@ -308,17 +308,25 @@ Excel 模板：`docs/product/samples/采购入库模板.xlsx`，列名：物料�
 
 ## 10. 私有交接仓库（给接手智能体）
 
-私有仓库 `youxihe/ai-erpnext`（需授权访问）包含两个分支：
+私有仓库 `youxihe/ai-erpnext`（需授权访问）包含五个分支：
 
-| 分支 | 内容 | 说明 |
+| 分支 | SHA | 内容 |
 |---|---|---|
-| `main` | `HANDOVER-FULL.md` | 完整交接文档，含服务器 SSH / MySQL / Administrator / 9 业务账号**明文密码** |
-| `deliverable-snapshot` | 255 个文件 / 4.7M | 本项目全部自有代码与文档快照：自定义 app `cn_mfg_poc`、产品脚本 `product/`、全部产品文档 `docs/product/`、本快照还额外含 `HANDOVER-FULL.md` |
+| `product/erpnext-wecom-ai-v1-20261029` | `da311f66` | **主产品分支**：3331 commits 完整历史、5821 文件 |
+| `poc/erpnext-cn-manufacturing-20261026` | `87ea0143` | POC 分支 |
+| `backup/local-before-sync-20261108` | `3486a0b3` | 同步前备份分支 |
+| `main` | `0318f4a` | `HANDOVER-FULL.md`（含 SSH / MySQL / Administrator / 9 业务账号**明文密码**）+ `SHA-REMAP.md` + `_sha_mapping.json` |
+| `deliverable-snapshot` | `6b2f80a` | 自有代码/文档文件树快照（255 文件，无历史） |
 
-获取方式（分支快照，不依赖 ERPNext 上游历史）：
+推荐取代码方式：
 ```
-git clone -b deliverable-snapshot git@github.com:youxihe/ai-erpnext.git
+git clone -b product/erpnext-wecom-ai-v1-20261029 git@github.com:youxihe/ai-erpnext.git
 ```
-完整 ERPNext 上游代码请从 public fork `youxihe/erpnext` 另行 clone，再把快照中的 `poc/apps/cn_mfg_poc/` 覆盖进去即可。
 
-> 说明：本地 `erpnext` 是 shallow clone，完整提交历史 FAIL 推送（缺浅边界父对象），故采用文件树快照分支交付。快照无历史提交，证据文档中引用的 commit SHA（`d4e19107` 等）需在 public fork `youxihe/erpnext` 中核对。
+> **commit SHA 与公开仓库不同**：本地 `erpnext` 是 shallow clone，git 禁止 shallow push
+> （`shallow update not allowed` / `did not receive expected object`）。三个代码分支经重建：
+> 保留 tree / message / author / committer，仅剥离浅边界之外的 parent，使 15 个边界成为
+> 真正的 root commit。**提交数与文件内容完全一致，只有 SHA 变化**。
+> 旧→新对照见私有仓库的 `SHA-REMAP.md` 与 `_sha_mapping.json`；需要旧 SHA 时到 public fork
+> `youxihe/erpnext` 核对（那边历史完整、SHA 未变）。
+> 本仓库不含浅边界之前的 5.7 万条上游历史，需要完整上游时从 `youxihe/erpnext` 另行 clone。
